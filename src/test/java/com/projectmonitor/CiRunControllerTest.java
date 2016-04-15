@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertTrue;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -92,5 +93,10 @@ public class CiRunControllerTest {
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("passed")));
+    }
+
+    @Test
+    public void thisFailsIntentionally(){
+        assertTrue(false);
     }
 }
