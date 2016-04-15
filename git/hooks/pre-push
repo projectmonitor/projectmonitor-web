@@ -1,0 +1,48 @@
+#!/bin/sh
+OLD_REV=$1
+NEW_REV=$2
+REFNAME=$3
+
+function determineIfCIHasFailed {
+  curl -H "Accept:application/vnd.travis-ci.2+json;" -H "User-Agent:us;" https://api.travis-ci.org/repos/projectmonitor/projectmonitor-web/branches/master -s | grep "\"state\":\"passed\"" > /dev/null 2>&1;
+  BUILD_EXIT_STATUS=$?
+
+  if [ $? > 0 ]
+  then
+    BUILD_FAILING=false
+  else
+    BUILD_FAILING=true
+  fi
+}
+
+function parseCommitMessage {
+  git cat-file commit $NEW_REV | sed '1,/^$/d' | grep "#fixesBrokenBuild"
+
+  if [ $? = 0 ]
+  then
+    ALLOW_COMMIT_ON_BROKEN_BUILD=true
+  else
+    ALLOW_COMMIT_ON_BROKEN_BUILD=false
+  fi
+}
+
+function printErrorMessage {
+  if [ "$ALLOW_COMMIT_ON_BROKEN_BUILD" = false ]
+  then
+    echo "Build is broken. Commits other than #fixesBrokenBuild are prohibited.\n"
+    exit 1
+  fi
+}
+
+
+determineIfCIHasFailed
+
+if [ "$BUILD_FAILING" = true ]
+then
+  while [ read $OLD_REV $NEW_REV ]
+  do
+    parseCommitMessage
+    printErrorMessage
+  done
+fi
+
