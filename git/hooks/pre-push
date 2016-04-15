@@ -1,13 +1,10 @@
 #!/bin/sh
-OLD_REV=$1
-NEW_REV=$2
-REFNAME=$3
 
 function determineIfCIHasFailed {
   curl -H "Accept:application/vnd.travis-ci.2+json;" -H "User-Agent:us;" https://api.travis-ci.org/repos/projectmonitor/projectmonitor-web/branches/master -s | grep "\"state\":\"passed\"" > /dev/null 2>&1;
   BUILD_EXIT_STATUS=$?
 
-  if [ $? > 0 ]
+  if [ $? -gt 0 ]
   then
     BUILD_FAILING=false
   else
@@ -16,9 +13,10 @@ function determineIfCIHasFailed {
 }
 
 function parseCommitMessage {
-  git cat-file commit $NEW_REV | sed '1,/^$/d' | grep "#fixesBrokenBuild"
+  git cat-file commit $REV | sed '1,/^$/d' | grep "[fixesBrokenBuild]"
 
-  if [ $? = 0 ]
+  # grep exits 0 if one or more lines selected
+  if [ $? -eq 0 ]
   then
     ALLOW_COMMIT_ON_BROKEN_BUILD=true
   else
@@ -29,20 +27,22 @@ function parseCommitMessage {
 function printErrorMessage {
   if [ "$ALLOW_COMMIT_ON_BROKEN_BUILD" = false ]
   then
-    echo "Build is broken. Commits other than #fixesBrokenBuild are prohibited.\n"
+    echo "Build is broken. Commits other than [fixesBrokenBuild] are prohibited.\n"
     exit 1
   fi
 }
 
-
 determineIfCIHasFailed
-
 if [ "$BUILD_FAILING" = true ]
 then
-  while [ read $OLD_REV $NEW_REV ]
+  while read line
   do
-    parseCommitMessage
-    printErrorMessage
-  done
+    LOCAL_REV=$(echo $line | awk '{print $2}')
+    MASTER_REV=$(echo $line | awk '{print $4}')
+    for REV in $(git log $MASTER_REV..$LOCAL_REV | grep commit | awk '{print $2}' | xargs)
+    do
+      parseCommitMessage
+      printErrorMessage
+    done
+  done < /dev/stdin
 fi
-
