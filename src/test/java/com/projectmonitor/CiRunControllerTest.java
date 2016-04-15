@@ -94,9 +94,4 @@ public class CiRunControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("passed")));
     }
-
-    @Test
-    public void thisFailsIntentionally(){
-        assertTrue(false);
-    }
 }
