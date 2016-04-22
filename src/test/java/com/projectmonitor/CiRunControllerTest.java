@@ -37,6 +37,19 @@ public class CiRunControllerTest {
     public void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
         mockServer = startClientAndServer(1080);
+
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/info")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"pivotalTrackerStoryID\": \"#55555\"}")
+                );
     }
 
     @After
@@ -111,19 +124,6 @@ public class CiRunControllerTest {
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
                                 .withBody("{\"branch\": {\"state\": \"passed\"}}")
-                );
-
-        mockServer
-                .when(
-                        request()
-                                .withMethod("GET")
-                                .withPath("/info")
-                )
-                .respond(
-                        response()
-                                .withStatusCode(200)
-                                .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"pivotalTrackerStoryID\": \"#55555\"}")
                 );
 
         mvc.perform(MockMvcRequestBuilders
