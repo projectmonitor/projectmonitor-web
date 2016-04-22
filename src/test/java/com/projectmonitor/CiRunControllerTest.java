@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertTrue;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -46,7 +45,7 @@ public class CiRunControllerTest {
     }
 
     @Test
-    public void whenCiShouldFail_returnsFailedStatus() throws Exception {
+    public void whenCiFails_returnsFailedStatus() throws Exception {
         mockServer
                 .when(
                         request()
@@ -71,7 +70,7 @@ public class CiRunControllerTest {
     }
 
     @Test
-    public void whenCiShouldPass_returnsPassesStatus() throws Exception {
+    public void whenCiPasses_returnsPassesStatus() throws Exception {
         mockServer
                 .when(
                         request()
@@ -93,5 +92,43 @@ public class CiRunControllerTest {
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("passed")));
+    }
+
+    @Test
+    public void displaysTheTrackerStoryNumberDeployedOnStoryAcceptance() throws Exception {
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/repos/projectmonitor/projectmonitor-web/branches/master")
+                                .withHeaders(
+                                        new Header("User-Agent", "us"),
+                                        new Header("Accept", "application/vnd.travis-ci.2+json")
+                                )
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"branch\": {\"state\": \"passed\"}}")
+                );
+
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/info")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"pivotalTrackerStoryID\": \"#55555\"}")
+                );
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Story Currently Deployed on Story Acceptance: #55555")));
     }
 }

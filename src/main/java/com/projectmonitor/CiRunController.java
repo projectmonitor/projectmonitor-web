@@ -18,6 +18,9 @@ public class CiRunController {
     @Value("${ciUrl}")
     private String ciUrl;
 
+    @Value("${storyAcceptanceUrl}")
+    private String storyAcceptanceUrl;
+
     @RequestMapping(method = RequestMethod.GET)
     public String execute(Model model) {
         RestTemplate restTemplate = new RestTemplate();
@@ -36,7 +39,10 @@ public class CiRunController {
                 CIResponse.class
         );
 
+        ProjectMonitorTrackerStoryInfo projectMonitorTrackerStoryInfo = restTemplate.getForObject(storyAcceptanceUrl + "info", ProjectMonitorTrackerStoryInfo.class);
+
         model.addAttribute("status", response.getBody().getBranch().getState());
+        model.addAttribute("pivotalTrackerStoryID", projectMonitorTrackerStoryInfo.getPivotalTrackerStoryID());
         return "status";
     }
 }

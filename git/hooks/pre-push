@@ -6,14 +6,14 @@ function determineIfCIHasFailed {
 
   if [ $? -gt 0 ]
   then
-    BUILD_FAILING=false
-  else
     BUILD_FAILING=true
+  else
+    BUILD_FAILING=false
   fi
 }
 
 function parseCommitMessage {
-  git cat-file commit $REV | sed '1,/^$/d' | grep "[fixesBrokenBuild]"
+  git cat-file commit $REV | sed '1,/^$/d' | grep "\[fixesBrokenBuild\]"
 
   # grep exits 0 if one or more lines selected
   if [ $? -eq 0 ]
