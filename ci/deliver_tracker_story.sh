@@ -12,7 +12,7 @@ function determine_if_commit_finishes_story {
 }
 
 function grab_story_id {
-  STORY_ID=$(echo $tracker_tag | awk '{print $2}' | egrep -o "[0-9]+")
+  STORY_ID=$(echo $tracker_tag | egrep -o "[0-9]+")
 }
 
 determine_if_commit_finishes_story
