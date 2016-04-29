@@ -2,8 +2,6 @@
 
 set -ex
 
-cd projectmonitor-web
-
 function update_tracker_story {
   curl -X PUT -H "X-TrackerToken: $TRACKER_TOKEN" -H "Content-Type: application/json" -d '{"current_state": "delivered"}' "https://www.pivotaltracker.com/services/v5/projects/$TRACKER_PROJECT_ID/stories/$STORY_ID"
 }
