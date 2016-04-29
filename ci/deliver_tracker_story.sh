@@ -15,9 +15,10 @@ function grab_story_id {
   STORY_ID=$(echo $tracker_tag | awk '{print $2}' | egrep -o "[0-9]+")
 }
 
+determine_if_commit_finishes_story
+
 if [ $found_finishes_tag -eq 0 ]
 then
-  determine_if_commit_finishes_story
   grab_story_id
   update_tracker_story
 fi
