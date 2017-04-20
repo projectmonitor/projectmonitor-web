@@ -19,6 +19,8 @@ public class CiRunController {
     private String ciUrl;
     @Value("${storyAcceptanceUrl}")
     private String storyAcceptanceUrl;
+    @Value("${productionUrl}")
+    private String productionUrl;
 
     @RequestMapping(method = RequestMethod.GET)
     public String execute(Model model) {
@@ -29,13 +31,19 @@ public class CiRunController {
                 CIResponse.class
         );
 
-        DeployedTrackerStory projectMonitorTrackerStoryInfo = restTemplate.getForObject(
+        DeployedTrackerStory storyAcceptanceDeployedStory = restTemplate.getForObject(
                 storyAcceptanceUrl + "info",
                 DeployedTrackerStory.class
         );
 
+        DeployedTrackerStory productionDeployedStory = restTemplate.getForObject(
+                productionUrl + "info",
+                DeployedTrackerStory.class
+        );
+
         model.addAttribute("status", response.getResult());
-        model.addAttribute("pivotalTrackerStoryID", projectMonitorTrackerStoryInfo.getPivotalTrackerStoryID());
+        model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
+        model.addAttribute("productionDeployedStoryID", productionDeployedStory.getPivotalTrackerStoryID());
         return "status";
     }
 }

@@ -49,6 +49,32 @@ public class CiRunControllerTest {
                                 .withHeaders(new Header("Content-Type", "application/json"))
                                 .withBody("{\"pivotalTrackerStoryID\": \"#55555\"}")
                 );
+
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/prod/info")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"pivotalTrackerStoryID\": \"#42\"}")
+                );
+
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/job/TestProject%20CI/lastCompletedBuild/api/json")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"result\": \"NOT_A_SUCCESS\"}")
+                );
     }
 
     @After
@@ -58,44 +84,25 @@ public class CiRunControllerTest {
 
     @Test
     public void whenCiResponds_wePrintTheBuildStatus() throws Exception {
-        mockServer
-                .when(
-                        request()
-                                .withMethod("GET")
-                                .withPath("/job/TestProject%20CI/lastCompletedBuild/api/json")
-                )
-                .respond(
-                        response()
-                                .withStatusCode(200)
-                                .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"result\": \"NOT_A_SUCCESS\"}")
-                );
-
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("NOT_A_SUCCESS")));
     }
 
-
     @Test
     public void displaysTheTrackerStoryNumberDeployedOnStoryAcceptance() throws Exception {
-        mockServer
-                .when(
-                        request()
-                                .withMethod("GET")
-                                .withPath("/job/TestProject%20CI/lastCompletedBuild/api/json")
-                )
-                .respond(
-                        response()
-                                .withStatusCode(200)
-                                .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"result\": \"NOT_A_SUCCESS\"}")
-                );
-
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story Currently Deployed on Story Acceptance: #55555")));
+    }
+
+    @Test
+    public void displaysTheTrackerStoryNumberDeployedInProduction() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Story Currently Deployed in Production: #42")));
     }
 }
