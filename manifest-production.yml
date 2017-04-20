@@ -1,0 +1,5 @@
+---
+applications:
+- name: projectmonitor-web-production
+  path: target/projectmonitor-web-0.0.1-SNAPSHOT.jar
+  buildpack: java_buildpack
