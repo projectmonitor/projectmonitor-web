@@ -17,7 +17,6 @@ public class CiRunController {
 
     @Value("${ciUrl}")
     private String ciUrl;
-
     @Value("${storyAcceptanceUrl}")
     private String storyAcceptanceUrl;
 
@@ -25,23 +24,17 @@ public class CiRunController {
     public String execute(Model model) {
         RestTemplate restTemplate = new RestTemplate();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", "us");
-        headers.set("Accept", "application/vnd.travis-ci.2+json");
-
-        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-
-
-        ResponseEntity<CIResponse> response = restTemplate.exchange(
-                ciUrl + "repos/projectmonitor/projectmonitor-web/branches/master",
-                HttpMethod.GET,
-                entity,
+        CIResponse response = restTemplate.getForObject(
+                ciUrl + "/job/TestProject CI/lastCompletedBuild/api/json",
                 CIResponse.class
         );
 
-        DeployedTrackerStory projectMonitorTrackerStoryInfo = restTemplate.getForObject(storyAcceptanceUrl + "info", DeployedTrackerStory.class);
+        DeployedTrackerStory projectMonitorTrackerStoryInfo = restTemplate.getForObject(
+                storyAcceptanceUrl + "info",
+                DeployedTrackerStory.class
+        );
 
-        model.addAttribute("status", response.getBody().getBranch().getState());
+        model.addAttribute("status", response.getResult());
         model.addAttribute("pivotalTrackerStoryID", projectMonitorTrackerStoryInfo.getPivotalTrackerStoryID());
         return "status";
     }

@@ -26,9 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(classes = ProjectmonitorWebApplication.class)
 @WebAppConfiguration
 public class CiRunControllerTest {
+
     private MockMvc mvc;
     private ClientAndServer mockServer;
-
     @Autowired
     private WebApplicationContext wac;
 
@@ -57,54 +57,26 @@ public class CiRunControllerTest {
     }
 
     @Test
-    public void whenCiFails_returnsFailedStatus() throws Exception {
+    public void whenCiResponds_wePrintTheBuildStatus() throws Exception {
         mockServer
                 .when(
                         request()
                                 .withMethod("GET")
-                                .withPath("/repos/projectmonitor/projectmonitor-web/branches/master")
-                                .withHeaders(
-                                        new Header("User-Agent", "us"),
-                                        new Header("Accept", "application/vnd.travis-ci.2+json")
-                                )
+                                .withPath("/job/TestProject%20CI/lastCompletedBuild/api/json")
                 )
                 .respond(
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"branch\": {\"state\": \"failed\"}}")
+                                .withBody("{\"result\": \"NOT_A_SUCCESS\"}")
                 );
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("failed")));
+                .andExpect(content().string(containsString("NOT_A_SUCCESS")));
     }
 
-    @Test
-    public void whenCiPasses_returnsPassesStatus() throws Exception {
-        mockServer
-                .when(
-                        request()
-                                .withMethod("GET")
-                                .withPath("/repos/projectmonitor/projectmonitor-web/branches/master")
-                                .withHeaders(
-                                        new Header("User-Agent", "us"),
-                                        new Header("Accept", "application/vnd.travis-ci.2+json")
-                                )
-                )
-                .respond(
-                        response()
-                                .withStatusCode(200)
-                                .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"branch\": {\"state\": \"passed\"}}")
-                );
-
-        mvc.perform(MockMvcRequestBuilders
-                .get("/"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("passed")));
-    }
 
     @Test
     public void displaysTheTrackerStoryNumberDeployedOnStoryAcceptance() throws Exception {
@@ -112,17 +84,13 @@ public class CiRunControllerTest {
                 .when(
                         request()
                                 .withMethod("GET")
-                                .withPath("/repos/projectmonitor/projectmonitor-web/branches/master")
-                                .withHeaders(
-                                        new Header("User-Agent", "us"),
-                                        new Header("Accept", "application/vnd.travis-ci.2+json")
-                                )
+                                .withPath("/job/TestProject%20CI/lastCompletedBuild/api/json")
                 )
                 .respond(
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"branch\": {\"state\": \"passed\"}}")
+                                .withBody("{\"result\": \"NOT_A_SUCCESS\"}")
                 );
 
         mvc.perform(MockMvcRequestBuilders

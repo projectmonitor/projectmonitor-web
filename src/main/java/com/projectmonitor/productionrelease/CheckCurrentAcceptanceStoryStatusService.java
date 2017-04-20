@@ -16,7 +16,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
     private final PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     private final ApplicationConfiguration applicationConfiguration;
     private final PCFDeployer pcfDeployer;
-    private static final Logger logger = LoggerFactory.getLogger(CheckCurrentAcceptanceStoryStatusService.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public CheckCurrentAcceptanceStoryStatusService(RestTemplate productionReleaseRestTemplate,
@@ -29,7 +29,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
         this.pcfDeployer = pcfDeployer;
     }
 
-    @Scheduled(fixedDelay = 180000)
+    @Scheduled(fixedDelay = 180000, initialDelay = 5000)
     public void execute() {
         logger.info("Job to determine if we should deploy to production kicking off...");
 

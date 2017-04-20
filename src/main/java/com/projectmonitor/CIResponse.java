@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CIResponse {
-    private Branch branch;
+    private String result;
 
-    public Branch getBranch() {
-        return branch;
+    public String getResult() {
+        return result;
     }
 }
