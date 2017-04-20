@@ -1,7 +1,7 @@
 package com.projectmonitor.productionrelease;
 
 import com.projectmonitor.ApplicationConfiguration;
-import com.projectmonitor.ProjectMonitorTrackerStoryInfo;
+import com.projectmonitor.DeployedTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +24,8 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     @Mock
     PCFDeployer pcfDeployer;
-    private com.projectmonitor.ProjectMonitorTrackerStoryInfo acceptanceStoryInfo;
-    private com.projectmonitor.ProjectMonitorTrackerStoryInfo productionStoryInfo;
+    private DeployedTrackerStory acceptanceStoryInfo;
+    private DeployedTrackerStory productionStoryInfo;
 
     @Before
     public void setUp() {
@@ -36,13 +36,13 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate, pivotalTrackerStoryConfiguration, applicationConfiguration, pcfDeployer);
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{STORY_ID}");
 
-        acceptanceStoryInfo = new ProjectMonitorTrackerStoryInfo();
+        acceptanceStoryInfo = new DeployedTrackerStory();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", ProjectMonitorTrackerStoryInfo.class)).thenReturn(acceptanceStoryInfo);
+        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedTrackerStory.class)).thenReturn(acceptanceStoryInfo);
 
-        productionStoryInfo = new ProjectMonitorTrackerStoryInfo();
+        productionStoryInfo = new DeployedTrackerStory();
         productionStoryInfo.setPivotalTrackerStoryID("9999");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", ProjectMonitorTrackerStoryInfo.class)).thenReturn(productionStoryInfo);
+        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedTrackerStory.class)).thenReturn(productionStoryInfo);
     }
 
     @Test

@@ -2,7 +2,7 @@ package com.projectmonitor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProjectMonitorTrackerStoryInfo {
+public class DeployedTrackerStory {
 
     private String pivotalTrackerStoryID;
 

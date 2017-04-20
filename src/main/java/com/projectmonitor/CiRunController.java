@@ -39,7 +39,7 @@ public class CiRunController {
                 CIResponse.class
         );
 
-        ProjectMonitorTrackerStoryInfo projectMonitorTrackerStoryInfo = restTemplate.getForObject(storyAcceptanceUrl + "info", ProjectMonitorTrackerStoryInfo.class);
+        DeployedTrackerStory projectMonitorTrackerStoryInfo = restTemplate.getForObject(storyAcceptanceUrl + "info", DeployedTrackerStory.class);
 
         model.addAttribute("status", response.getBody().getBranch().getState());
         model.addAttribute("pivotalTrackerStoryID", projectMonitorTrackerStoryInfo.getPivotalTrackerStoryID());

@@ -1,7 +1,7 @@
 package com.projectmonitor.productionrelease;
 
 import com.projectmonitor.ApplicationConfiguration;
-import com.projectmonitor.ProjectMonitorTrackerStoryInfo;
+import com.projectmonitor.DeployedTrackerStory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +34,19 @@ public class CheckCurrentAcceptanceStoryStatusService {
         logger.info("Job to determine if we should deploy to production kicking off...");
 
         try {
-            ProjectMonitorTrackerStoryInfo acceptanceStoryInfo = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", ProjectMonitorTrackerStoryInfo.class);
-            logger.info("Current story in acceptance {}", acceptanceStoryInfo.getPivotalTrackerStoryID());
+            DeployedTrackerStory acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedTrackerStory.class);
+            logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());
 
-            ProjectMonitorTrackerStoryInfo productionStoryInfo = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", ProjectMonitorTrackerStoryInfo.class);
-            logger.info("Current story in production: {}", productionStoryInfo.getPivotalTrackerStoryID());
+            DeployedTrackerStory productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedTrackerStory.class);
+            logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
-            String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl().replace("{STORY_ID}", acceptanceStoryInfo.getPivotalTrackerStoryID());
+            String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl().replace("{STORY_ID}", acceptanceStory.getPivotalTrackerStoryID());
             logger.info("Url of the current story in acceptance: {}", storyURL);
 
             PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
             logger.info("State of story currently in acceptance: {}", story.getCurrentState());
 
-            if ("accepted".equals(story.getCurrentState()) && acceptanceStoryInfo.getPivotalTrackerStoryID() != productionStoryInfo.getPivotalTrackerStoryID()) {
+            if ("accepted".equals(story.getCurrentState()) && acceptanceStory.getPivotalTrackerStoryID() != productionStory.getPivotalTrackerStoryID()) {
                 pcfDeployer.push();
             } else {
                 logger.info("Nothing to deploy at the moment...");
