@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 public class PCFDeployer {
 
     private final RestTemplate productionReleaseRestTemplate;
-    private static final Logger logger = LoggerFactory.getLogger(PCFDeployer.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public PCFDeployer(RestTemplate productionReleaseRestTemplate) {
