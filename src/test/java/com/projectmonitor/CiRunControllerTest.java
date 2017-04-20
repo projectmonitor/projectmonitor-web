@@ -5,7 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockserver.integration.ClientAndServer;
+import org.mockserver.mockserver.MockServer;
 import org.mockserver.model.Header;
+import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -105,4 +107,38 @@ public class CiRunControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story Currently Deployed in Production: #42")));
     }
+
+    @Test
+    public void whenProductionDoesNotRespond_displaysThatTheEnvironmentIsDown() throws Exception {
+        mockServer.clear(request().withMethod("GET").withPath("/prod/info"));
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Production is not responding")))
+        ;
+    }
+
+    @Test
+    public void whenStoryAcceptanceDoesNotRespond_displaysThatTheEnvironmentIsDown() throws Exception {
+        mockServer.clear(request().withMethod("GET").withPath("/info"));
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Story Acceptance is not responding")))
+        ;
+    }
+
+    @Test
+    public void whenCIDoesNotRespond_displaysThatTheEnvironmentIsDown() throws Exception {
+        mockServer.clear(request().withMethod("GET").withPath("/job/TestProject%20CI/lastCompletedBuild/api/json"));
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("CI is not responding")))
+        ;
+    }
+
 }

@@ -26,20 +26,35 @@ public class CiRunController {
     public String execute(Model model) {
         RestTemplate restTemplate = new RestTemplate();
 
-        CIResponse response = restTemplate.getForObject(
-                ciUrl + "/job/TestProject CI/lastCompletedBuild/api/json",
-                CIResponse.class
-        );
+        CIResponse response = new CIResponse();
+        try {
+            response = restTemplate.getForObject(
+                    ciUrl + "/job/TestProject CI/lastCompletedBuild/api/json",
+                    CIResponse.class
+            );
+        } catch(org.springframework.web.client.HttpClientErrorException exception){
+            response.setResult("CI is not responding");
+        }
 
-        DeployedTrackerStory storyAcceptanceDeployedStory = restTemplate.getForObject(
-                storyAcceptanceUrl + "info",
-                DeployedTrackerStory.class
-        );
+        DeployedTrackerStory storyAcceptanceDeployedStory = new DeployedTrackerStory();
+        try {
+            storyAcceptanceDeployedStory = restTemplate.getForObject(
+                    storyAcceptanceUrl + "info",
+                    DeployedTrackerStory.class
+            );
+        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+            storyAcceptanceDeployedStory.setPivotalTrackerStoryID("Story Acceptance is not responding");
+        }
 
-        DeployedTrackerStory productionDeployedStory = restTemplate.getForObject(
-                productionUrl + "info",
-                DeployedTrackerStory.class
-        );
+        DeployedTrackerStory productionDeployedStory = new DeployedTrackerStory();
+        try {
+            productionDeployedStory = restTemplate.getForObject(
+                    productionUrl + "info",
+                    DeployedTrackerStory.class
+            );
+        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+            productionDeployedStory.setPivotalTrackerStoryID("Production is not responding");
+        }
 
         model.addAttribute("status", response.getResult());
         model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
