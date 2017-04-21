@@ -29,7 +29,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
         this.pcfDeployer = pcfDeployer;
     }
 
-    @Scheduled(fixedDelay = 180000, initialDelay = 5000)
+    @Scheduled(fixedDelay = 180000, initialDelay = 10000)
     public void execute() {
         logger.info("Job to determine if we should deploy to production kicking off...");
 
@@ -46,7 +46,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
             PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
             logger.info("State of story currently in acceptance: {}", story.getCurrentState());
 
-            if ("accepted".equals(story.getCurrentState()) && acceptanceStory.getPivotalTrackerStoryID() != productionStory.getPivotalTrackerStoryID()) {
+            if ("accepted".equals(story.getCurrentState()) && !acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())) {
                 pcfDeployer.push();
             } else {
                 logger.info("Nothing to deploy at the moment...");

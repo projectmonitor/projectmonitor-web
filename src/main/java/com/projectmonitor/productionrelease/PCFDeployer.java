@@ -22,7 +22,7 @@ public class PCFDeployer {
 
         try {
             productionReleaseRestTemplate.getForObject(
-                    "http://localhost:9000/job/TestProject to Production/build?token=TestProjectToProduction",
+                    "http://localhost:8080/job/TestProject to Production/build",
                     Object.class);
         } catch (RuntimeException e) {
             logger.info("Call to jenkins failed, cause: ", e.getMessage());
