@@ -1,15 +1,16 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${status}" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title th:text="${status}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="../static/css/app.css" th:href="@{/css/app.css}" rel="stylesheet"/>
 </head>
 <body>
 
-<p th:text="|CI Status: ${status}|" />
-<p th:text="|Story Currently Deployed on Story Acceptance: ${storyAcceptanceDeployedStoryID}|" />
-<p th:text="|SHA Currently Deployed on Story Acceptance: ${storyAcceptanceDeployedSHA}|" />
-<p th:text="|Story Currently Deployed in Production: ${productionDeployedStoryID}|" />
-<p th:text="|SHA Currently Deployed in Production: ${productionDeployedSHA}|" />
+<p th:text="|CI Status: ${status}|"/>
+<p th:text="|Story Currently Deployed on Story Acceptance: ${storyAcceptanceDeployedStoryID}|"/>
+<p th:text="|SHA Currently Deployed on Story Acceptance: ${storyAcceptanceDeployedSHA}|"/>
+<p th:text="|Story Currently Deployed in Production: ${productionDeployedStoryID}|"/>
+<p th:text="|SHA Currently Deployed in Production: ${productionDeployedSHA}|"/>
 </body>
 </html>
