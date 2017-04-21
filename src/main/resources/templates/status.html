@@ -8,10 +8,17 @@
 </head>
 <body>
 
+<h2 th:text="|Test Build:|" />
 <p th:text="|CI Status: ${status}|"/>
+
+<h2 th:text="|Story Acceptance:|" />
 <p th:text="|Story Currently Deployed on Story Acceptance: ${storyAcceptanceDeployedStoryID}|"/>
 <p th:text="|SHA Currently Deployed on Story Acceptance: ${storyAcceptanceDeployedSHA}|"/>
+<p th:text="|Last Deploy to Story Acceptance was: ${storyAcceptanceDeployResponse}|"/>
+
+<h2 th:text="|Production:|" />
 <p th:text="|Story Currently Deployed in Production: ${productionDeployedStoryID}|"/>
 <p th:text="|SHA Currently Deployed in Production: ${productionDeployedSHA}|"/>
+<p th:text="|Last Deploy to Production was: ${productionDeployResponse}|"/>
 </body>
 </html>

@@ -22,14 +22,34 @@ public class CiRunController {
     public String execute(Model model) {
         RestTemplate restTemplate = new RestTemplate();
 
-        CIResponse response = new CIResponse();
+        CIResponse ciResponse = new CIResponse();
         try {
-            response = restTemplate.getForObject(
+            ciResponse = restTemplate.getForObject(
                     ciUrl + "/job/TestProject CI/lastCompletedBuild/api/json",
                     CIResponse.class
             );
-        } catch(org.springframework.web.client.HttpClientErrorException exception){
-            response.setResult("CI is not responding");
+        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+            ciResponse.setResult("CI is not responding");
+        }
+
+        CIResponse storyAcceptanceDeployResponse = new CIResponse();
+        try {
+            storyAcceptanceDeployResponse = restTemplate.getForObject(
+                    ciUrl + "/job/TestProject to SA/lastCompletedBuild/api/json",
+                    CIResponse.class
+            );
+        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+            storyAcceptanceDeployResponse.setResult("Story Acceptance Deploy Job is not responding");
+        }
+
+        CIResponse productionDeployResponse = new CIResponse();
+        try {
+            productionDeployResponse = restTemplate.getForObject(
+                    ciUrl + "/job/TestProject to SA/lastCompletedBuild/api/json",
+                    CIResponse.class
+            );
+        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+            productionDeployResponse.setResult("Production Deploy Job is not responding");
         }
 
         DeployedAppInfo storyAcceptanceDeployedStory = new DeployedAppInfo();
@@ -52,7 +72,9 @@ public class CiRunController {
             productionDeployedStory.setPivotalTrackerStoryID("Production is not responding");
         }
 
-        model.addAttribute("status", response.getResult());
+        model.addAttribute("status", ciResponse.getResult());
+        model.addAttribute("storyAcceptanceDeployResponse", storyAcceptanceDeployResponse.getResult());
+        model.addAttribute("productionDeployResponse", productionDeployResponse.getResult());
         model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
         model.addAttribute("storyAcceptanceDeployedSHA", storyAcceptanceDeployedStory.getStorySHA());
         model.addAttribute("productionDeployedStoryID", productionDeployedStory.getPivotalTrackerStoryID());
