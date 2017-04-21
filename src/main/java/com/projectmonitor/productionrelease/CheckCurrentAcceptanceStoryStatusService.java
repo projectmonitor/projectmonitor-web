@@ -1,7 +1,7 @@
 package com.projectmonitor.productionrelease;
 
 import com.projectmonitor.ApplicationConfiguration;
-import com.projectmonitor.DeployedTrackerStory;
+import com.projectmonitor.DeployedAppInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +34,10 @@ public class CheckCurrentAcceptanceStoryStatusService {
         logger.info("Job to determine if we should deploy to production kicking off...");
 
         try {
-            DeployedTrackerStory acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedTrackerStory.class);
+            DeployedAppInfo acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedAppInfo.class);
             logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());
 
-            DeployedTrackerStory productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedTrackerStory.class);
+            DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedAppInfo.class);
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
             String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl().replace("{STORY_ID}", acceptanceStory.getPivotalTrackerStoryID());

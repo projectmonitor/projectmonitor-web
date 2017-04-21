@@ -2,9 +2,11 @@ package com.projectmonitor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DeployedTrackerStory {
+public class DeployedAppInfo {
 
     private String pivotalTrackerStoryID;
+
+    private String storySHA;
 
 
     public String getPivotalTrackerStoryID() {
@@ -15,4 +17,11 @@ public class DeployedTrackerStory {
         this.pivotalTrackerStoryID = pivotalTrackerStoryID;
     }
 
+    public String getStorySHA() {
+        return storySHA;
+    }
+
+    public void setStorySHA(String storySHA) {
+        this.storySHA = storySHA;
+    }
 }

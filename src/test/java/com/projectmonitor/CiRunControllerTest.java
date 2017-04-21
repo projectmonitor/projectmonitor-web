@@ -49,7 +49,7 @@ public class CiRunControllerTest {
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"pivotalTrackerStoryID\": \"#55555\"}")
+                                .withBody("{\"pivotalTrackerStoryID\": \"#55555\", \"storySHA\": \"88\"}")
                 );
 
         mockServer
@@ -62,7 +62,7 @@ public class CiRunControllerTest {
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"pivotalTrackerStoryID\": \"#42\"}")
+                                .withBody("{\"pivotalTrackerStoryID\": \"#42\", \"storySHA\": \"21\"}")
                 );
 
         mockServer
@@ -93,19 +93,23 @@ public class CiRunControllerTest {
     }
 
     @Test
-    public void displaysTheTrackerStoryNumberDeployedOnStoryAcceptance() throws Exception {
+    public void displaysAppInfoOfTheAppDeployedOnStoryAcceptance() throws Exception {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Currently Deployed on Story Acceptance: #55555")));
+                .andExpect(content().string(containsString("Story Currently Deployed on Story Acceptance: #55555")))
+                .andExpect(content().string(containsString("SHA Currently Deployed on Story Acceptance: 88")))
+        ;
     }
 
     @Test
-    public void displaysTheTrackerStoryNumberDeployedInProduction() throws Exception {
+    public void displaysAppInfoOfTheAppDeployedInProduction() throws Exception {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Currently Deployed in Production: #42")));
+                .andExpect(content().string(containsString("Story Currently Deployed in Production: #42")))
+                .andExpect(content().string(containsString("SHA Currently Deployed in Production: 21")))
+        ;
     }
 
     @Test

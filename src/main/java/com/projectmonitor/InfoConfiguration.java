@@ -15,10 +15,14 @@ public class InfoConfiguration {
     @Value("${pivotalTrackerStoryID}")
     private String pivotalTrackerStoryID;
 
+    @Value("${storySha}")
+    private String storySHA;
+
     @Bean
     public InfoEndpoint infoEndpoint() {
         final LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("pivotalTrackerStoryID", pivotalTrackerStoryID);
+        map.put("storySHA", storySHA);
         return new InfoEndpoint(map);
     }
 

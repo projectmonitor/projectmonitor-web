@@ -1,7 +1,7 @@
 package com.projectmonitor.productionrelease;
 
 import com.projectmonitor.ApplicationConfiguration;
-import com.projectmonitor.DeployedTrackerStory;
+import com.projectmonitor.DeployedAppInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +24,8 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     @Mock
     PCFDeployer pcfDeployer;
-    private DeployedTrackerStory acceptanceStoryInfo;
-    private DeployedTrackerStory productionStoryInfo;
+    private DeployedAppInfo acceptanceStoryInfo;
+    private DeployedAppInfo productionStoryInfo;
 
     @Before
     public void setUp() {
@@ -36,13 +36,13 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate, pivotalTrackerStoryConfiguration, applicationConfiguration, pcfDeployer);
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{STORY_ID}");
 
-        acceptanceStoryInfo = new DeployedTrackerStory();
+        acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedTrackerStory.class)).thenReturn(acceptanceStoryInfo);
+        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedAppInfo.class)).thenReturn(acceptanceStoryInfo);
 
-        productionStoryInfo = new DeployedTrackerStory();
+        productionStoryInfo = new DeployedAppInfo();
         productionStoryInfo.setPivotalTrackerStoryID("9999");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedTrackerStory.class)).thenReturn(productionStoryInfo);
+        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedAppInfo.class)).thenReturn(productionStoryInfo);
     }
 
     @Test

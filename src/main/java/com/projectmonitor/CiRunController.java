@@ -1,10 +1,6 @@
 package com.projectmonitor;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,21 +32,21 @@ public class CiRunController {
             response.setResult("CI is not responding");
         }
 
-        DeployedTrackerStory storyAcceptanceDeployedStory = new DeployedTrackerStory();
+        DeployedAppInfo storyAcceptanceDeployedStory = new DeployedAppInfo();
         try {
             storyAcceptanceDeployedStory = restTemplate.getForObject(
                     storyAcceptanceUrl + "info",
-                    DeployedTrackerStory.class
+                    DeployedAppInfo.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             storyAcceptanceDeployedStory.setPivotalTrackerStoryID("Story Acceptance is not responding");
         }
 
-        DeployedTrackerStory productionDeployedStory = new DeployedTrackerStory();
+        DeployedAppInfo productionDeployedStory = new DeployedAppInfo();
         try {
             productionDeployedStory = restTemplate.getForObject(
                     productionUrl + "info",
-                    DeployedTrackerStory.class
+                    DeployedAppInfo.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             productionDeployedStory.setPivotalTrackerStoryID("Production is not responding");
@@ -58,7 +54,9 @@ public class CiRunController {
 
         model.addAttribute("status", response.getResult());
         model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
+        model.addAttribute("storyAcceptanceDeployedSHA", storyAcceptanceDeployedStory.getStorySHA());
         model.addAttribute("productionDeployedStoryID", productionDeployedStory.getPivotalTrackerStoryID());
+        model.addAttribute("productionDeployedSHA", productionDeployedStory.getStorySHA());
         return "status";
     }
 }
