@@ -21,16 +21,15 @@ mvn test
 
 To commit on this project you must use our git command:
 ```bash
-git hard
+git deliver
 ```
 This will require a story number and then allow you to enter a message.
 
-ci is on travis:
+### Install Jenkins locally
+```bash
+brew install jenkins
+brew services start jenkins
 ```
-https://travis-ci.org/projectmonitor/projectmonitor-web
-```
-
-app is not running anywheres currently
 
 **Ignore this for now: Install bats for bash unit tests:**
 ```
