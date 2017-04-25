@@ -17,7 +17,6 @@ public class CheckCurrentAcceptanceStoryStatusService {
     private final ApplicationConfiguration applicationConfiguration;
     private final PCFProductionDeployer pcfProductionDeployer;
     private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
@@ -51,8 +50,9 @@ public class CheckCurrentAcceptanceStoryStatusService {
             logger.info("State of story currently in acceptance: {}", story.getCurrentState());
 
             if ("accepted".equals(story.getCurrentState()) && !acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())) {
-                pcfProductionDeployer.push(acceptanceStory.getStorySHA());
-                // make prod deployer finish before updating SA...
+                if (pcfProductionDeployer.push(acceptanceStory.getStorySHA())) {
+                    pcfStoryAcceptanceDeployer.push();
+                }
             } else {
                 logger.info("Nothing to deploy at the moment...");
             }
