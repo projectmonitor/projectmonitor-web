@@ -78,18 +78,6 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     }
 
     @Test
-    public void execute_whenTrackerAPIResponds_andStoryIsRejected_triggersTheSADeploy() throws Exception {
-        PivotalTrackerStory rejectedStory = new PivotalTrackerStory();
-        rejectedStory.setCurrentState("rejected");
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
-                .thenReturn(rejectedStory);
-
-        subject.execute();
-        verify(pcfStoryAcceptanceDeployer).push();
-        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
-    }
-
-    @Test
     public void execute_whenTrackerAPIResponds_andStoryIsNotAccepted_doesNotTriggerAProductionDeploy() throws Exception {
         PivotalTrackerStory notAcceptedStory = new PivotalTrackerStory();
         notAcceptedStory.setCurrentState("delivered");

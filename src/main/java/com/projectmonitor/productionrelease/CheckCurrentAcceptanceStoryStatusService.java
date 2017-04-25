@@ -50,13 +50,9 @@ public class CheckCurrentAcceptanceStoryStatusService {
             PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
             logger.info("State of story currently in acceptance: {}", story.getCurrentState());
 
-            if("rejected".equals(story.getCurrentState())){
-                pcfStoryAcceptanceDeployer.push();
-                return;
-            }
-
             if ("accepted".equals(story.getCurrentState()) && !acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())) {
                 pcfProductionDeployer.push(acceptanceStory.getStorySHA());
+                // make prod deployer finish before updating SA...
             } else {
                 logger.info("Nothing to deploy at the moment...");
             }
