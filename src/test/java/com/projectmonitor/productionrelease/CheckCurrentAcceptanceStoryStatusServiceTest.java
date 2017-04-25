@@ -23,9 +23,13 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     @Mock
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     @Mock
-    PCFDeployer pcfDeployer;
+    PCFProductionDeployer pcfProductionDeployer;
+    @Mock
+    private PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
+
     private DeployedAppInfo acceptanceStoryInfo;
     private DeployedAppInfo productionStoryInfo;
+
 
     @Before
     public void setUp() {
@@ -33,11 +37,12 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         applicationConfiguration.setStoryAcceptanceUrl("http://story.acceptance.url/");
         applicationConfiguration.setProductionUrl("http://story.production.url/");
 
-        subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate, pivotalTrackerStoryConfiguration, applicationConfiguration, pcfDeployer);
+        subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate, pivotalTrackerStoryConfiguration, applicationConfiguration, pcfProductionDeployer, pcfStoryAcceptanceDeployer);
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{STORY_ID}");
 
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
+        acceptanceStoryInfo.setStorySHA("blahblahSHA");
         when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedAppInfo.class)).thenReturn(acceptanceStoryInfo);
 
         productionStoryInfo = new DeployedAppInfo();
@@ -54,7 +59,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
                 .thenReturn(acceptedStory);
 
         subject.execute();
-        verify(pcfDeployer).push();
+        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA());
     }
 
     @Test
@@ -69,7 +74,19 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
         subject.execute();
 
-        verify(pcfDeployer, never()).push();
+        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
+    }
+
+    @Test
+    public void execute_whenTrackerAPIResponds_andStoryIsRejected_triggersTheSADeploy() throws Exception {
+        PivotalTrackerStory rejectedStory = new PivotalTrackerStory();
+        rejectedStory.setCurrentState("rejected");
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
+                .thenReturn(rejectedStory);
+
+        subject.execute();
+        verify(pcfStoryAcceptanceDeployer).push();
+        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
     }
 
     @Test
@@ -79,6 +96,6 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
                 .thenReturn(notAcceptedStory);
         subject.execute();
-        verify(pcfDeployer, never()).push();
+        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
     }
 }

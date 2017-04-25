@@ -15,18 +15,22 @@ public class CheckCurrentAcceptanceStoryStatusService {
     private final RestTemplate productionReleaseRestTemplate;
     private final PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     private final ApplicationConfiguration applicationConfiguration;
-    private final PCFDeployer pcfDeployer;
+    private final PCFProductionDeployer pcfProductionDeployer;
+    private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public CheckCurrentAcceptanceStoryStatusService(RestTemplate productionReleaseRestTemplate,
                                                     PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
                                                     ApplicationConfiguration applicationConfiguration,
-                                                    PCFDeployer pcfDeployer) {
+                                                    PCFProductionDeployer pcfProductionDeployer,
+                                                    PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer) {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
         this.pivotalTrackerStoryConfiguration = pivotalTrackerStoryConfiguration;
         this.applicationConfiguration = applicationConfiguration;
-        this.pcfDeployer = pcfDeployer;
+        this.pcfProductionDeployer = pcfProductionDeployer;
+        this.pcfStoryAcceptanceDeployer = pcfStoryAcceptanceDeployer;
     }
 
     @Scheduled(fixedDelay = 180000, initialDelay = 10000)
@@ -46,8 +50,13 @@ public class CheckCurrentAcceptanceStoryStatusService {
             PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
             logger.info("State of story currently in acceptance: {}", story.getCurrentState());
 
+            if("rejected".equals(story.getCurrentState())){
+                pcfStoryAcceptanceDeployer.push();
+                return;
+            }
+
             if ("accepted".equals(story.getCurrentState()) && !acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())) {
-                pcfDeployer.push();
+                pcfProductionDeployer.push(acceptanceStory.getStorySHA());
             } else {
                 logger.info("Nothing to deploy at the moment...");
             }

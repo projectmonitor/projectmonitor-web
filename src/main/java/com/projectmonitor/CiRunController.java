@@ -45,7 +45,7 @@ public class CiRunController {
         CIResponse productionDeployResponse = new CIResponse();
         try {
             productionDeployResponse = restTemplate.getForObject(
-                    ciUrl + "/job/TestProject to SA/lastCompletedBuild/api/json",
+                    ciUrl + "/job/TestProject to Production/lastCompletedBuild/api/json",
                     CIResponse.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {

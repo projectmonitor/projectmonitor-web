@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euf -o pipefail
 
+#
+# Some assumptions:
+# 1. You have jenkins configured to use an ssh key so we can push
+# 2. You are using a feature branch strategy, the pipeline will handle 'easy' merges for you
+#
+
 # because of how Jenkins checks out from Git, we are not on a branch and the remote branches are not known locally
 git checkout master
 git branch -va

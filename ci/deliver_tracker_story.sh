@@ -7,7 +7,7 @@ function update_tracker_story {
 }
 
 function determine_if_commit_finishes_story {
-  tracker_tag="$(git log HEAD~..HEAD | sed '1,/^$/d' | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print $2, $3}')"
+  tracker_tag="$(git log -1 | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print $2, $3}')"
   found_finishes_tag=$?
 }
 

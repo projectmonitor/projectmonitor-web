@@ -9,23 +9,23 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.client.RestTemplate;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PCFDeployerTest {
+public class PCFProductionDeployerTest {
 
-    PCFDeployer subject;
+    PCFProductionDeployer subject;
 
     @Mock
     RestTemplate productionReleaseRestTemplate;
 
     @Before
     public void setUp(){
-        subject = new PCFDeployer(productionReleaseRestTemplate);
+        subject = new PCFProductionDeployer(productionReleaseRestTemplate);
     }
 
     @Test
-    public void push_kicksOffProductionDeployJob() throws Exception {
-        String ciURL = "http://localhost:8080/job/TestProject to Production/build";
+    public void push_kicksOffProductionDeployJob_withShaFromAcceptance() throws Exception {
+        String ciURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA";
 
-        subject.push();
+        subject.push("blahblahSHA");
         Mockito.verify(productionReleaseRestTemplate).getForObject(ciURL, Object.class);
     }
 

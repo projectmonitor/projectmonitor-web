@@ -101,7 +101,7 @@ public class CiRunControllerTest {
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"result\": \"NOT_A_SUCCESS\"}")
+                                .withBody("{\"result\": \"BANANAS\"}")
                 );
     }
 
@@ -144,7 +144,7 @@ public class CiRunControllerTest {
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Last Deploy to Story Acceptance was: NOT_A_SUCCESS")))
-                .andExpect(content().string(containsString("Last Deploy to Production was: NOT_A_SUCCESS")))
+                .andExpect(content().string(containsString("Last Deploy to Production was: BANANAS")))
         ;
     }
 
