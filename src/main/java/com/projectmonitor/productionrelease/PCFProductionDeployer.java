@@ -13,7 +13,7 @@ public class PCFProductionDeployer {
 
     private final RestTemplate productionReleaseRestTemplate;
     private final ThreadSleepService threadSleepService;
-    private final String prodDeployStatusURL = "http://localhost:8080/job/TestProject%20to%20Production/lastBuild/api/json";
+    private final String prodDeployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
     private final String productionDeployURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=";
     public static final String jenkinsSuccessMessage = "SUCCESS";
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
