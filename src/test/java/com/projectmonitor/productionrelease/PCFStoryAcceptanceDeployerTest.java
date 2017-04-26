@@ -1,37 +1,44 @@
 package com.projectmonitor.productionrelease;
 
+import com.projectmonitor.StoryAcceptanceDeploy.StoryAcceptanceQueue;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.redis.core.BoundListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.fail;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PCFStoryAcceptanceDeployerTest {
 
     PCFStoryAcceptanceDeployer subject;
 
+    @Mock
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Mock
+    private BoundListOperations<String, String> boundListOperations;
+
+    @Mock
+    private RestTemplate productionReleaseRestTemplate;
+
     @Before
     public void setUp(){
-        subject = new PCFStoryAcceptanceDeployer();
+
+        subject = new PCFStoryAcceptanceDeployer(productionReleaseRestTemplate, redisTemplate);
     }
 
     @Test
     public void push_triggersTheJenkinsSADeployJob_withTheNextBuildThatHasPassedCI() throws Exception {
-        // Currently SA deploy script expects SHA to deploy
-        // it checks if that sha is the top commit on the branch
-        // and that the story for the branch is finished
-        // then merges with master if no conflicts, re runs tests and pushes if they pass
-        // so triggering a deploy of something not ready will be a non op to SA env
-
-
-        // look at tracker, get all stories in finished state
-        // curl -X GET -H "X-TrackerToken: $TOKEN" "https://www.pivotaltracker.com/services/v5/projects/$PROJECT_ID/search?query=state:finished"
-        // gives you all stories in finished state (has #completes), with story numbers obvi
-        // and has updated at, so you can determine commit order (kinda roughly)
-        // how to determine if it passed CI on remote branch before
-
-        // what happens if tests fail after merge? reject story with note? -- jenkins script should own this
-
+        Mockito.when(boundListOperations.leftPop()).thenReturn("theNextDeployableSHA");
+        Mockito.when(redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME)).thenReturn(boundListOperations);
         subject.push();
-        fail();
+        Mockito.verify(productionReleaseRestTemplate)
+                .getForObject("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=theNextDeployableSHA", Object.class);
     }
 }

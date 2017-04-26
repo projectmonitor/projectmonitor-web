@@ -31,6 +31,12 @@ brew install jenkins
 brew services start jenkins
 ```
 
+### Install Redis Locally
+```bash
+brew install redis
+brew services start redis
+```
+
 **Ignore this for now: Install bats for bash unit tests:**
 ```
 brew install bats

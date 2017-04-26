@@ -17,7 +17,7 @@ public class PCFProductionDeployerTest {
     PCFProductionDeployer subject;
 
     String ciURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA";
-    String deployStatusURL = "http://localhost:8080/job/TestProject%20to%20Production/lastBuild/api/json";
+    String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
 
     @Mock
     RestTemplate productionReleaseRestTemplate;
