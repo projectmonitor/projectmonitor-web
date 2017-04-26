@@ -40,7 +40,8 @@ public class PCFProductionDeployer {
         try {
             JenkinsJobStatus jenkinsJobStatus = new JenkinsJobStatus();
             do {
-                threadSleepService.sleep(5000);
+                logger.info("Sleeping before next poll...");
+                threadSleepService.sleep(10000);
                 try {
 
                     jenkinsJobStatus = productionReleaseRestTemplate.getForObject(prodDeployStatusURL, JenkinsJobStatus.class);

@@ -25,6 +25,12 @@ public class PCFStoryAcceptanceDeployer {
 
     public void push() {
         String theSHA = redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME).leftPop();
+
+        if (theSHA == null || theSHA.isEmpty()) {
+            logger.error("No build SHA's in queue, nothing to deploy to SA");
+            return;
+        }
+
         logger.info("Deploying to Story Acceptance with the following SHA: " + theSHA);
         productionReleaseRestTemplate.getForObject(STORY_ACCEPTANCE_URL + theSHA, Object.class);
     }

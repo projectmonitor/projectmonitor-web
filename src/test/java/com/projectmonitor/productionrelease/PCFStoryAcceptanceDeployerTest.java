@@ -12,6 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PCFStoryAcceptanceDeployerTest {
@@ -40,5 +42,13 @@ public class PCFStoryAcceptanceDeployerTest {
         subject.push();
         Mockito.verify(productionReleaseRestTemplate)
                 .getForObject("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=theNextDeployableSHA", Object.class);
+    }
+
+    @Test
+    public void push_whenQueueEmpty_doesNotTriggerAnSADeploy() throws Exception {
+        Mockito.when(boundListOperations.leftPop()).thenReturn(null);
+        Mockito.when(redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME)).thenReturn(boundListOperations);
+        subject.push();
+        Mockito.verifyZeroInteractions(productionReleaseRestTemplate);
     }
 }

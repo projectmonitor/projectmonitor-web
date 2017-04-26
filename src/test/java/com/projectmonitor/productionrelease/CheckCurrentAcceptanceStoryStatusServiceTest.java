@@ -63,7 +63,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     }
 
     @Test
-    public void execute_whenTrackerAPIResponds_andStoryisAccepted_andStoriesMatch_doesNottriggerAProductionDeploy() {
+    public void execute_whenTrackerAPIResponds_andStoryisAccepted_andStoriesMatch_doesNotTriggerAProductionDeploy_butDoesTriggerAnSADeploy() {
         PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
         acceptedStory.setCurrentState("accepted");
 
@@ -75,6 +75,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         subject.execute();
 
         verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
+        verify(pcfStoryAcceptanceDeployer).push();
     }
 
     @Test
