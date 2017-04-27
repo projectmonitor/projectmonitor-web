@@ -38,7 +38,8 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         applicationConfiguration.setProductionUrl("http://story.production.url/");
 
         subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate, pivotalTrackerStoryConfiguration, applicationConfiguration, pcfProductionDeployer, pcfStoryAcceptanceDeployer);
-        when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{STORY_ID}");
+        when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{TRACKER_PROJECT_ID}/{STORY_ID}");
+        when(pivotalTrackerStoryConfiguration.getTrackerProjectId()).thenReturn("989898");
 
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
@@ -55,7 +56,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
         acceptedStory.setCurrentState("accepted");
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888", PivotalTrackerStory.class))
                 .thenReturn(acceptedStory);
 
         subject.execute();
@@ -67,7 +68,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
         acceptedStory.setCurrentState("accepted");
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888", PivotalTrackerStory.class))
                 .thenReturn(acceptedStory);
 
         productionStoryInfo.setPivotalTrackerStoryID("8888");
@@ -82,7 +83,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     public void execute_whenTrackerAPIResponds_andStoryIsNotAccepted_doesNotTriggerAProductionDeploy() throws Exception {
         PivotalTrackerStory notAcceptedStory = new PivotalTrackerStory();
         notAcceptedStory.setCurrentState("delivered");
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888", PivotalTrackerStory.class))
                 .thenReturn(notAcceptedStory);
         subject.execute();
         verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
@@ -93,7 +94,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
         acceptedStory.setCurrentState("accepted");
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888", PivotalTrackerStory.class))
                 .thenReturn(acceptedStory);
 
         when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID())).thenReturn(false);
@@ -108,7 +109,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
         acceptedStory.setCurrentState("accepted");
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888", PivotalTrackerStory.class))
                 .thenReturn(acceptedStory);
 
         when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID())).thenReturn(true);

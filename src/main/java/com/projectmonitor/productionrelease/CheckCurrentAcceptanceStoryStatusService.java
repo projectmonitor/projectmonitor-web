@@ -43,8 +43,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
             DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedAppInfo.class);
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
-            String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl().replace("{STORY_ID}", acceptanceStory.getPivotalTrackerStoryID());
-            logger.info("Url of the current story in acceptance: {}", storyURL);
+            String storyURL = generatePivotalTrackerUrl(acceptanceStory.getPivotalTrackerStoryID());
 
             PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
             logger.info("State of story currently in acceptance: {}", story.getCurrentState());
@@ -64,5 +63,14 @@ public class CheckCurrentAcceptanceStoryStatusService {
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             logger.info("A web call to acceptance/production or tracker errored! {}", exception.getMessage());
         }
+    }
+
+    private String generatePivotalTrackerUrl(String pivotalTrackerStoryID) {
+        String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl();
+        storyURL = storyURL.replace("{STORY_ID}", pivotalTrackerStoryID);
+        storyURL = storyURL.replace("{TRACKER_PROJECT_ID}", pivotalTrackerStoryConfiguration.getTrackerProjectId());
+
+        logger.info("Url of the current story in acceptance: {}", storyURL);
+        return storyURL;
     }
 }

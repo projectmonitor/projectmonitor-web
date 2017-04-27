@@ -8,11 +8,21 @@ import org.springframework.stereotype.Component;
 public class PivotalTrackerStoryConfiguration {
     private String pivotalTrackerStoryDetailsUrl;
 
+    private String trackerProjectId;
+
     public String getPivotalTrackerStoryDetailsUrl() {
         return pivotalTrackerStoryDetailsUrl;
     }
 
     public void setPivotalTrackerStoryDetailsUrl(String pivotalTrackerStoryDetailsUrl) {
         this.pivotalTrackerStoryDetailsUrl = pivotalTrackerStoryDetailsUrl;
+    }
+
+    public String getTrackerProjectId() {
+        return trackerProjectId;
+    }
+
+    public void setTrackerProjectId(String trackerProjectId) {
+        this.trackerProjectId = trackerProjectId;
     }
 }
