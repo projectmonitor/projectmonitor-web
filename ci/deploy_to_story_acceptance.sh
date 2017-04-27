@@ -36,9 +36,17 @@ fi
 # awk '/(\[finishes\s+#[0-9]+\])|(\[fixes\s+#[0-9]+\])|(\[completes\s+#[0-9]+\])/{result=1}END{print "RES" result; exit result}';
 set +o pipefail
 
+function update_tracker_story {
+  curl -X PUT -H "X-TrackerToken: $TRACKER_TOKEN" -H "Content-Type: application/json" -d '{"current_state": "delivered"}' "https://www.pivotaltracker.com/services/v5/projects/$TRACKER_PROJECT_ID/stories/$STORY_ID"
+}
+
 shouldDeploy=$(git log HEAD~..HEAD | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print}' )
 if [ ! -z "$shouldDeploy" ]
 then
+    tracker_tag="$(git log -1 | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print $2, $3}')"
+    found_finishes_tag=$?
+    STORY_ID=$(echo $tracker_tag | egrep -o "[0-9]+")
+
     git merge master --no-edit || ( echo "### The merge with master failed" && git reset --hard origin/master && exit 4 )
 
     mvn clean package || ( echo "### The tests or build failed" && exit 5  )
@@ -46,9 +54,11 @@ then
     git push origin $branch_name
 
     ShaRebased=$(git rev-parse HEAD)
-    ./ci/deliver_tracker_story.sh
-    tracker_tag="$(git log -1 | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print $2, $3}')"
-    STORY_ID=$(echo $tracker_tag | egrep -o "[0-9]+")
+    if [ $found_finishes_tag -eq 0 ]
+    then
+      update_tracker_story
+    fi
+
     ./ci/add_story_to_manifest.sh manifest-acceptance.yml ${ShaRebased} ${STORY_ID}
 
     cf login -a api.run.pivotal.io -u ${CF_USER} -p ${CF_PASSWORD} -s pronto -o dirk
