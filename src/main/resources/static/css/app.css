@@ -1,4 +1,31 @@
 body {
-    background-color: cornflowerblue;
     font-weight: bold;
+}
+
+body.normal {
+    background-color: cornflowerblue;
+}
+
+body.dependencyDown {
+    background-color: purple;
+}
+
+body.ciFailed {
+    background-color: red;
+}
+
+body.storyAcceptanceDeployFailed {
+    background-color: coral;
+}
+
+body.storyAcceptanceDown {
+    background-color: darkorange;
+}
+
+body.productionDeployFailed {
+    background-color: crimson;
+}
+
+body.productionDown {
+    background-color: darkred;
 }

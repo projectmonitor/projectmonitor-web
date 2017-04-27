@@ -3,10 +3,10 @@
 <head>
     <title th:text="${status}"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="refresh" content="15"/>
+    <meta http-equiv="refresh" content="7"/>
     <link href="../static/css/app.css" th:href="@{/css/app.css}" rel="stylesheet"/>
 </head>
-<body>
+<body th:class="${backgroundColor}">
 
 <h2 th:text="|Test Build:|" />
 <p th:text="|CI Status: ${status}|"/>

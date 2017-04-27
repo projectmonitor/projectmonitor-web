@@ -26,6 +26,7 @@ public class CiRunController {
     @RequestMapping(method = RequestMethod.GET)
     public String execute(Model model) {
         RestTemplate restTemplate = new RestTemplate();
+        String aura = "normal";
 
         CIResponse ciResponse = new CIResponse();
         try {
@@ -35,6 +36,7 @@ public class CiRunController {
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             ciResponse.setResult("CI is not responding");
+            aura = "dependencyDown";
         }
 
         CIResponse storyAcceptanceDeployResponse = new CIResponse();
@@ -45,6 +47,7 @@ public class CiRunController {
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             storyAcceptanceDeployResponse.setResult("Story Acceptance Deploy Job is not responding");
+            aura = "dependencyDown";
         }
 
         CIResponse productionDeployResponse = new CIResponse();
@@ -55,6 +58,7 @@ public class CiRunController {
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             productionDeployResponse.setResult("Production Deploy Job is not responding");
+            aura = "dependencyDown";
         }
 
         DeployedAppInfo storyAcceptanceDeployedStory = new DeployedAppInfo();
@@ -65,6 +69,7 @@ public class CiRunController {
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             storyAcceptanceDeployedStory.setPivotalTrackerStoryID("Story Acceptance is not responding");
+            aura = "storyAcceptanceDown";
         }
 
         DeployedAppInfo productionDeployedStory = new DeployedAppInfo();
@@ -75,9 +80,19 @@ public class CiRunController {
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             productionDeployedStory.setPivotalTrackerStoryID("Production is not responding");
+            aura = "productionDown";
+        }
+
+        if ("FAILURE".equals(storyAcceptanceDeployResponse.getResult())) {
+            aura = "storyAcceptanceDeployFailed";
+        }
+
+        if ("FAILURE".equals(productionDeployResponse.getResult())) {
+            aura = "productionDeployFailed";
         }
 
         model.addAttribute("status", ciResponse.getResult());
+        model.addAttribute("backgroundColor", aura);
         model.addAttribute("storyAcceptanceDeployResponse", storyAcceptanceDeployResponse.getResult());
         model.addAttribute("productionDeployResponse", productionDeployResponse.getResult());
         model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
