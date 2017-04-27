@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
-
 @Component
 public class PCFProductionDeployer {
 
@@ -25,12 +23,12 @@ public class PCFProductionDeployer {
         this.threadSleepService = threadSleepService;
     }
 
-    public boolean push(String shaToDeploy) {
+    public boolean push(String shaToDeploy, String storyID) {
         logger.info("Kicking off Jenkins Job to do production release");
 
         try {
             productionReleaseRestTemplate.getForObject(
-                    productionDeployURL + shaToDeploy,
+                    productionDeployURL + shaToDeploy + "&STORY_ID=" + storyID,
                     Object.class);
         } catch (RuntimeException e) {
             logger.info("Call to jenkins failed, cause: ", e.getMessage());

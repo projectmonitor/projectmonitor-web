@@ -59,7 +59,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
                 .thenReturn(acceptedStory);
 
         subject.execute();
-        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA());
+        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
         subject.execute();
 
-        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
+        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfStoryAcceptanceDeployer).push();
     }
 
@@ -85,7 +85,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
                 .thenReturn(notAcceptedStory);
         subject.execute();
-        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA());
+        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
     }
 
     @Test
@@ -96,10 +96,10 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
                 .thenReturn(acceptedStory);
 
-        when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA())).thenReturn(false);
+        when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID())).thenReturn(false);
 
         subject.execute();
-        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA());
+        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfStoryAcceptanceDeployer, never()).push();
     }
 
@@ -111,10 +111,10 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/8888", PivotalTrackerStory.class))
                 .thenReturn(acceptedStory);
 
-        when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA())).thenReturn(true);
+        when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID())).thenReturn(true);
 
         subject.execute();
-        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA());
+        verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfStoryAcceptanceDeployer).push();
     }
 }

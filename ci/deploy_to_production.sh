@@ -10,6 +10,12 @@ if [[ "$SHA_TO_DEPLOY" == "0" ]] ; then
   exit 1
 fi
 
+if [[ "$STORY_ID" == "0" ]] ; then
+  echo "Please set STORY_ID, we had: $STORY_ID"
+  exit 1
+fi
+
+
 SHA_TO_DEPLOY=$(git rev-parse $SHA_TO_DEPLOY)
 echo "Building SHA $SHA_TO_DEPLOY"
 
@@ -29,8 +35,7 @@ git merge $branch_name --ff-only || ( echo "Fast forward branch merge failed" &&
 mvn clean package -DskiptTests
 git push origin master
 
-# deploy to production environment
-./ci/add_story_to_manifest.sh manifest-production.yml ${SHA_TO_DEPLOY}
+./ci/add_story_to_manifest.sh manifest-production.yml ${SHA_TO_DEPLOY} ${STORY_ID}
 
 cf login -a api.run.pivotal.io -u ${CF_USER} -p ${CF_PASSWORD} -s pronto -o dirk
 cf push -f manifest.yml -t 180

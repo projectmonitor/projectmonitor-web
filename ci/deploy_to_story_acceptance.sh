@@ -47,6 +47,8 @@ then
 
     ShaRebased=$(git rev-parse HEAD)
     ./ci/deliver_tracker_story.sh
+    tracker_tag="$(git log -1 | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print $2, $3}')"
+    STORY_ID=$(echo $tracker_tag | egrep -o "[0-9]+")
     ./ci/add_story_to_manifest.sh manifest-acceptance.yml ${ShaRebased} ${STORY_ID}
 
     cf login -a api.run.pivotal.io -u ${CF_USER} -p ${CF_PASSWORD} -s pronto -o dirk

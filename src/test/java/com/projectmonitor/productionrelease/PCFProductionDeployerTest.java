@@ -16,7 +16,7 @@ public class PCFProductionDeployerTest {
 
     PCFProductionDeployer subject;
 
-    String ciURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA";
+    String ciURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA&STORY_ID=theStoryID";
     String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
 
     @Mock
@@ -33,7 +33,7 @@ public class PCFProductionDeployerTest {
     @Test
     public void push_kicksOffProductionDeployJob_withShaFromAcceptance() throws Exception {
         when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(new JenkinsJobStatus());
-        subject.push("blahblahSHA");
+        subject.push("blahblahSHA", "theStoryID");
         Mockito.verify(productionReleaseRestTemplate).getForObject(ciURL, Object.class);
     }
 
@@ -44,11 +44,11 @@ public class PCFProductionDeployerTest {
         prodDeployStatus.setResult("NOT_A_SUCCESS");
 
         when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(prodDeployStatus);
-        assertThat(subject.push("blahblahSHA")).isFalse();
+        assertThat(subject.push("blahblahSHA", "theStoryID")).isFalse();
     }
 
     @Test
-    public void push_whenProdDeployStillRunning_pollsJobEveryFewSecondsUntilCompletion() throws Exception {
+    public void push_whenProdDeployStillRunning_pollsJobEveryFewSecondsUntilCompletion_returnsTrueWhenBuildSucceeds() throws Exception {
         JenkinsJobStatus prodDeployStatus = new JenkinsJobStatus();
         prodDeployStatus.setBuilding(true);
 
@@ -58,6 +58,6 @@ public class PCFProductionDeployerTest {
 
         when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
                 .thenReturn(prodDeployStatus).thenReturn(successProdDeployStatus);
-        assertThat(subject.push("blahblahSHA")).isTrue();
+        assertThat(subject.push("blahblahSHA", "theStoryID")).isTrue();
     }
 }

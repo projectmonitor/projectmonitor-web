@@ -51,7 +51,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
 
             if ("accepted".equals(story.getCurrentState())) {
                 if(!acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())){
-                    if (pcfProductionDeployer.push(acceptanceStory.getStorySHA())) {
+                    if (pcfProductionDeployer.push(acceptanceStory.getStorySHA(), acceptanceStory.getPivotalTrackerStoryID())) {
                         pcfStoryAcceptanceDeployer.push();
                     }
                 } else {
