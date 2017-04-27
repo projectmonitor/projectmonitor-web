@@ -37,10 +37,10 @@ public class CheckCurrentAcceptanceStoryStatusService {
         logger.info("Job to determine if we should deploy to production kicking off...");
 
         try {
-            DeployedAppInfo acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedAppInfo.class);
+            DeployedAppInfo acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl(), DeployedAppInfo.class);
             logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());
 
-            DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedAppInfo.class);
+            DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class);
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
             String storyURL = generatePivotalTrackerUrl(acceptanceStory.getPivotalTrackerStoryID());

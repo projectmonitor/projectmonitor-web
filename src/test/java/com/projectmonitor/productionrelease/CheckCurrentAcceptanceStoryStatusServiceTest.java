@@ -34,8 +34,8 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     @Before
     public void setUp() {
         applicationConfiguration = new ApplicationConfiguration();
-        applicationConfiguration.setStoryAcceptanceUrl("http://story.acceptance.url/");
-        applicationConfiguration.setProductionUrl("http://story.production.url/");
+        applicationConfiguration.setStoryAcceptanceUrl("http://story.acceptance.url/info");
+        applicationConfiguration.setProductionUrl("http://story.production.url/info");
 
         subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate, pivotalTrackerStoryConfiguration, applicationConfiguration, pcfProductionDeployer, pcfStoryAcceptanceDeployer);
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{TRACKER_PROJECT_ID}/{STORY_ID}");
@@ -44,11 +44,11 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
         acceptanceStoryInfo.setStorySHA("blahblahSHA");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl() + "info", DeployedAppInfo.class)).thenReturn(acceptanceStoryInfo);
+        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl(), DeployedAppInfo.class)).thenReturn(acceptanceStoryInfo);
 
         productionStoryInfo = new DeployedAppInfo();
         productionStoryInfo.setPivotalTrackerStoryID("9999");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl() + "info", DeployedAppInfo.class)).thenReturn(productionStoryInfo);
+        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class)).thenReturn(productionStoryInfo);
     }
 
     @Test

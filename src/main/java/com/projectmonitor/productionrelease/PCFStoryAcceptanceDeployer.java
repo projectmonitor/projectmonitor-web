@@ -1,5 +1,6 @@
 package com.projectmonitor.productionrelease;
 
+import com.projectmonitor.CIJobConfiguration;
 import com.projectmonitor.StoryAcceptanceDeploy.StoryAcceptanceQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +15,15 @@ public class PCFStoryAcceptanceDeployer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private final RedisTemplate<String, String> redisTemplate;
     private final RestTemplate productionReleaseRestTemplate;
-    private static final String STORY_ACCEPTANCE_URL = "http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=";
+    private final CIJobConfiguration ciJobConfiguration;
 
     @Autowired
     public PCFStoryAcceptanceDeployer(RestTemplate productionReleaseRestTemplate,
-                                      RedisTemplate<String, String> redisTemplate) {
+                                      RedisTemplate<String, String> redisTemplate,
+                                      CIJobConfiguration ciJobConfiguration) {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
         this.redisTemplate = redisTemplate;
+        this.ciJobConfiguration = ciJobConfiguration;
     }
 
     public void push() {
@@ -32,6 +35,6 @@ public class PCFStoryAcceptanceDeployer {
         }
 
         logger.info("Deploying to Story Acceptance with the following SHA: " + theSHA);
-        productionReleaseRestTemplate.getForObject(STORY_ACCEPTANCE_URL + theSHA, Object.class);
+        productionReleaseRestTemplate.getForObject(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + theSHA, Object.class);
     }
 }

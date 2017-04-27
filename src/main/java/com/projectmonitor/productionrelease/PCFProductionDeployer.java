@@ -1,5 +1,6 @@
 package com.projectmonitor.productionrelease;
 
+import com.projectmonitor.CIJobConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +12,18 @@ public class PCFProductionDeployer {
 
     private final RestTemplate productionReleaseRestTemplate;
     private final ThreadSleepService threadSleepService;
-    private final String prodDeployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
-    private final String productionDeployURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=";
+    private final CIJobConfiguration ciJobConfiguration;
+
     public static final String jenkinsSuccessMessage = "SUCCESS";
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public PCFProductionDeployer(RestTemplate productionReleaseRestTemplate,
-                                 ThreadSleepService threadSleepService) {
+                                 ThreadSleepService threadSleepService, CIJobConfiguration ciJobConfiguration) {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
         this.threadSleepService = threadSleepService;
+        this.ciJobConfiguration = ciJobConfiguration;
     }
 
     public boolean push(String shaToDeploy, String storyID) {
@@ -28,7 +31,7 @@ public class PCFProductionDeployer {
 
         try {
             productionReleaseRestTemplate.getForObject(
-                    productionDeployURL + shaToDeploy + "&STORY_ID=" + storyID,
+                    ciJobConfiguration.getProductionDeployJobURL() + shaToDeploy + "&STORY_ID=" + storyID,
                     Object.class);
         } catch (RuntimeException e) {
             logger.info("Call to jenkins failed, cause: ", e.getMessage());
@@ -42,7 +45,7 @@ public class PCFProductionDeployer {
                 threadSleepService.sleep(10000);
                 try {
 
-                    jenkinsJobStatus = productionReleaseRestTemplate.getForObject(prodDeployStatusURL, JenkinsJobStatus.class);
+                    jenkinsJobStatus = productionReleaseRestTemplate.getForObject(ciJobConfiguration.getProductionDeployStatusURL(), JenkinsJobStatus.class);
                     if (!jenkinsJobStatus.isBuilding() && jenkinsSuccessMessage.equals(jenkinsJobStatus.getResult())) {
                         logger.info("Production Deploy has finished!");
                         return true;

@@ -1,5 +1,6 @@
 package com.projectmonitor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,12 +12,16 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/")
 public class CiRunController {
 
-    @Value("${ciUrl}")
-    private String ciUrl;
     @Value("${storyAcceptanceUrl}")
     private String storyAcceptanceUrl;
     @Value("${productionUrl}")
     private String productionUrl;
+    private CIJobConfiguration ciJobConfiguration;
+
+    @Autowired
+    public CiRunController(CIJobConfiguration ciJobConfiguration) {
+        this.ciJobConfiguration = ciJobConfiguration;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public String execute(Model model) {
@@ -25,7 +30,7 @@ public class CiRunController {
         CIResponse ciResponse = new CIResponse();
         try {
             ciResponse = restTemplate.getForObject(
-                    ciUrl + "/job/TestProject CI/lastCompletedBuild/api/json",
+                    ciJobConfiguration.getCiLastCompletedBuildURL(),
                     CIResponse.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
@@ -35,7 +40,7 @@ public class CiRunController {
         CIResponse storyAcceptanceDeployResponse = new CIResponse();
         try {
             storyAcceptanceDeployResponse = restTemplate.getForObject(
-                    ciUrl + "/job/TestProject to SA/lastCompletedBuild/api/json",
+                    ciJobConfiguration.getStoryAcceptanceDeployStatusURL(),
                     CIResponse.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
@@ -45,7 +50,7 @@ public class CiRunController {
         CIResponse productionDeployResponse = new CIResponse();
         try {
             productionDeployResponse = restTemplate.getForObject(
-                    ciUrl + "/job/TestProject to Production/lastCompletedBuild/api/json",
+                    ciJobConfiguration.getProductionDeployJobLastStatusURL(),
                     CIResponse.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
@@ -55,7 +60,7 @@ public class CiRunController {
         DeployedAppInfo storyAcceptanceDeployedStory = new DeployedAppInfo();
         try {
             storyAcceptanceDeployedStory = restTemplate.getForObject(
-                    storyAcceptanceUrl + "info",
+                    storyAcceptanceUrl,
                     DeployedAppInfo.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
@@ -65,7 +70,7 @@ public class CiRunController {
         DeployedAppInfo productionDeployedStory = new DeployedAppInfo();
         try {
             productionDeployedStory = restTemplate.getForObject(
-                    productionUrl + "info",
+                    productionUrl,
                     DeployedAppInfo.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {

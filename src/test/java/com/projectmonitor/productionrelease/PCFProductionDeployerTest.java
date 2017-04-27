@@ -1,5 +1,6 @@
 package com.projectmonitor.productionrelease;
 
+import com.projectmonitor.CIJobConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,7 @@ public class PCFProductionDeployerTest {
 
     PCFProductionDeployer subject;
 
-    String ciURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA&STORY_ID=theStoryID";
+    String expectedProductionDeployJobURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA&STORY_ID=theStoryID";
     String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
 
     @Mock
@@ -25,16 +26,21 @@ public class PCFProductionDeployerTest {
     @Mock
     ThreadSleepService threadSleepService;
 
+    CIJobConfiguration ciJobConfiguration;
+
     @Before
     public void setUp(){
-        subject = new PCFProductionDeployer(productionReleaseRestTemplate, threadSleepService);
+        ciJobConfiguration = new CIJobConfiguration();
+        ciJobConfiguration.setProductionDeployJobURL("http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=");
+        ciJobConfiguration.setProductionDeployStatusURL(deployStatusURL);
+        subject = new PCFProductionDeployer(productionReleaseRestTemplate, threadSleepService, ciJobConfiguration);
     }
 
     @Test
     public void push_kicksOffProductionDeployJob_withShaFromAcceptance() throws Exception {
         when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(new JenkinsJobStatus());
         subject.push("blahblahSHA", "theStoryID");
-        Mockito.verify(productionReleaseRestTemplate).getForObject(ciURL, Object.class);
+        Mockito.verify(productionReleaseRestTemplate).getForObject(expectedProductionDeployJobURL, Object.class);
     }
 
     @Test

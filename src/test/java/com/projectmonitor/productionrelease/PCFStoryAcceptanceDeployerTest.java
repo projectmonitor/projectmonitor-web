@@ -1,5 +1,6 @@
 package com.projectmonitor.productionrelease;
 
+import com.projectmonitor.CIJobConfiguration;
 import com.projectmonitor.StoryAcceptanceDeploy.StoryAcceptanceQueue;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PCFStoryAcceptanceDeployerTest {
@@ -29,10 +29,13 @@ public class PCFStoryAcceptanceDeployerTest {
     @Mock
     private RestTemplate productionReleaseRestTemplate;
 
+    CIJobConfiguration ciJobConfiguration;
+
     @Before
     public void setUp(){
-
-        subject = new PCFStoryAcceptanceDeployer(productionReleaseRestTemplate, redisTemplate);
+        ciJobConfiguration = new CIJobConfiguration();
+        ciJobConfiguration.setStoryAcceptanceDeployJobURL("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=");
+        subject = new PCFStoryAcceptanceDeployer(productionReleaseRestTemplate, redisTemplate, ciJobConfiguration);
     }
 
     @Test

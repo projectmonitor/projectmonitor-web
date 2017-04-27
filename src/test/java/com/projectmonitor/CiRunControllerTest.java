@@ -37,7 +37,7 @@ public class CiRunControllerTest {
     @Before
     public void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        mockServer = startClientAndServer(1080);
+        mockServer = startClientAndServer(1090);
 
         mockServer
                 .when(
