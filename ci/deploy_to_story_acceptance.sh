@@ -47,7 +47,7 @@ then
 
     ShaRebased=$(git rev-parse HEAD)
     ./ci/deliver_tracker_story.sh
-    ./ci/add_story_to_manifest.sh manifest-acceptance.yml ${ShaRebased}
+    ./ci/add_story_to_manifest.sh manifest-acceptance.yml ${ShaRebased} ${STORY_ID}
 
     cf login -a api.run.pivotal.io -u ${CF_USER} -p ${CF_PASSWORD} -s pronto -o dirk
     cf push -f manifest.yml -t 180
