@@ -17,10 +17,13 @@ public class CiRunController {
     @Value("${productionUrl}")
     private String productionUrl;
     private CIJobConfiguration ciJobConfiguration;
+    private ApplicationConfiguration applicationConfiguration;
 
     @Autowired
-    public CiRunController(CIJobConfiguration ciJobConfiguration) {
+    public CiRunController(CIJobConfiguration ciJobConfiguration,
+                           ApplicationConfiguration applicationConfiguration) {
         this.ciJobConfiguration = ciJobConfiguration;
+        this.applicationConfiguration = applicationConfiguration;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -92,6 +95,8 @@ public class CiRunController {
         }
 
         model.addAttribute("status", ciResponse.getResult());
+        model.addAttribute("githubUsername", applicationConfiguration.getGithubUsername());
+        model.addAttribute("githubProjectName", applicationConfiguration.getGithubProjectName());
         model.addAttribute("backgroundColor", aura);
         model.addAttribute("storyAcceptanceDeployResponse", storyAcceptanceDeployResponse.getResult());
         model.addAttribute("productionDeployResponse", productionDeployResponse.getResult());
