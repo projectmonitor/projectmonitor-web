@@ -6,7 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -14,14 +17,14 @@ public class PCFStoryAcceptanceDeployer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private final RedisTemplate<String, String> redisTemplate;
-    private final RestTemplate productionReleaseRestTemplate;
+    private final JenkinsRestTemplate restTemplate;
     private final CIJobConfiguration ciJobConfiguration;
 
     @Autowired
-    public PCFStoryAcceptanceDeployer(RestTemplate productionReleaseRestTemplate,
-                                      RedisTemplate<String, String> redisTemplate,
+    public PCFStoryAcceptanceDeployer(RedisTemplate<String, String> redisTemplate,
+                                      JenkinsRestTemplate restTemplate,
                                       CIJobConfiguration ciJobConfiguration) {
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
+        this.restTemplate = restTemplate;
         this.redisTemplate = redisTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
     }
@@ -35,6 +38,8 @@ public class PCFStoryAcceptanceDeployer {
         }
 
         logger.info("Deploying to Story Acceptance with the following SHA: " + theSHA);
-        productionReleaseRestTemplate.getForObject(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + theSHA, Object.class);
+        restTemplate.addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
+        restTemplate.postForEntity(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + theSHA,
+                null, String.class);
     }
 }

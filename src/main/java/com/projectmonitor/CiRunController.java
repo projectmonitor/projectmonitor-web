@@ -1,5 +1,8 @@
 package com.projectmonitor;
 
+import com.projectmonitor.productionrelease.JenkinsRestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,22 +21,28 @@ public class CiRunController {
     private String productionUrl;
     private CIJobConfiguration ciJobConfiguration;
     private ApplicationConfiguration applicationConfiguration;
+    private JenkinsRestTemplate jenkinsRestTemplate;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public CiRunController(CIJobConfiguration ciJobConfiguration,
-                           ApplicationConfiguration applicationConfiguration) {
+                           ApplicationConfiguration applicationConfiguration,
+                           JenkinsRestTemplate jenkinsRestTemplate) {
         this.ciJobConfiguration = ciJobConfiguration;
         this.applicationConfiguration = applicationConfiguration;
+        this.jenkinsRestTemplate = jenkinsRestTemplate;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public String execute(Model model) {
-        RestTemplate restTemplate = new RestTemplate();
+
         String aura = "normal";
+        jenkinsRestTemplate.addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
 
         CIResponse ciResponse = new CIResponse();
         try {
-            ciResponse = restTemplate.getForObject(
+            ciResponse = jenkinsRestTemplate.getForObject(
                     ciJobConfiguration.getCiLastCompletedBuildURL(),
                     CIResponse.class
             );
@@ -44,7 +53,7 @@ public class CiRunController {
 
         CIResponse storyAcceptanceDeployResponse = new CIResponse();
         try {
-            storyAcceptanceDeployResponse = restTemplate.getForObject(
+            storyAcceptanceDeployResponse = jenkinsRestTemplate.getForObject(
                     ciJobConfiguration.getStoryAcceptanceDeployStatusURL(),
                     CIResponse.class
             );
@@ -53,9 +62,13 @@ public class CiRunController {
             aura = "dependencyDown";
         }
 
+        if ("FAILURE".equals(storyAcceptanceDeployResponse.getResult())) {
+            aura = "storyAcceptanceDeployFailed";
+        }
+
         CIResponse productionDeployResponse = new CIResponse();
         try {
-            productionDeployResponse = restTemplate.getForObject(
+            productionDeployResponse = jenkinsRestTemplate.getForObject(
                     ciJobConfiguration.getProductionDeployJobLastStatusURL(),
                     CIResponse.class
             );
@@ -64,6 +77,7 @@ public class CiRunController {
             aura = "dependencyDown";
         }
 
+        RestTemplate restTemplate = new RestTemplate();
         DeployedAppInfo storyAcceptanceDeployedStory = new DeployedAppInfo();
         try {
             storyAcceptanceDeployedStory = restTemplate.getForObject(
@@ -75,6 +89,10 @@ public class CiRunController {
             aura = "storyAcceptanceDown";
         }
 
+        if ("FAILURE".equals(productionDeployResponse.getResult())) {
+            aura = "productionDeployFailed";
+        }
+
         DeployedAppInfo productionDeployedStory = new DeployedAppInfo();
         try {
             productionDeployedStory = restTemplate.getForObject(
@@ -84,14 +102,6 @@ public class CiRunController {
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             productionDeployedStory.setPivotalTrackerStoryID("Production is not responding");
             aura = "productionDown";
-        }
-
-        if ("FAILURE".equals(storyAcceptanceDeployResponse.getResult())) {
-            aura = "storyAcceptanceDeployFailed";
-        }
-
-        if ("FAILURE".equals(productionDeployResponse.getResult())) {
-            aura = "productionDeployFailed";
         }
 
         model.addAttribute("status", ciResponse.getResult());

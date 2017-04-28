@@ -4,13 +4,14 @@ import com.projectmonitor.CIJobConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.MultiValueMap;
 
 @Component
 public class PCFProductionDeployer {
 
-    private final RestTemplate productionReleaseRestTemplate;
+    private final JenkinsRestTemplate jenkinsRestTemplate;
     private final ThreadSleepService threadSleepService;
     private final CIJobConfiguration ciJobConfiguration;
 
@@ -19,19 +20,21 @@ public class PCFProductionDeployer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public PCFProductionDeployer(RestTemplate productionReleaseRestTemplate,
+    public PCFProductionDeployer(JenkinsRestTemplate productionReleaseRestTemplate,
                                  ThreadSleepService threadSleepService, CIJobConfiguration ciJobConfiguration) {
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
+        this.jenkinsRestTemplate = productionReleaseRestTemplate;
         this.threadSleepService = threadSleepService;
         this.ciJobConfiguration = ciJobConfiguration;
     }
 
     public boolean push(String shaToDeploy, String storyID) {
         logger.info("Kicking off Jenkins Job to do production release");
+        jenkinsRestTemplate.addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
 
         try {
-            productionReleaseRestTemplate.getForObject(
+            jenkinsRestTemplate.postForEntity(
                     ciJobConfiguration.getProductionDeployJobURL() + shaToDeploy + "&STORY_ID=" + storyID,
+                    null,
                     Object.class);
         } catch (RuntimeException e) {
             logger.info("Call to jenkins failed, cause: ", e.getMessage());
@@ -44,8 +47,7 @@ public class PCFProductionDeployer {
                 logger.info("Sleeping before next poll...");
                 threadSleepService.sleep(10000);
                 try {
-
-                    jenkinsJobStatus = productionReleaseRestTemplate.getForObject(ciJobConfiguration.getProductionDeployStatusURL(), JenkinsJobStatus.class);
+                    jenkinsJobStatus = jenkinsRestTemplate.getForObject(ciJobConfiguration.getProductionDeployStatusURL(), JenkinsJobStatus.class);
                     if (!jenkinsJobStatus.isBuilding() && jenkinsSuccessMessage.equals(jenkinsJobStatus.getResult())) {
                         logger.info("Production Deploy has finished!");
                         return true;

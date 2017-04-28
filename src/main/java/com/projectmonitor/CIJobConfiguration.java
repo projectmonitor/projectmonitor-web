@@ -13,6 +13,8 @@ public class CIJobConfiguration {
     private String productionDeployJobURL;
     private String productionDeployStatusURL;
     private String productionDeployJobLastStatusURL;
+    private String ciUsername;
+    private String ciPassword;
 
     public String getStoryAcceptanceDeployJobURL() {
         return storyAcceptanceDeployJobURL;
@@ -60,5 +62,21 @@ public class CIJobConfiguration {
 
     public void setCiLastCompletedBuildURL(String ciLastCompletedBuildURL) {
         this.ciLastCompletedBuildURL = ciLastCompletedBuildURL;
+    }
+
+    public String getCiPassword() {
+        return ciPassword;
+    }
+
+    public void setCiPassword(String ciPassword) {
+        this.ciPassword = ciPassword;
+    }
+
+    public String getCiUsername() {
+        return ciUsername;
+    }
+
+    public void setCiUsername(String ciUsername) {
+        this.ciUsername = ciUsername;
     }
 }

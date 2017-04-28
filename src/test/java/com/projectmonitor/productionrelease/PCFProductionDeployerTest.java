@@ -7,7 +7,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
@@ -21,7 +24,7 @@ public class PCFProductionDeployerTest {
     String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
 
     @Mock
-    RestTemplate productionReleaseRestTemplate;
+    JenkinsRestTemplate jenkinsRestTemplate;
 
     @Mock
     ThreadSleepService threadSleepService;
@@ -33,14 +36,14 @@ public class PCFProductionDeployerTest {
         ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setProductionDeployJobURL("http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=");
         ciJobConfiguration.setProductionDeployStatusURL(deployStatusURL);
-        subject = new PCFProductionDeployer(productionReleaseRestTemplate, threadSleepService, ciJobConfiguration);
+        subject = new PCFProductionDeployer(jenkinsRestTemplate, threadSleepService, ciJobConfiguration);
     }
 
     @Test
     public void push_kicksOffProductionDeployJob_withShaFromAcceptance() throws Exception {
-        when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(new JenkinsJobStatus());
+        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(new JenkinsJobStatus());
         subject.push("blahblahSHA", "theStoryID");
-        Mockito.verify(productionReleaseRestTemplate).getForObject(expectedProductionDeployJobURL, Object.class);
+        Mockito.verify(jenkinsRestTemplate).postForEntity(expectedProductionDeployJobURL, null, Object.class);
     }
 
     @Test
@@ -49,7 +52,7 @@ public class PCFProductionDeployerTest {
         prodDeployStatus.setBuilding(false);
         prodDeployStatus.setResult("NOT_A_SUCCESS");
 
-        when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(prodDeployStatus);
+        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class)).thenReturn(prodDeployStatus);
         assertThat(subject.push("blahblahSHA", "theStoryID")).isFalse();
     }
 
@@ -62,7 +65,7 @@ public class PCFProductionDeployerTest {
         successProdDeployStatus.setBuilding(false);
         successProdDeployStatus.setResult(PCFProductionDeployer.jenkinsSuccessMessage);
 
-        when(productionReleaseRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
+        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
                 .thenReturn(prodDeployStatus).thenReturn(successProdDeployStatus);
         assertThat(subject.push("blahblahSHA", "theStoryID")).isTrue();
     }

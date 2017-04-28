@@ -10,10 +10,14 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PCFStoryAcceptanceDeployerTest {
@@ -27,7 +31,7 @@ public class PCFStoryAcceptanceDeployerTest {
     private BoundListOperations<String, String> boundListOperations;
 
     @Mock
-    private RestTemplate productionReleaseRestTemplate;
+    private JenkinsRestTemplate jenkinsRestTemplate;
 
     CIJobConfiguration ciJobConfiguration;
 
@@ -35,16 +39,18 @@ public class PCFStoryAcceptanceDeployerTest {
     public void setUp(){
         ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setStoryAcceptanceDeployJobURL("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=");
-        subject = new PCFStoryAcceptanceDeployer(productionReleaseRestTemplate, redisTemplate, ciJobConfiguration);
+        subject = new PCFStoryAcceptanceDeployer(redisTemplate, jenkinsRestTemplate, ciJobConfiguration);
     }
 
     @Test
     public void push_triggersTheJenkinsSADeployJob_withTheNextBuildThatHasPassedCI() throws Exception {
+
         Mockito.when(boundListOperations.leftPop()).thenReturn("theNextDeployableSHA");
         Mockito.when(redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME)).thenReturn(boundListOperations);
         subject.push();
-        Mockito.verify(productionReleaseRestTemplate)
-                .getForObject("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=theNextDeployableSHA", Object.class);
+        Mockito.verify(jenkinsRestTemplate)
+                .postForEntity("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=theNextDeployableSHA",
+                        null, String.class);
     }
 
     @Test
@@ -52,6 +58,6 @@ public class PCFStoryAcceptanceDeployerTest {
         Mockito.when(boundListOperations.leftPop()).thenReturn(null);
         Mockito.when(redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME)).thenReturn(boundListOperations);
         subject.push();
-        Mockito.verifyZeroInteractions(productionReleaseRestTemplate);
+        Mockito.verifyZeroInteractions(jenkinsRestTemplate);
     }
 }

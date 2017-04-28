@@ -123,8 +123,10 @@ public class CiRunControllerTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Currently Deployed on Story Acceptance: #55555")))
-                .andExpect(content().string(containsString("SHA Currently Deployed on Story Acceptance: 88")))
+                .andExpect(content().string(containsString("Story Currently Deployed in Story Acceptance:")))
+                .andExpect(content().string(containsString("#55555")))
+                .andExpect(content().string(containsString("SHA Currently Deployed in Story Acceptance:")))
+                .andExpect(content().string(containsString("88")))
         ;
     }
 
@@ -133,8 +135,10 @@ public class CiRunControllerTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Currently Deployed in Production: #42")))
-                .andExpect(content().string(containsString("SHA Currently Deployed in Production: 21")))
+                .andExpect(content().string(containsString("Story Currently Deployed in Production:")))
+                .andExpect(content().string(containsString("#42")))
+                .andExpect(content().string(containsString("SHA Currently Deployed in Production:")))
+                .andExpect(content().string(containsString("21")))
         ;
     }
 
