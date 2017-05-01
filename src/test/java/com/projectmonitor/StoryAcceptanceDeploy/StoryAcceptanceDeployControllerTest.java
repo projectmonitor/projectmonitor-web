@@ -26,11 +26,12 @@ public class StoryAcceptanceDeployControllerTest {
 
     @Test
     public void put_addsToTheBuildList() throws Exception {
-        this.mvc.perform(put("/storyAcceptanceDeploy/blahblahSHA"))
+        this.mvc.perform(put("/storyAcceptanceDeploy/blahblahSHA-blahblahStory"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.sha", is("blahblahSHA")))
+                .andExpect(jsonPath("$.storyID", is("blahblahStory")))
         ;
 
-        Mockito.verify(storyAcceptanceQueue).push("blahblahSHA");
+        Mockito.verify(storyAcceptanceQueue).push("blahblahSHA-blahblahStory");
     }
 }

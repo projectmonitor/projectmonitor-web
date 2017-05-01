@@ -18,12 +18,13 @@ public class StoryAcceptanceDeployController {
         this.storyAcceptanceQueue = storyAcceptanceQueue;
     }
 
-    @RequestMapping(value = "/storyAcceptanceDeploy/{shaValue}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/storyAcceptanceDeploy/{shaValue}-{storyID}", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.CREATED)
-    public Deploy put(@PathVariable String shaValue){
+    public Deploy put(@PathVariable String shaValue, @PathVariable String storyID){
         Deploy deploy = new Deploy();
         deploy.setSha(shaValue);
-        storyAcceptanceQueue.push(shaValue);
+        deploy.setStoryID(storyID);
+        storyAcceptanceQueue.push(shaValue + "-" + storyID);
         return deploy;
     }
 

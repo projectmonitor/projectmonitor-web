@@ -9,6 +9,7 @@ public class PivotalTrackerStoryConfiguration {
     private String pivotalTrackerStoryDetailsUrl;
 
     private String trackerProjectId;
+    private String pivotalTrackerToken;
 
     public String getPivotalTrackerStoryDetailsUrl() {
         return pivotalTrackerStoryDetailsUrl;
@@ -24,5 +25,13 @@ public class PivotalTrackerStoryConfiguration {
 
     public void setTrackerProjectId(String trackerProjectId) {
         this.trackerProjectId = trackerProjectId;
+    }
+
+    public String getPivotalTrackerToken() {
+        return pivotalTrackerToken;
+    }
+
+    public void setPivotalTrackerToken(String pivotalTrackerToken) {
+        this.pivotalTrackerToken = pivotalTrackerToken;
     }
 }
