@@ -8,13 +8,18 @@ import org.springframework.stereotype.Component;
 public class CIJobConfiguration {
 
     private String ciLastCompletedBuildURL;
+
     private String storyAcceptanceDeployJobURL;
     private String storyAcceptanceDeployStatusURL;
+    private String storyAcceptanceDeployJobLastStatusURL;
+
     private String productionDeployJobURL;
     private String productionDeployStatusURL;
     private String productionDeployJobLastStatusURL;
+    
     private String ciUsername;
     private String ciPassword;
+
 
     public String getStoryAcceptanceDeployJobURL() {
         return storyAcceptanceDeployJobURL;
@@ -78,5 +83,13 @@ public class CIJobConfiguration {
 
     public void setCiUsername(String ciUsername) {
         this.ciUsername = ciUsername;
+    }
+
+    public String getStoryAcceptanceDeployJobLastStatusURL() {
+        return storyAcceptanceDeployJobLastStatusURL;
+    }
+
+    public void setStoryAcceptanceDeployJobLastStatusURL(String storyAcceptanceDeployJobLastStatusURL) {
+        this.storyAcceptanceDeployJobLastStatusURL = storyAcceptanceDeployJobLastStatusURL;
     }
 }

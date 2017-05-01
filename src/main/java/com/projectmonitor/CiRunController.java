@@ -54,7 +54,7 @@ public class CiRunController {
         CIResponse storyAcceptanceDeployResponse = new CIResponse();
         try {
             storyAcceptanceDeployResponse = jenkinsRestTemplate.getForObject(
-                    ciJobConfiguration.getStoryAcceptanceDeployStatusURL(),
+                    ciJobConfiguration.getStoryAcceptanceDeployJobLastStatusURL(),
                     CIResponse.class
             );
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
