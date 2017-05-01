@@ -26,7 +26,7 @@ public class StoryAcceptanceQueue {
         String queueMessage = redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME).leftPop();
 
         if (queueMessage == null || queueMessage.isEmpty()) {
-            logger.info("No build messages's in queue, nothing to deploy to SA\n");
+            logger.info("No build messages's in queue, nothing to deploy to SA");
             return null;
         }
 

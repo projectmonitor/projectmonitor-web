@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import static junit.framework.TestCase.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -28,7 +30,7 @@ public class PivotalTrackerAPITest {
     private RestTemplate productionReleaseRestTemplate;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         subject = new PivotalTrackerAPI(pivotalTrackerStoryConfiguration, productionReleaseRestTemplate);
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl())
                 .thenReturn("http://tracker.com/{TRACKER_PROJECT_ID}/{STORY_ID}");
@@ -43,7 +45,6 @@ public class PivotalTrackerAPITest {
 
         PivotalTrackerStory body = new PivotalTrackerStory();
         body.setCurrentState("rejected");
-        HttpEntity<PivotalTrackerStory> entity = new HttpEntity<>(body, headers);
 
         Mockito.when(productionReleaseRestTemplate.exchange(
                 eq("http://tracker.com/100/55"),
@@ -60,4 +61,14 @@ public class PivotalTrackerAPITest {
                 eq(String.class));
     }
 
+    @Test
+    public void getStory_test() throws Exception {
+        when(pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl()).thenReturn("https://trackerapi.com/{TRACKER_PROJECT_ID}/{STORY_ID}");
+        when(pivotalTrackerStoryConfiguration.getTrackerProjectId()).thenReturn("989898");
+        PivotalTrackerStory story = new PivotalTrackerStory();
+
+        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888", PivotalTrackerStory.class))
+                .thenReturn(story);
+        assertThat(subject.getStory("8888")).isEqualTo(story);
+    }
 }

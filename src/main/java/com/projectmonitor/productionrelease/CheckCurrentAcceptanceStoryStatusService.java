@@ -13,23 +13,23 @@ import org.springframework.web.client.RestTemplate;
 public class CheckCurrentAcceptanceStoryStatusService {
 
     private final RestTemplate productionReleaseRestTemplate;
-    private final PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     private final ApplicationConfiguration applicationConfiguration;
     private final PCFProductionDeployer pcfProductionDeployer;
     private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
+    private final PivotalTrackerAPI pivotalTrackerAPI;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public CheckCurrentAcceptanceStoryStatusService(RestTemplate productionReleaseRestTemplate,
-                                                    PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
                                                     ApplicationConfiguration applicationConfiguration,
                                                     PCFProductionDeployer pcfProductionDeployer,
-                                                    PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer) {
+                                                    PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer,
+                                                    PivotalTrackerAPI pivotalTrackerAPI) {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
-        this.pivotalTrackerStoryConfiguration = pivotalTrackerStoryConfiguration;
         this.applicationConfiguration = applicationConfiguration;
         this.pcfProductionDeployer = pcfProductionDeployer;
         this.pcfStoryAcceptanceDeployer = pcfStoryAcceptanceDeployer;
+        this.pivotalTrackerAPI = pivotalTrackerAPI;
     }
 
     @Scheduled(fixedDelay = 180000, initialDelay = 10000)
@@ -43,10 +43,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
             DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class);
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
-            String storyURL = generatePivotalTrackerUrl(acceptanceStory.getPivotalTrackerStoryID());
-
-            PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
-            logger.info("State of story currently in acceptance: {}", story.getCurrentState());
+            PivotalTrackerStory story = pivotalTrackerAPI.getStory(acceptanceStory.getPivotalTrackerStoryID());
 
             if ("accepted".equals(story.getCurrentState())) {
                 if(!acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())){
@@ -63,14 +60,5 @@ public class CheckCurrentAcceptanceStoryStatusService {
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             logger.info("A web call to acceptance/production or tracker errored! {}", exception.getMessage());
         }
-    }
-
-    private String generatePivotalTrackerUrl(String pivotalTrackerStoryID) {
-        String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl();
-        storyURL = storyURL.replace("{STORY_ID}", pivotalTrackerStoryID);
-        storyURL = storyURL.replace("{TRACKER_PROJECT_ID}", pivotalTrackerStoryConfiguration.getTrackerProjectId());
-
-        logger.info("Url of the current story in acceptance: {}", storyURL);
-        return storyURL;
     }
 }
