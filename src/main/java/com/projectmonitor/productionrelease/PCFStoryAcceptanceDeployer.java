@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class PCFStoryAcceptanceDeployer {
 
@@ -77,5 +79,15 @@ public class PCFStoryAcceptanceDeployer {
         }
 
         return false;
+    }
+
+    public void pushRejectedBuild(String rejectedStoryID) {
+        logger.info("Story in acceptance is rejected, storyID: {}", rejectedStoryID);
+        Deploy nextDeploy = storyAcceptanceQueue.readHead();
+        if (!Objects.equals(rejectedStoryID, nextDeploy.getStoryID())) {
+            return;
+        }
+
+        push();
     }
 }

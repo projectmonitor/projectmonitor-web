@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PCFStoryAcceptanceDeployerTest {
 
-    PCFStoryAcceptanceDeployer subject;
+    private PCFStoryAcceptanceDeployer subject;
     @Mock
     private JenkinsRestTemplate jenkinsRestTemplate;
     @Mock
@@ -101,5 +101,33 @@ public class PCFStoryAcceptanceDeployerTest {
 
         assertThat(subject.push()).isFalse();
         Mockito.verify(pivotalTrackerAPI).rejectStory("theStoryID");
+    }
+
+    @Test
+    public void pushRejectedBuild_whenTheStoryPassedInMatchesTheHeadOfTheQueue_deploys() throws Exception {
+        Deploy theDeploy = new Deploy();
+        theDeploy.setSha("theNextDeployableSHA");
+        theDeploy.setStoryID("aRejectedStory");
+
+        Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
+        Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
+
+        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
+                .thenReturn(new JenkinsJobStatus());
+        subject.pushRejectedBuild("aRejectedStory");
+        Mockito.verify(jenkinsRestTemplate).postForEntity(saDeployJobURL, null, String.class);
+    }
+
+    @Test
+    public void pushRejectedBuild_whenTheStoryPassedInDoesNotMatchHeadofQueue_doesNotDeploy() throws Exception {
+        Deploy theDeploy = new Deploy();
+        theDeploy.setSha("theNextDeployableSHA");
+        theDeploy.setStoryID("aDifferentStory");
+
+        Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
+        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
+                .thenReturn(new JenkinsJobStatus());
+        subject.pushRejectedBuild("aRejectedStory");
+        Mockito.verify(storyAcceptanceQueue, times(0)).pop();
     }
 }

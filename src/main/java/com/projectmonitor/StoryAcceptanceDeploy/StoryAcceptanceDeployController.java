@@ -24,8 +24,7 @@ public class StoryAcceptanceDeployController {
         Deploy deploy = new Deploy();
         deploy.setSha(shaValue);
         deploy.setStoryID(storyID);
-        storyAcceptanceQueue.push(shaValue + "-" + storyID);
+        storyAcceptanceQueue.push(shaValue, storyID);
         return deploy;
     }
-
 }

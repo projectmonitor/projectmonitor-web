@@ -46,7 +46,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
             PivotalTrackerStory story = pivotalTrackerAPI.getStory(acceptanceStory.getPivotalTrackerStoryID());
 
             if ("accepted".equals(story.getCurrentState())) {
-                if(!acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())){
+                if (!acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())) {
                     if (pcfProductionDeployer.push(acceptanceStory.getStorySHA(), acceptanceStory.getPivotalTrackerStoryID())) {
                         pcfStoryAcceptanceDeployer.push();
                     }
@@ -54,6 +54,8 @@ public class CheckCurrentAcceptanceStoryStatusService {
                     logger.info("Story in SA deployed already, looking for new build to deploy to SA");
                     pcfStoryAcceptanceDeployer.push();
                 }
+            } else if ("rejected".equals(story.getCurrentState())) {
+                pcfStoryAcceptanceDeployer.pushRejectedBuild(acceptanceStory.getPivotalTrackerStoryID());
             } else {
                 logger.info("Nothing to deploy at the moment...");
             }

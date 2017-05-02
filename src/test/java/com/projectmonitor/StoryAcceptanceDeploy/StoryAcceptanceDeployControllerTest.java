@@ -32,6 +32,6 @@ public class StoryAcceptanceDeployControllerTest {
                 .andExpect(jsonPath("$.storyID", is("blahblahStory")))
         ;
 
-        Mockito.verify(storyAcceptanceQueue).push("blahblahSHA-blahblahStory");
+        Mockito.verify(storyAcceptanceQueue).push("blahblahSHA", "blahblahStory");
     }
 }

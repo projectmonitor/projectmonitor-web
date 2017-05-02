@@ -1,10 +1,11 @@
 package com.projectmonitor.StoryAcceptanceDeploy;
 
+import com.projectmonitor.productionrelease.PivotalTrackerAPI;
+import com.projectmonitor.productionrelease.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,17 +25,33 @@ public class StoryAcceptanceQueueTest {
     @Mock
     private BoundListOperations<String, String> boundListOperations;
 
+    @Mock
+    private PivotalTrackerAPI pivotalTrackerAPI;
+
     @Before
     public void setUp(){
-        subject = new StoryAcceptanceQueue(redisTemplate);
+        subject = new StoryAcceptanceQueue(redisTemplate, pivotalTrackerAPI);
     }
 
     @Test
     public void push_addsToRedisQueueViaRedisTemplate() throws Exception {
         when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
-        subject.push("the SHA LOL");
+        when(pivotalTrackerAPI.getStory("theStoryID")).thenReturn(new PivotalTrackerStory());
+        subject.push("theSHALOL", "theStoryID");
         verify(redisTemplate).boundListOps(STORY_ACCEPTANCE_QUEUE_NAME);
-        verify(boundListOperations).rightPush("the SHA LOL");
+        verify(boundListOperations).rightPush("theSHALOL-theStoryID");
+    }
+
+    @Test
+    public void push_whenTheStoryForTheCommitIsRejected_addsDeployToHeadOfQueue() throws Exception {
+        PivotalTrackerStory rejectedStory = new PivotalTrackerStory();
+        rejectedStory.setCurrentState("rejected");
+        when(pivotalTrackerAPI.getStory("rejectedStory")).thenReturn(rejectedStory);
+
+        when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
+        subject.push("veryGoodCommit", "rejectedStory");
+        verify(boundListOperations).leftPush("veryGoodCommit-rejectedStory");
+
     }
 
     @Test
@@ -59,5 +76,24 @@ public class StoryAcceptanceQueueTest {
         when(boundListOperations.leftPop()).thenReturn("theSHAOnly");
         when(redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME)).thenReturn(boundListOperations);
         assertThat(subject.pop()).isNull();
+    }
+
+    @Test
+    public void readHead_whenQueueHasData_grabsHeadOfListFromRedisTemplate() throws Exception {
+        when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
+        when(boundListOperations.index(0)).thenReturn("theSHALOL-theStoryID");
+        Deploy result = subject.readHead();
+        verify(redisTemplate).boundListOps(STORY_ACCEPTANCE_QUEUE_NAME);
+        verify(boundListOperations).index(0);
+        assertThat(result.getSha()).isEqualTo("theSHALOL");
+        assertThat(result.getStoryID()).isEqualTo("theStoryID");
+    }
+
+    @Test
+    public void readHead_whenQueueIsEmpty_returnsNull() throws Exception {
+        when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
+        when(boundListOperations.index(0)).thenReturn(null);
+        Deploy result = subject.readHead();
+        assertThat(result).isNull();
     }
 }

@@ -49,7 +49,7 @@ public class PivotalTrackerAPI {
     public PivotalTrackerStory getStory(String pivotalTrackerStoryID) {
         String storyURL = generatePivotalTrackerUrl(pivotalTrackerStoryID);
         PivotalTrackerStory story = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStory.class);
-        logger.info("State of story currently in acceptance: {}", story.getCurrentState());
+        logger.info("State of story: {}", story.getCurrentState());
         return story;
     }
 
@@ -58,7 +58,7 @@ public class PivotalTrackerAPI {
         storyURL = storyURL.replace("{STORY_ID}", pivotalTrackerStoryID);
         storyURL = storyURL.replace("{TRACKER_PROJECT_ID}", pivotalTrackerStoryConfiguration.getTrackerProjectId());
 
-        logger.info("Url of the current story in acceptance: {}", storyURL);
+        logger.info("Url of the current story: {}", storyURL);
         return storyURL;
     }
 }
