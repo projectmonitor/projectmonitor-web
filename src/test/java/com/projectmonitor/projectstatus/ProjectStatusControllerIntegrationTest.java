@@ -113,7 +113,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("NOT_A_SUCCESS")));
+                .andExpect(content().string(containsString("NOT_A_SUCCESS")))
+        ;
     }
 
     @Test
