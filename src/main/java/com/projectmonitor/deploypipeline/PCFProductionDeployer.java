@@ -1,12 +1,12 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.CIJobConfiguration;
+import com.projectmonitor.jenkins.CIJobConfiguration;
+import com.projectmonitor.jenkins.JenkinsJobStatus;
+import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 
 @Component
 public class PCFProductionDeployer {

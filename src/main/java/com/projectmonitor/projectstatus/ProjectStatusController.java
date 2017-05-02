@@ -1,6 +1,9 @@
-package com.projectmonitor;
+package com.projectmonitor.projectstatus;
 
-import com.projectmonitor.productionrelease.JenkinsRestTemplate;
+import com.projectmonitor.ApplicationConfiguration;
+import com.projectmonitor.jenkins.CIJobConfiguration;
+import com.projectmonitor.jenkins.CIResponse;
+import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Controller
 @RequestMapping("/")
-public class CiRunController {
+public class ProjectStatusController {
 
     @Value("${storyAcceptanceUrl}")
     private String storyAcceptanceUrl;
@@ -26,9 +29,9 @@ public class CiRunController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public CiRunController(CIJobConfiguration ciJobConfiguration,
-                           ApplicationConfiguration applicationConfiguration,
-                           JenkinsRestTemplate jenkinsRestTemplate) {
+    public ProjectStatusController(CIJobConfiguration ciJobConfiguration,
+                                   ApplicationConfiguration applicationConfiguration,
+                                   JenkinsRestTemplate jenkinsRestTemplate) {
         this.ciJobConfiguration = ciJobConfiguration;
         this.applicationConfiguration = applicationConfiguration;
         this.jenkinsRestTemplate = jenkinsRestTemplate;

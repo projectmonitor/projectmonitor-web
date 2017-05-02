@@ -1,8 +1,9 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.CIJobConfiguration;
-import com.projectmonitor.StoryAcceptanceDeploy.Deploy;
-import com.projectmonitor.StoryAcceptanceDeploy.StoryAcceptanceQueue;
+import com.projectmonitor.jenkins.CIJobConfiguration;
+import com.projectmonitor.jenkins.JenkinsJobStatus;
+import com.projectmonitor.jenkins.JenkinsRestTemplate;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

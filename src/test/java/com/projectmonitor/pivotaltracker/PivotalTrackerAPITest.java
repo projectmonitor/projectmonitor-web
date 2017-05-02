@@ -1,9 +1,11 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.pivotaltracker;
 
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
+import com.projectmonitor.pivotaltracker.PivotalTrackerStoryConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;

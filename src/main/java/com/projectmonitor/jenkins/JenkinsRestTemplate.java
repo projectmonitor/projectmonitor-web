@@ -1,4 +1,4 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.jenkins;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;

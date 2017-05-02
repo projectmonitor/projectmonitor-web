@@ -1,5 +1,6 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.jenkins;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,11 @@ public class JenkinsRestTemplateTest {
         subject = new JenkinsRestTemplate();
 
         mockServer = startClientAndServer(1090);
+    }
+
+    @After
+    public void stopProxy() {
+        mockServer.stop();
     }
 
     @Test

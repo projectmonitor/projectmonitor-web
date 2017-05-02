@@ -1,7 +1,7 @@
-package com.projectmonitor.StoryAcceptanceDeploy;
+package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.productionrelease.PivotalTrackerAPI;
-import com.projectmonitor.productionrelease.PivotalTrackerStory;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,10 +10,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static com.projectmonitor.StoryAcceptanceDeploy.StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME;
-import static junit.framework.TestCase.fail;
+import static com.projectmonitor.deploypipeline.StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoryAcceptanceQueueTest {

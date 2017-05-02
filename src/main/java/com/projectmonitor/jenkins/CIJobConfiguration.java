@@ -1,4 +1,4 @@
-package com.projectmonitor;
+package com.projectmonitor.jenkins;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

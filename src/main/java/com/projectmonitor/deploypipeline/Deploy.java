@@ -1,4 +1,4 @@
-package com.projectmonitor.StoryAcceptanceDeploy;
+package com.projectmonitor.deploypipeline;
 
 public class Deploy {
 

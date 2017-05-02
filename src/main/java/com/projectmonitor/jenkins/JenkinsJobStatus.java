@@ -1,4 +1,4 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.jenkins;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

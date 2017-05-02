@@ -1,4 +1,4 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.pivotaltracker;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,9 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.ApplicationConfiguration;
-import com.projectmonitor.DeployedAppInfo;
+import com.projectmonitor.projectstatus.DeployedAppInfo;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.deploypipeline;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

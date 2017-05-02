@@ -1,4 +1,4 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.pivotaltracker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class PivotalTrackerAPI {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
     }
 
-    void rejectStory(String storyID) {
+    public void rejectStory(String storyID) {
         String storyURL = generatePivotalTrackerUrl(storyID);
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-TrackerToken", pivotalTrackerStoryConfiguration.getPivotalTrackerToken());

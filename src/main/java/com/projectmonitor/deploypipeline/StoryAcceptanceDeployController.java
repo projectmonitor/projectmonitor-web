@@ -1,4 +1,4 @@
-package com.projectmonitor.StoryAcceptanceDeploy;
+package com.projectmonitor.deploypipeline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

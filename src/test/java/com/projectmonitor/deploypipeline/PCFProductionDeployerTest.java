@@ -1,16 +1,14 @@
-package com.projectmonitor.productionrelease;
+package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.CIJobConfiguration;
+import com.projectmonitor.jenkins.CIJobConfiguration;
+import com.projectmonitor.jenkins.JenkinsJobStatus;
+import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
