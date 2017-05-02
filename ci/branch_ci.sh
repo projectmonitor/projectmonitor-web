@@ -26,7 +26,9 @@ set +o pipefail
 shouldDeploy=$(git log HEAD~..HEAD | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print}' )
 if [ ! -z "$shouldDeploy" ]
 then
-    curl -X PUT "http://localhost:8081/storyAcceptanceDeploy/${GIT_COMMIT}"
+    tracker_tag="$(git log -1 | egrep "\[finishes\s+#[0-9]+\]|\[fixes\s+#[0-9]+\]|\[completes\s+#[0-9]+\]" | awk '{print $2, $3}')"
+    STORY_ID=$(echo $tracker_tag | egrep -o "[0-9]+")
+    curl -X PUT "http://localhost:8081/storyAcceptanceDeploy/${GIT_COMMIT}-${STORY_ID}"
 else
     mkdir -p target
     touch target/fake-SNAPSHOT.jar
