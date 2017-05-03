@@ -1,15 +1,18 @@
 package com.projectmonitor.projectstatus;
 
 import com.projectmonitor.jenkins.CIResponse;
+import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuraService {
+
     public String determineAura(CIResponse ciResponse,
                                 CIResponse storyAcceptanceDeployResponse,
                                 DeployedAppInfo storyAcceptanceDeployedStory,
                                 CIResponse productionDeployResponse,
-                                DeployedAppInfo productionDeployedStory) {
+                                DeployedAppInfo productionDeployedStory,
+                                PivotalTrackerStory pivotalTrackerStory) {
         String aura = "normal";
 
         if ("CI is not responding".equals(ciResponse.getResult())) {
@@ -34,6 +37,10 @@ public class AuraService {
 
         if ("Story Acceptance is not responding".equals(storyAcceptanceDeployedStory.getPivotalTrackerStoryID())) {
             aura = "storyAcceptanceDown";
+        }
+
+        if ("rejected".equals(pivotalTrackerStory.getCurrentState())) {
+            aura = "storyRejected";
         }
 
         if ("FAILURE".equals(productionDeployResponse.getResult())) {

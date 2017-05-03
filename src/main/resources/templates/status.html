@@ -20,6 +20,18 @@
         SHA Currently Deployed in Story Acceptance:
         <a th:text="|${storyAcceptanceDeployedSHA}|" th:href="|https://github.com/${githubUsername}/${githubProjectName}/commit/${storyAcceptanceDeployedSHA}|" />
     </p>
+    <div th:switch="${storyStatus}">
+        <p th:case="'rejected'">
+            Story deployed in acceptance has been rejected!
+        </p>
+        <p th:case="'accepted'">
+            Story deployed in acceptance has been accepted!, deploys under way.
+        </p>
+        <p th:case="*">
+            Story deployed awaiting decision.
+        </p>
+    </div>
+
     <p th:text="|Last Deploy to Story Acceptance was: ${storyAcceptanceDeployResponse}|"/>
 
     <h2 th:text="|Production:|" />

@@ -2,6 +2,7 @@ package com.projectmonitor.projectstatus;
 
 import com.projectmonitor.deploypipeline.Deploy;
 import com.projectmonitor.jenkins.CIResponse;
+import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ public class AuraServiceTest {
     private DeployedAppInfo storyAcceptanceDeployedAppInfo;
     private CIResponse productionDeployResponse;
     private DeployedAppInfo productionDeployedAppInfo;
+    private PivotalTrackerStory pivotalTrackerStory;
 
     private String aura;
 
@@ -27,13 +29,15 @@ public class AuraServiceTest {
         storyAcceptanceDeployedAppInfo = new DeployedAppInfo();
         productionDeployResponse = new CIResponse();
         productionDeployedAppInfo = new DeployedAppInfo();
+        pivotalTrackerStory = new PivotalTrackerStory();
         subject = new AuraService();
     }
 
     @Test
     public void whenAllChecksAreOK_returnsNormal(){
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("normal");
     }
@@ -43,7 +47,8 @@ public class AuraServiceTest {
         ciStatusResponse.setResult("CI is not responding");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("dependencyDown");
     }
@@ -53,7 +58,8 @@ public class AuraServiceTest {
         ciStatusResponse.setResult("FAILURE");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("ciFailed");
     }
@@ -62,7 +68,8 @@ public class AuraServiceTest {
     public void whenStoryAcceptanceDeployStatusJobDoesNotRespond_returnsDependencyDown() throws Exception {
         storyAcceptanceDeployResponse.setResult("Story Acceptance Deploy Job is not responding");
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("dependencyDown");
     }
@@ -72,7 +79,8 @@ public class AuraServiceTest {
         productionDeployResponse.setResult("Production Deploy Job is not responding");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("dependencyDown");
     }
@@ -84,7 +92,8 @@ public class AuraServiceTest {
         storyAcceptanceDeployResponse.setResult("FAILURE");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("storyAcceptanceDeployFailed");
     }
@@ -97,9 +106,25 @@ public class AuraServiceTest {
         storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("storyAcceptanceDown");
+    }
+
+    @Test
+    public void whenStoryInAcceptanceHasBeenRejected_takesPrecedenceOverNonProductionFailures_returnsStoryRejected() throws Exception {
+        ciStatusResponse.setResult("FAILURE");
+        productionDeployResponse.setResult("happy as a bee");
+        storyAcceptanceDeployResponse.setResult("FAILURE");
+        storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
+        pivotalTrackerStory.setCurrentState("rejected");
+
+        aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
+
+        assertThat(aura).isEqualTo("storyRejected");
     }
 
     @Test
@@ -107,10 +132,12 @@ public class AuraServiceTest {
         ciStatusResponse.setResult("CI is not responding");
         productionDeployResponse.setResult("FAILURE");
         storyAcceptanceDeployResponse.setResult("FAILURE");
+        pivotalTrackerStory.setCurrentState("rejected");
         storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("productionDeployFailed");
     }
@@ -120,11 +147,13 @@ public class AuraServiceTest {
         ciStatusResponse.setResult("FAILURE");
         productionDeployResponse.setResult("FAILURE");
         storyAcceptanceDeployResponse.setResult("FAILURE");
+        pivotalTrackerStory.setCurrentState("rejected");
         storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
         productionDeployedAppInfo.setPivotalTrackerStoryID("Production is not responding");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedAppInfo, productionDeployResponse, productionDeployedAppInfo);
+                storyAcceptanceDeployedAppInfo, productionDeployResponse,
+                productionDeployedAppInfo, pivotalTrackerStory);
 
         assertThat(aura).isEqualTo("productionDown");
     }

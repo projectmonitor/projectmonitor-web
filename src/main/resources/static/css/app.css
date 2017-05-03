@@ -14,6 +14,10 @@ body.ciFailed {
     background-color: red;
 }
 
+body.storyRejected {
+    background-color: firebrick;
+}
+
 body.storyAcceptanceDeployFailed {
     background-color: coral;
 }

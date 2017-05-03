@@ -16,18 +16,18 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PCFProductionDeployerTest {
 
-    PCFProductionDeployer subject;
+    private PCFProductionDeployer subject;
 
-    String expectedProductionDeployJobURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA&STORY_ID=theStoryID";
-    String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
-
-    @Mock
-    JenkinsRestTemplate jenkinsRestTemplate;
+    private String expectedProductionDeployJobURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA&STORY_ID=theStoryID";
+    private String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
 
     @Mock
-    ThreadSleepService threadSleepService;
+    private JenkinsRestTemplate jenkinsRestTemplate;
 
-    CIJobConfiguration ciJobConfiguration;
+    @Mock
+    private ThreadSleepService threadSleepService;
+
+    private CIJobConfiguration ciJobConfiguration;
 
     @Before
     public void setUp(){

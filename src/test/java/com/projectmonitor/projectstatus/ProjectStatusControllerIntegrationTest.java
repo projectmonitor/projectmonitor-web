@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
@@ -47,7 +48,7 @@ public class ProjectStatusControllerIntegrationTest {
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"pivotalTrackerStoryID\": \"#55555\", \"storySHA\": \"88\"}")
+                                .withBody("{\"pivotalTrackerStoryID\": \"55555\", \"storySHA\": \"88\"}")
                 );
 
         mockServer
@@ -60,7 +61,7 @@ public class ProjectStatusControllerIntegrationTest {
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(new Header("Content-Type", "application/json"))
-                                .withBody("{\"pivotalTrackerStoryID\": \"#42\", \"storySHA\": \"21\"}")
+                                .withBody("{\"pivotalTrackerStoryID\": \"42\", \"storySHA\": \"21\"}")
                 );
 
         mockServer
@@ -101,11 +102,33 @@ public class ProjectStatusControllerIntegrationTest {
                                 .withHeaders(new Header("Content-Type", "application/json"))
                                 .withBody("{\"result\": \"BANANAS\"}")
                 );
+
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/1/story/55555")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"current_state\": \"delivered\"}")
+                );
     }
 
     @After
     public void stopProxy() {
         mockServer.stop();
+    }
+
+    @Test
+    public void blah() throws Exception {
+        fail();
+        /**
+         * redis to keep list of rejected stories so we don't lose state?
+         * or parse story history from tracker to see if it was rejected
+         */
     }
 
     @Test
@@ -123,7 +146,7 @@ public class ProjectStatusControllerIntegrationTest {
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story Currently Deployed in Story Acceptance:")))
-                .andExpect(content().string(containsString("#55555")))
+                .andExpect(content().string(containsString("55555")))
                 .andExpect(content().string(containsString("SHA Currently Deployed in Story Acceptance:")))
                 .andExpect(content().string(containsString("88")))
         ;
@@ -135,7 +158,7 @@ public class ProjectStatusControllerIntegrationTest {
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story Currently Deployed in Production:")))
-                .andExpect(content().string(containsString("#42")))
+                .andExpect(content().string(containsString("42")))
                 .andExpect(content().string(containsString("SHA Currently Deployed in Production:")))
                 .andExpect(content().string(containsString("21")))
         ;
@@ -194,6 +217,61 @@ public class ProjectStatusControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story Acceptance Deploy Job is not responding")))
                 .andExpect(content().string(containsString("Production Deploy Job is not responding")))
+        ;
+    }
+
+    @Test
+    public void whenStoryAcceptanceIsAccepted_displaysMessage() throws Exception {
+        mockServer.clear(request().withMethod("GET").withPath("/1/story/55555"));
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/1/story/55555")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"current_state\": \"accepted\"}")
+                );
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Story deployed in acceptance has been accepted!, deploys under way.")))
+        ;
+    }
+
+    @Test
+    public void whenStoryAcceptanceHasARejectedStory_displaysMessage() throws Exception {
+        mockServer.clear(request().withMethod("GET").withPath("/1/story/55555"));
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/1/story/55555")
+                )
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("{\"current_state\": \"rejected\"}")
+                );
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Story deployed in acceptance has been rejected!")))
+        ;
+    }
+
+    @Test
+    public void whenStoryAcceptanceStoryAwaitingDecision_displaysMessage() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Story deployed awaiting decision.")))
         ;
     }
 

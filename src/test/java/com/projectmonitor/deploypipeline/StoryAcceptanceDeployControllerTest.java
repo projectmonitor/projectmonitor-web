@@ -1,7 +1,5 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.deploypipeline.StoryAcceptanceDeployController;
-import com.projectmonitor.deploypipeline.StoryAcceptanceQueue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -24,7 +22,7 @@ public class StoryAcceptanceDeployControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    StoryAcceptanceQueue storyAcceptanceQueue;
+    private StoryAcceptanceQueue storyAcceptanceQueue;
 
     @Test
     public void put_addsToTheBuildList() throws Exception {
