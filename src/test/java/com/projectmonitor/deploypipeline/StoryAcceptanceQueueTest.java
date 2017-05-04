@@ -1,6 +1,6 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,41 +17,39 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoryAcceptanceQueueTest {
-    private StoryAcceptanceQueue subject;
 
+    private StoryAcceptanceQueue subject;
     @Mock
     private RedisTemplate<String, String> redisTemplate;
-
     @Mock
     private BoundListOperations<String, String> boundListOperations;
-
     @Mock
-    private PivotalTrackerAPI pivotalTrackerAPI;
+    private PivotalTrackerAPIService pivotalTrackerAPIService;
 
     @Before
-    public void setUp(){
-        subject = new StoryAcceptanceQueue(redisTemplate, pivotalTrackerAPI);
+    public void setUp() {
+        subject = new StoryAcceptanceQueue(redisTemplate, pivotalTrackerAPIService);
     }
 
     @Test
     public void push_addsToRedisQueueViaRedisTemplate() throws Exception {
         when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
-        when(pivotalTrackerAPI.getStory("theStoryID")).thenReturn(new PivotalTrackerStory());
+        when(pivotalTrackerAPIService.getStory("theStoryID")).thenReturn(PivotalTrackerStory.builder().build());
         subject.push("theSHALOL", "theStoryID");
         verify(redisTemplate).boundListOps(STORY_ACCEPTANCE_QUEUE_NAME);
         verify(boundListOperations).rightPush("theSHALOL-theStoryID");
     }
 
     @Test
-    public void push_whenTheStoryForTheCommitIsRejected_addsDeployToHeadOfQueue() throws Exception {
-        PivotalTrackerStory rejectedStory = new PivotalTrackerStory();
-        rejectedStory.setCurrentState("rejected");
-        when(pivotalTrackerAPI.getStory("rejectedStory")).thenReturn(rejectedStory);
+    public void push_whenTheStoryHasBeenRejected_addsBuildToHeadOfQueue() throws Exception {
+        PivotalTrackerStory rejectedStory = PivotalTrackerStory.builder()
+                .currentState("whatever").hasBeenRejected(true).build();
+
+        when(pivotalTrackerAPIService.getStory("rejectedStory")).thenReturn(rejectedStory);
 
         when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
         subject.push("veryGoodCommit", "rejectedStory");
         verify(boundListOperations).leftPush("veryGoodCommit-rejectedStory");
-
     }
 
     @Test

@@ -123,15 +123,6 @@ public class ProjectStatusControllerIntegrationTest {
     }
 
     @Test
-    public void blah() throws Exception {
-        fail();
-        /**
-         * redis to keep list of rejected stories so we don't lose state?
-         * or parse story history from tracker to see if it was rejected
-         */
-    }
-
-    @Test
     public void whenCiResponds_wePrintTheBuildStatus() throws Exception {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
@@ -273,6 +264,12 @@ public class ProjectStatusControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story deployed awaiting decision.")))
         ;
+        fail();
+
+        /**
+         *  only check hasBeenRejected Now, still have weird display issues
+         *  get story sets correctly and adds label if need be.  now just display issues i think.
+         */
     }
 
 }

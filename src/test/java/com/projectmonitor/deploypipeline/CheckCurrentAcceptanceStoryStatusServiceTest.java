@@ -2,7 +2,7 @@ package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.projectstatus.DeployedAppInfo;
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     @Mock
     private PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
     @Mock
-    private PivotalTrackerAPI pivotalTrackerAPI;
+    private PivotalTrackerAPIService pivotalTrackerAPIService;
 
     private DeployedAppInfo acceptanceStoryInfo;
     private DeployedAppInfo productionStoryInfo;
@@ -40,7 +40,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
         subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate,
                 applicationConfiguration, pcfProductionDeployer,
-                pcfStoryAcceptanceDeployer, pivotalTrackerAPI);
+                pcfStoryAcceptanceDeployer, pivotalTrackerAPIService);
 
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
@@ -54,10 +54,10 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
     @Test
     public void execute_whenTrackerAPIResponds_andStoryisAccepted_andStoriesDiffer_triggersAProductionDeploy() {
-        PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
-        acceptedStory.setCurrentState("accepted");
+        PivotalTrackerStory acceptedStory = PivotalTrackerStory.builder()
+                .currentState("accepted").build();
 
-        when(pivotalTrackerAPI.getStory("8888")).thenReturn(acceptedStory);
+        when(pivotalTrackerAPIService.getStory("8888")).thenReturn(acceptedStory);
 
         subject.execute();
         verify(pcfProductionDeployer).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
@@ -65,10 +65,10 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
     @Test
     public void execute_whenTrackerAPIResponds_andStoryisAccepted_andStoriesMatch_doesNotTriggerAProductionDeploy_butDoesTriggerAnSADeploy() {
-        PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
-        acceptedStory.setCurrentState("accepted");
+        PivotalTrackerStory acceptedStory = PivotalTrackerStory.builder()
+                .currentState("accepted").build();
 
-        when(pivotalTrackerAPI.getStory("8888")).thenReturn(acceptedStory);
+        when(pivotalTrackerAPIService.getStory("8888")).thenReturn(acceptedStory);
 
         productionStoryInfo.setPivotalTrackerStoryID("8888");
 
@@ -80,30 +80,33 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
     @Test
     public void execute_whenTrackerAPIResponds_andStoryIsNotAccepted_doesNotTriggerADeployToAnyEnvironment() throws Exception {
-        PivotalTrackerStory notAcceptedStory = new PivotalTrackerStory();
-        notAcceptedStory.setCurrentState("delivered");
-        when(pivotalTrackerAPI.getStory("8888")).thenReturn(notAcceptedStory);
+        PivotalTrackerStory notAcceptedStory = PivotalTrackerStory.builder()
+                .currentState("delivered").build();
+
+        when(pivotalTrackerAPIService.getStory("8888")).thenReturn(notAcceptedStory);
         subject.execute();
         verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfStoryAcceptanceDeployer, never()).push();
     }
 
     @Test
-    public void execute_whenTrackerAPIResponds_andStoryIsRejected_triggersContingentStoryAcceptaceDeploy() throws Exception {
-        PivotalTrackerStory rejectedStory = new PivotalTrackerStory();
-        rejectedStory.setCurrentState("rejected");
-        when(pivotalTrackerAPI.getStory("8888")).thenReturn(rejectedStory);
+    public void execute_whenTrackerAPIResponds_andStoryIsRejected_triggersContingentStoryAcceptaceDeploy_AND_addsRejectedLabel() throws Exception {
+        PivotalTrackerStory rejectedStory = PivotalTrackerStory.builder()
+                .currentState("rejected").build();
+
+        when(pivotalTrackerAPIService.getStory("8888")).thenReturn(rejectedStory);
         subject.execute();
+        verify(pivotalTrackerAPIService).addRejectLabel(acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfStoryAcceptanceDeployer).pushRejectedBuild(acceptanceStoryInfo.getPivotalTrackerStoryID());
     }
 
     @Test
     public void execute_whenAProductionDeployFails_doesNotTriggerAStoryAcceptanceDeploy() throws Exception {
-        PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
-        acceptedStory.setCurrentState("accepted");
+        PivotalTrackerStory acceptedStory = PivotalTrackerStory.builder()
+                .currentState("accepted").build();
 
-        when(pivotalTrackerAPI.getStory("8888")).thenReturn(acceptedStory);
+        when(pivotalTrackerAPIService.getStory("8888")).thenReturn(acceptedStory);
         when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID())).thenReturn(false);
 
         subject.execute();
@@ -113,10 +116,10 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
     @Test
     public void execute_whenAProductionDeploySucceeds_triggersADeployToStoryAcceptance() throws Exception {
-        PivotalTrackerStory acceptedStory = new PivotalTrackerStory();
-        acceptedStory.setCurrentState("accepted");
+        PivotalTrackerStory acceptedStory = PivotalTrackerStory.builder()
+                .currentState("accepted").build();
 
-        when(pivotalTrackerAPI.getStory("8888")).thenReturn(acceptedStory);
+        when(pivotalTrackerAPIService.getStory("8888")).thenReturn(acceptedStory);
         when(pcfProductionDeployer.push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID())).thenReturn(true);
 
         subject.execute();

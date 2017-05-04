@@ -1,12 +1,10 @@
 package com.projectmonitor.projectstatus;
 
-import com.projectmonitor.deploypipeline.Deploy;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuraServiceTest {
@@ -29,7 +27,7 @@ public class AuraServiceTest {
         storyAcceptanceDeployedAppInfo = new DeployedAppInfo();
         productionDeployResponse = new CIResponse();
         productionDeployedAppInfo = new DeployedAppInfo();
-        pivotalTrackerStory = new PivotalTrackerStory();
+        pivotalTrackerStory = PivotalTrackerStory.builder().build();
         subject = new AuraService();
     }
 
@@ -118,7 +116,10 @@ public class AuraServiceTest {
         productionDeployResponse.setResult("happy as a bee");
         storyAcceptanceDeployResponse.setResult("FAILURE");
         storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
-        pivotalTrackerStory.setCurrentState("rejected");
+        pivotalTrackerStory = PivotalTrackerStory.builder()
+                .currentState("rejected")
+                .hasBeenRejected(true)
+                .build();
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
                 storyAcceptanceDeployedAppInfo, productionDeployResponse,
@@ -132,7 +133,7 @@ public class AuraServiceTest {
         ciStatusResponse.setResult("CI is not responding");
         productionDeployResponse.setResult("FAILURE");
         storyAcceptanceDeployResponse.setResult("FAILURE");
-        pivotalTrackerStory.setCurrentState("rejected");
+        pivotalTrackerStory = PivotalTrackerStory.builder().currentState("rejected").build();
         storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
 
         aura = subject.determineAura(ciStatusResponse, storyAcceptanceDeployResponse,
@@ -147,7 +148,7 @@ public class AuraServiceTest {
         ciStatusResponse.setResult("FAILURE");
         productionDeployResponse.setResult("FAILURE");
         storyAcceptanceDeployResponse.setResult("FAILURE");
-        pivotalTrackerStory.setCurrentState("rejected");
+        pivotalTrackerStory = PivotalTrackerStory.builder().currentState("rejected").build();
         storyAcceptanceDeployedAppInfo.setPivotalTrackerStoryID("Story Acceptance is not responding");
         productionDeployedAppInfo.setPivotalTrackerStoryID("Production is not responding");
 

@@ -3,7 +3,7 @@ package com.projectmonitor.projectstatus;
 import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsJobs;
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class ProjectStatusController {
     private JenkinsJobs jenkinsJobs;
     private Environments environments;
     private AuraService auraService;
-    private PivotalTrackerAPI pivotalTrackerAPI;
+    private PivotalTrackerAPIService pivotalTrackerAPIService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
@@ -29,13 +29,13 @@ public class ProjectStatusController {
                                    JenkinsJobs jenkinsJobs,
                                    Environments environments,
                                    AuraService auraService,
-                                   PivotalTrackerAPI pivotalTrackerAPI) {
+                                   PivotalTrackerAPIService pivotalTrackerAPIService) {
 
         this.applicationConfiguration = applicationConfiguration;
         this.jenkinsJobs = jenkinsJobs;
         this.environments = environments;
         this.auraService = auraService;
-        this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.pivotalTrackerAPIService = pivotalTrackerAPIService;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -46,9 +46,9 @@ public class ProjectStatusController {
 
         PivotalTrackerStory pivotalTrackerStory;
         if ("Story Acceptance is not responding".equals(storyAcceptanceDeployedStory.getPivotalTrackerStoryID())) {
-            pivotalTrackerStory = new PivotalTrackerStory();
+            pivotalTrackerStory = PivotalTrackerStory.builder().build();
         } else {
-            pivotalTrackerStory = pivotalTrackerAPI.getStory(storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
+            pivotalTrackerStory = pivotalTrackerAPIService.getStory(storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
         }
 
         CIResponse productionDeployResponse = jenkinsJobs.loadProductionLastDeployStatus();

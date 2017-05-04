@@ -39,7 +39,8 @@ public class AuraService {
             aura = "storyAcceptanceDown";
         }
 
-        if ("rejected".equals(pivotalTrackerStory.getCurrentState())) {
+        if ("rejected".equals(pivotalTrackerStory.getCurrentState())
+                || pivotalTrackerStory.isHasBeenRejected()) {
             aura = "storyRejected";
         }
 

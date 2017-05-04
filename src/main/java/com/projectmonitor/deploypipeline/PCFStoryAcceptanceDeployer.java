@@ -3,7 +3,7 @@ package com.projectmonitor.deploypipeline;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobStatus;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class PCFStoryAcceptanceDeployer {
     private final JenkinsRestTemplate jenkinsRestTemplate;
     private final CIJobConfiguration ciJobConfiguration;
     private final ThreadSleepService threadSleepService;
-    private PivotalTrackerAPI pivotalTrackerAPI;
+    private PivotalTrackerAPIService pivotalTrackerAPIService;
     public static final String JENKINS_SUCCESS_MESSAGE = "SUCCESS";
 
     @Autowired
@@ -27,12 +27,12 @@ public class PCFStoryAcceptanceDeployer {
                                       JenkinsRestTemplate jenkinsRestTemplate,
                                       CIJobConfiguration ciJobConfiguration,
                                       ThreadSleepService threadSleepService,
-                                      PivotalTrackerAPI pivotalTrackerAPI) {
+                                      PivotalTrackerAPIService pivotalTrackerAPIService) {
         this.storyAcceptanceQueue = storyAcceptanceQueue;
         this.jenkinsRestTemplate = jenkinsRestTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
         this.threadSleepService = threadSleepService;
-        this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.pivotalTrackerAPIService = pivotalTrackerAPIService;
     }
 
     public boolean push() {
@@ -76,7 +76,7 @@ public class PCFStoryAcceptanceDeployer {
             return true;
         } else {
             logger.info("Story Acceptance Deploy failed, rejecting story");
-            pivotalTrackerAPI.rejectStory(deploy.getStoryID());
+            pivotalTrackerAPIService.rejectStory(deploy.getStoryID());
         }
 
         return false;

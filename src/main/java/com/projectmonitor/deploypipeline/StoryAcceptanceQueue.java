@@ -1,6 +1,6 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,23 +12,24 @@ import org.springframework.stereotype.Component;
 public class StoryAcceptanceQueue {
 
     private RedisTemplate<String, String> redisTemplate;
-    private PivotalTrackerAPI pivotalTrackerAPI;
+    private PivotalTrackerAPIService pivotalTrackerAPIService;
     static final String STORY_ACCEPTANCE_QUEUE_NAME = "storyAcceptanceBuildQueue";
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public StoryAcceptanceQueue(RedisTemplate<String, String> template, PivotalTrackerAPI pivotalTrackerAPI) {
+    public StoryAcceptanceQueue(RedisTemplate<String, String> template, PivotalTrackerAPIService pivotalTrackerAPIService) {
         this.redisTemplate = template;
-        this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.pivotalTrackerAPIService = pivotalTrackerAPIService;
     }
 
     public void push(String commitSHA, String storyID) {
-        PivotalTrackerStory theStory = pivotalTrackerAPI.getStory(storyID);
-        if ("rejected".equals(theStory.getCurrentState())) {
+        PivotalTrackerStory theStory = pivotalTrackerAPIService.getStory(storyID);
+        if (theStory.isHasBeenRejected()) {
             redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).leftPush(commitSHA + "-" + storyID);
-        } else {
-            redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).rightPush(commitSHA + "-" + storyID);
+            return;
         }
+
+        redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).rightPush(commitSHA + "-" + storyID);
     }
 
     public Deploy pop() {
@@ -67,6 +68,4 @@ public class StoryAcceptanceQueue {
         deploy.setStoryID(parts[1]);
         return deploy;
     }
-
-
 }

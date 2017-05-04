@@ -3,7 +3,7 @@ package com.projectmonitor.deploypipeline;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobStatus;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ public class PCFStoryAcceptanceDeployerTest {
     @Mock
     private StoryAcceptanceQueue storyAcceptanceQueue;
     @Mock
-    private PivotalTrackerAPI pivotalTrackerAPI;
+    private PivotalTrackerAPIService pivotalTrackerAPIService;
 
     private CIJobConfiguration ciJobConfiguration;
     private String saDeployJobURL = "http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=theNextDeployableSHA";
@@ -37,7 +37,7 @@ public class PCFStoryAcceptanceDeployerTest {
         ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setStoryAcceptanceDeployJobURL("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=");
         ciJobConfiguration.setStoryAcceptanceDeployStatusURL(deployStatusURL);
-        subject = new PCFStoryAcceptanceDeployer(storyAcceptanceQueue, jenkinsRestTemplate, ciJobConfiguration, threadSleepService, pivotalTrackerAPI);
+        subject = new PCFStoryAcceptanceDeployer(storyAcceptanceQueue, jenkinsRestTemplate, ciJobConfiguration, threadSleepService, pivotalTrackerAPIService);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class PCFStoryAcceptanceDeployerTest {
                 .thenReturn(failedStatus);
 
         assertThat(subject.push()).isFalse();
-        Mockito.verify(pivotalTrackerAPI).rejectStory("theStoryID");
+        Mockito.verify(pivotalTrackerAPIService).rejectStory("theStoryID");
     }
 
     @Test

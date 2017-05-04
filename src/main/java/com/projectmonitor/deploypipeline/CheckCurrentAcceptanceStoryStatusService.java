@@ -2,7 +2,7 @@ package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.projectstatus.DeployedAppInfo;
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
     private final ApplicationConfiguration applicationConfiguration;
     private final PCFProductionDeployer pcfProductionDeployer;
     private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
-    private final PivotalTrackerAPI pivotalTrackerAPI;
+    private final PivotalTrackerAPIService pivotalTrackerAPIService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
@@ -26,12 +26,12 @@ public class CheckCurrentAcceptanceStoryStatusService {
                                                     ApplicationConfiguration applicationConfiguration,
                                                     PCFProductionDeployer pcfProductionDeployer,
                                                     PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer,
-                                                    PivotalTrackerAPI pivotalTrackerAPI) {
+                                                    PivotalTrackerAPIService pivotalTrackerAPIService) {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
         this.applicationConfiguration = applicationConfiguration;
         this.pcfProductionDeployer = pcfProductionDeployer;
         this.pcfStoryAcceptanceDeployer = pcfStoryAcceptanceDeployer;
-        this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.pivotalTrackerAPIService = pivotalTrackerAPIService;
     }
 
     @Scheduled(fixedDelay = 180000, initialDelay = 10000)
@@ -45,7 +45,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
             DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class);
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
-            PivotalTrackerStory story = pivotalTrackerAPI.getStory(acceptanceStory.getPivotalTrackerStoryID());
+            PivotalTrackerStory story = pivotalTrackerAPIService.getStory(acceptanceStory.getPivotalTrackerStoryID());
 
             if ("accepted".equals(story.getCurrentState())) {
                 if (!acceptanceStory.getPivotalTrackerStoryID().equals(productionStory.getPivotalTrackerStoryID())) {
@@ -57,6 +57,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
                     pcfStoryAcceptanceDeployer.push();
                 }
             } else if ("rejected".equals(story.getCurrentState())) {
+                pivotalTrackerAPIService.addRejectLabel(acceptanceStory.getPivotalTrackerStoryID());
                 pcfStoryAcceptanceDeployer.pushRejectedBuild(acceptanceStory.getPivotalTrackerStoryID());
             } else {
                 logger.info("Nothing to deploy at the moment...");
