@@ -1,6 +1,6 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +12,19 @@ import org.springframework.stereotype.Component;
 public class StoryAcceptanceQueue {
 
     private RedisTemplate<String, String> redisTemplate;
-    private PivotalTrackerAPIService pivotalTrackerAPIService;
+    private PivotalTrackerAPI pivotalTrackerAPI;
     static final String STORY_ACCEPTANCE_QUEUE_NAME = "storyAcceptanceBuildQueue";
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public StoryAcceptanceQueue(RedisTemplate<String, String> template, PivotalTrackerAPIService pivotalTrackerAPIService) {
+    public StoryAcceptanceQueue(RedisTemplate<String, String> template,
+                                PivotalTrackerAPI pivotalTrackerAPI) {
         this.redisTemplate = template;
-        this.pivotalTrackerAPIService = pivotalTrackerAPIService;
+        this.pivotalTrackerAPI = pivotalTrackerAPI;
     }
 
     public void push(String commitSHA, String storyID) {
-        PivotalTrackerStory theStory = pivotalTrackerAPIService.getStory(storyID);
+        PivotalTrackerStory theStory = pivotalTrackerAPI.getStory(storyID);
         if (theStory.isHasBeenRejected()) {
             redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).leftPush(commitSHA + "-" + storyID);
             return;

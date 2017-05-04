@@ -1,6 +1,6 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,17 +24,17 @@ public class StoryAcceptanceQueueTest {
     @Mock
     private BoundListOperations<String, String> boundListOperations;
     @Mock
-    private PivotalTrackerAPIService pivotalTrackerAPIService;
+    private PivotalTrackerAPI pivotalTrackerAPI;
 
     @Before
     public void setUp() {
-        subject = new StoryAcceptanceQueue(redisTemplate, pivotalTrackerAPIService);
+        subject = new StoryAcceptanceQueue(redisTemplate, pivotalTrackerAPI);
     }
 
     @Test
     public void push_addsToRedisQueueViaRedisTemplate() throws Exception {
         when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
-        when(pivotalTrackerAPIService.getStory("theStoryID")).thenReturn(PivotalTrackerStory.builder().build());
+        when(pivotalTrackerAPI.getStory("theStoryID")).thenReturn(PivotalTrackerStory.builder().build());
         subject.push("theSHALOL", "theStoryID");
         verify(redisTemplate).boundListOps(STORY_ACCEPTANCE_QUEUE_NAME);
         verify(boundListOperations).rightPush("theSHALOL-theStoryID");
@@ -45,7 +45,7 @@ public class StoryAcceptanceQueueTest {
         PivotalTrackerStory rejectedStory = PivotalTrackerStory.builder()
                 .currentState("whatever").hasBeenRejected(true).build();
 
-        when(pivotalTrackerAPIService.getStory("rejectedStory")).thenReturn(rejectedStory);
+        when(pivotalTrackerAPI.getStory("rejectedStory")).thenReturn(rejectedStory);
 
         when(redisTemplate.boundListOps("storyAcceptanceBuildQueue")).thenReturn(boundListOperations);
         subject.push("veryGoodCommit", "rejectedStory");

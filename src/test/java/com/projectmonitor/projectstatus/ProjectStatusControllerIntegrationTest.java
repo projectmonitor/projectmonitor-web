@@ -6,8 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
+import org.mockserver.model.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -250,6 +252,29 @@ public class ProjectStatusControllerIntegrationTest {
                                 .withBody("{\"current_state\": \"rejected\"}")
                 );
 
+        HttpRequest request = new HttpRequest()
+                .withMethod("POST")
+                .withPath("/1/story/55555/labels")
+                .withHeader("Content-Type", "application/json")
+                .withHeader("X-TrackerToken", "some-tracker-token")
+                .withHeader("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .withBody("{\"name\":\"rejected\"}");
+
+        mockServer
+                .when(request)
+                .respond(
+                        response()
+                                .withStatusCode(200)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("    {" +
+                                        "\"created_at\": \"2017-04-25T12:00:00Z\"," +
+                                        "\"id\": 5100," +
+                                        "\"kind\": \"label\"," +
+                                        "\"name\": \"rejected\"," +
+                                        "\"project_id\": 2005," +
+                                        "\"updated_at\": \"2017-04-25T12:00:00Z\"}")
+                );
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
@@ -269,6 +294,7 @@ public class ProjectStatusControllerIntegrationTest {
         /**
          *  only check hasBeenRejected Now, still have weird display issues
          *  get story sets correctly and adds label if need be.  now just display issues i think.
+         *  figure out if you can ask for interface vs impleementer
          */
     }
 

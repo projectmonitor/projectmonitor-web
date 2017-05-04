@@ -3,7 +3,7 @@ package com.projectmonitor.deploypipeline;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobStatus;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
-import com.projectmonitor.pivotaltracker.PivotalTrackerAPIService;
+import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +19,20 @@ public class PCFStoryAcceptanceDeployer {
     private final JenkinsRestTemplate jenkinsRestTemplate;
     private final CIJobConfiguration ciJobConfiguration;
     private final ThreadSleepService threadSleepService;
-    private PivotalTrackerAPIService pivotalTrackerAPIService;
-    public static final String JENKINS_SUCCESS_MESSAGE = "SUCCESS";
+    private PivotalTrackerAPI pivotalTrackerAPI;
+    private static final String JENKINS_SUCCESS_MESSAGE = "SUCCESS";
 
     @Autowired
     public PCFStoryAcceptanceDeployer(StoryAcceptanceQueue storyAcceptanceQueue,
                                       JenkinsRestTemplate jenkinsRestTemplate,
                                       CIJobConfiguration ciJobConfiguration,
                                       ThreadSleepService threadSleepService,
-                                      PivotalTrackerAPIService pivotalTrackerAPIService) {
+                                      PivotalTrackerAPI pivotalTrackerAPI) {
         this.storyAcceptanceQueue = storyAcceptanceQueue;
         this.jenkinsRestTemplate = jenkinsRestTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
         this.threadSleepService = threadSleepService;
-        this.pivotalTrackerAPIService = pivotalTrackerAPIService;
+        this.pivotalTrackerAPI = pivotalTrackerAPI;
     }
 
     public boolean push() {
@@ -76,7 +76,7 @@ public class PCFStoryAcceptanceDeployer {
             return true;
         } else {
             logger.info("Story Acceptance Deploy failed, rejecting story");
-            pivotalTrackerAPIService.rejectStory(deploy.getStoryID());
+            pivotalTrackerAPI.rejectStory(deploy.getStoryID());
         }
 
         return false;
