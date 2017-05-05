@@ -1,12 +1,12 @@
-# About the Last Mile
-## This is most certainly Alpha software, so lulz ahead I'm sure.
+# About Project Monitor
+## WARNING: This is most certainly Alpha software! This guide was last touched on : May 5th, 2017
 
 ### Continuous Delivery?
 This projects goal is support continuous delivery by building a workflow about Pivotal Tracker.  
 
 Continuous delivery implies a lot things about the maturity level of your organization (automated test suites, automated deploys, automated rollbacks, monitoring etc.)  We hope to help by reducing the number of road blocks a project has to get to CD with (hopefully) little effort.
 
-# End User Setup
+# End User Readme
 ### Assumptions
 * you are using pivotal tracker for your backlog
 * you are using git for version management
@@ -15,23 +15,49 @@ Continuous delivery implies a lot things about the maturity level of your organi
 **We want to support more tools, but that's how it is in the alpha.**
 
 ### The dealio
-Currently, Last Mile only supports a feature branching workflow.  
-As a developer, you start a story, create a feature branch.  When done with the story, push a commit with the fixes, completes, finishes tags tracker supports.  You should not mark the  story delivered as that will be handled by Last Mile when it deploys to story acceptance.
+Currently, Project Monitor only supports a feature branching workflow.  
+As a developer, you start a story, create a feature branch.  When done with the story, push a commit with the fixes, completes, finishes tags tracker supports.  You should not mark the  story delivered as that will be handled by Project Monitor when it deploys to story acceptance.
 
 CI is running for all branches (except master, which should be locked down for commits).  If a commit completes a story, a build is enqueued to be deployed to the Story Acceptance environment.  Commits that do not complete a story will run CI but will not be enqueued to go to story acceptance.
 
-Enqueued is an important distinction here.  Stories will be accepted in isolation from each other.  So builds must be queued, only being deployed once the previous story has been accepted. This ensures that there is not pollution from other stories that have been recently completed.  There will be a production deploy of each accepted story in the order in which they were completed/accepted.
+Enqueued is an important distinction here.  Stories (and therefore branches) will be accepted in isolation from each other.  So builds must be queued, only being deployed once the previous story has been accepted. This ensures that there is not pollution from other stories that have been recently completed.  There will be a production deploy of each accepted story in the order in which they were completed/accepted.
 
 Before a build is sent to SA, it is merged with master (a no edit merge).  This ensures that the branch is up to date with previously deployed stories.  Once the story has been accepted by the PM in tracker the branch is merged into master and deployed to production.  The next available buld is then deployed to story acceptance.  Conflicts currently fail the job, to be handled manually for the moment.
 
-# This documentation is currently incomplete. SO use is not currently advised!!!!
+If a story is rejected, no other builds will be deployed until that story has been accepted.  Pushing a fixes commit to the branch of the rejected story will cause a new deploy to go to Story Acceptance for that story.
 
-Please run the setup script before starting work
-```bash
-$: ./setup.sh
-```
+### Jenkins Setup
+Jenkins currently works off of 3 jobs:
+1. A CI Job (triggered by pushes to your repo, any branch exacpt master)
+ * runs tests
+ * enqueues build for deploy to story acceptance if necessary
+2. A Job to deploy to Story Acceptance (triggered by project monitor programmatically)
+ * no edit merges with master
+ * re runs test on merge
+ * deploys to story acceptance
+ * marks story as delivered
+3. A job to deploy to Production (triggered by project monitor programmatically)
+ * checks out sha deployed to acceptance
+ * rebuilds artifacts
+ * deploys to production
 
-#Developer Setup
+We have scripts for each jenkins job in the ci directory. Currently you will need to copy these scripts to your project and make edits as necessary for your projects (test commands/deploy command etc.).  
+
+**Notes:**
+ * If a merge or deploy to Story acceptance fails the relevant story is set to rejected by Project monitor.
+ * Project monitor displays information about most of what I just covered on the home page
+ * Currently, an install of project monitor is just configured for one app (feature in the backlog)
+ * Pulling a build out of the queue is a manual process. This can be accomplished by manually deploying a different build to Story Acceptance
+ * Most state that project monitor uses is contained in jenkins and tracker, that means info you want to see should be one of those tow places
+ 
+
+### Environment variables
+There are several environment variables that project monitor will need to operate.  You can find examples in the application.properties file
+
+
+##### NEED TO GET EXAMPLES OF THE JOBS, guides to setting them up!
+
+#Developer README
 Assuming you have cloned the repo somewheres relevant...
 
 install maven:
