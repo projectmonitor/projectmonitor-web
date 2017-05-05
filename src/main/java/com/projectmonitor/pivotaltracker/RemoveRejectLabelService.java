@@ -39,8 +39,12 @@ public class RemoveRejectLabelService {
         headers.set("Content-Type", "application/json");
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
+        logger.info("Removing rejected label from story: {}", storyID);
         ResponseEntity response = productionReleaseRestTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 
-        logger.info(response.toString());
+        if(response.getStatusCodeValue() > 399){
+            logger.error("failed removing label form story: {}. \n Error response: {}", storyID, response.toString());
+        }
+
     }
 }

@@ -44,6 +44,7 @@ class RejectLabelService {
         PivotalTrackerLabelSlim body = new PivotalTrackerLabelSlim();
         body.setName("rejected");
 
+        logger.info("Adding rejected label to tracker story: {}", storyID);
         HttpEntity<PivotalTrackerLabelSlim> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = productionReleaseRestTemplate.exchange(
                 storyURL,

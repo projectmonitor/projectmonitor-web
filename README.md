@@ -26,6 +26,17 @@ Before a build is sent to SA, it is merged with master (a no edit merge).  This 
 
 If a story is rejected, no other builds will be deployed until that story has been accepted.  Pushing a fixes commit to the branch of the rejected story will cause a new deploy to go to Story Acceptance for that story.
 
+### Your app setup
+1. We expect you have endpoint at /info. This returns json and contains the sha deployed and the story deployed to that environment
+1. Project monitor will set environment variables in your manifest file before deploy with the correct values.  if you are using spring boot actuator, you can drop the InfoConfiguration class into your project and you'r done.
+Example response:
+```json
+{
+    "pivotalTrackerStoryID": "144644741",
+    "storySHA": "bbd82fc105e68d85956d6eacf3cfb58ddc8ab04f"
+}
+```
+
 ### Jenkins Setup
 Jenkins currently works off of 3 jobs:
 1. A CI Job (triggered by pushes to your repo, any branch exacpt master)

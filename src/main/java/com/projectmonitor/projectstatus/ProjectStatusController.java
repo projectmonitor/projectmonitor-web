@@ -49,6 +49,7 @@ public class ProjectStatusController {
             pivotalTrackerStory = PivotalTrackerStory.builder().build();
         } else {
             pivotalTrackerStory = pivotalTrackerAPI.getStory(storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
+            logger.info("State of story in acceptance: {}", pivotalTrackerStory.getCurrentState());
         }
 
         CIResponse productionDeployResponse = jenkinsJobs.loadProductionLastDeployStatus();

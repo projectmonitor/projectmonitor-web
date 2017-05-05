@@ -52,7 +52,6 @@ class GetStoryService {
                 .rejectedLabelID(rejectedStoryID)
                 .build();
 
-        logger.info("State of story: {}", story.getCurrentState());
         return story;
     }
 }

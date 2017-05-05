@@ -38,6 +38,8 @@ class RejectStoryService {
         PivotalTrackerStoryDTO body = new PivotalTrackerStoryDTO();
         body.setCurrentState("rejected");
 
+        logger.info("Rejecting tracker story: {}", storyID);
+
         HttpEntity<PivotalTrackerStoryDTO> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = productionReleaseRestTemplate.exchange(
                 storyURL,
