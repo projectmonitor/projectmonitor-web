@@ -18,10 +18,12 @@ public class PivotalTrackerAPIServiceTest {
     private GetStoryService getStoryService;
     @Mock
     private RejectStoryService rejectStoryService;
+    @Mock
+    private RemoveRejectLabelService removeRejectLabelService;
 
     @Before
     public void setUp() {
-        subject = new PivotalTrackerAPIService(rejectLabelService, getStoryService, rejectStoryService);
+        subject = new PivotalTrackerAPIService(rejectLabelService, getStoryService, rejectStoryService, removeRejectLabelService);
     }
 
     @Test
@@ -40,5 +42,11 @@ public class PivotalTrackerAPIServiceTest {
     public void addRejectLabel_delegatesToRejectLabelService() throws Exception {
         subject.addRejectLabel("55");
         Mockito.verify(rejectLabelService).add("55");
+    }
+
+    @Test
+    public void removeRejectLabel_delegates() throws Exception {
+        subject.removeRejectLabel("55");
+        Mockito.verify(removeRejectLabelService).execute("55");
     }
 }

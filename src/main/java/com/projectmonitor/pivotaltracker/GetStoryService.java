@@ -31,11 +31,12 @@ class GetStoryService {
         PivotalTrackerStoryDTO storyDTO = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStoryDTO.class);
 
         boolean hasBeenRejected = false;
-
+        String rejectedStoryID = "";
         if (storyDTO.getLabels() != null) {
             for (PivotalTrackerLabel label : storyDTO.getLabels()) {
                 if ("rejected".equals(label.getName())) {
                     hasBeenRejected = true;
+                    rejectedStoryID = label.getId();
                 }
             }
         }
@@ -48,6 +49,7 @@ class GetStoryService {
         PivotalTrackerStory story = PivotalTrackerStory.builder()
                 .currentState(storyDTO.getCurrentState())
                 .hasBeenRejected(hasBeenRejected)
+                .rejectedLabelID(rejectedStoryID)
                 .build();
 
         logger.info("State of story: {}", story.getCurrentState());

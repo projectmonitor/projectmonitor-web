@@ -90,13 +90,28 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     }
 
     @Test
-    public void execute_whenTrackerAPIResponds_andStoryIsRejected_triggersContingentStoryAcceptaceDeploy_AND_addsRejectedLabel() throws Exception {
+    public void execute_whenTrackerAPIResponds_andStoryIsRejected_triggersContingentStoryAcceptaceDeploy_AND_removesRejectedLabel() throws Exception {
         PivotalTrackerStory rejectedStory = PivotalTrackerStory.builder()
-                .currentState("rejected").build();
+                .currentState("rejected")
+                .hasBeenRejected(false)
+                .build();
 
         when(pivotalTrackerAPI.getStory("8888")).thenReturn(rejectedStory);
         subject.execute();
-        verify(pivotalTrackerAPI).addRejectLabel(acceptanceStoryInfo.getPivotalTrackerStoryID());
+
+        verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
+        verify(pcfStoryAcceptanceDeployer).pushRejectedBuild(acceptanceStoryInfo.getPivotalTrackerStoryID());
+    }
+
+    @Test
+    public void execute_whenTrackerAPIResponds_andStoryHasBeenRejected_triggersContingentStoryAcceptaceDeploy_AND_removesRejectedLabel() throws Exception {
+        PivotalTrackerStory rejectedStory = PivotalTrackerStory.builder()
+                .currentState("does not matter")
+                .hasBeenRejected(true)
+                .build();
+
+        when(pivotalTrackerAPI.getStory("8888")).thenReturn(rejectedStory);
+        subject.execute();
         verify(pcfProductionDeployer, never()).push(acceptanceStoryInfo.getStorySHA(), acceptanceStoryInfo.getPivotalTrackerStoryID());
         verify(pcfStoryAcceptanceDeployer).pushRejectedBuild(acceptanceStoryInfo.getPivotalTrackerStoryID());
     }

@@ -102,7 +102,7 @@ public class PCFStoryAcceptanceDeployerTest {
     }
 
     @Test
-    public void pushRejectedBuild_whenTheStoryPassedInMatchesTheHeadOfTheQueue_deploys() throws Exception {
+    public void pushRejectedBuild_whenTheStoryPassedInMatchesTheHeadOfTheQueue_deploys_removesRejectedLabel() throws Exception {
         Deploy theDeploy = new Deploy();
         theDeploy.setSha("theNextDeployableSHA");
         theDeploy.setStoryID("aRejectedStory");
@@ -114,6 +114,7 @@ public class PCFStoryAcceptanceDeployerTest {
                 .thenReturn(new JenkinsJobStatus());
         subject.pushRejectedBuild("aRejectedStory");
         Mockito.verify(jenkinsRestTemplate).postForEntity(saDeployJobURL, null, String.class);
+        Mockito.verify(pivotalTrackerAPI).removeRejectLabel("aRejectedStory");
     }
 
     @Test

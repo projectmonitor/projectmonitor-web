@@ -41,10 +41,10 @@ class RejectLabelService {
         acceptHeaders.add(MediaType.APPLICATION_JSON_UTF8);
         headers.setAccept(acceptHeaders);
 
-        PivotalTrackerLabel body = new PivotalTrackerLabel();
+        PivotalTrackerLabelSlim body = new PivotalTrackerLabelSlim();
         body.setName("rejected");
 
-        HttpEntity<PivotalTrackerLabel> entity = new HttpEntity<>(body, headers);
+        HttpEntity<PivotalTrackerLabelSlim> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = productionReleaseRestTemplate.exchange(
                 storyURL,
                 HttpMethod.POST,

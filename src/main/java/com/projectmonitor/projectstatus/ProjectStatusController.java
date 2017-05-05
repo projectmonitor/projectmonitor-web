@@ -58,11 +58,16 @@ public class ProjectStatusController {
                 storyAcceptanceDeployedStory, productionDeployResponse,
                 productionDeployedStory, pivotalTrackerStory);
 
+        String storyStatus = pivotalTrackerStory.getCurrentState();
+        if(pivotalTrackerStory.isHasBeenRejected()){
+            storyStatus = "rejected";
+        }
+
         model.addAttribute("status", ciResponse.getResult());
         model.addAttribute("githubUsername", applicationConfiguration.getGithubUsername());
         model.addAttribute("githubProjectName", applicationConfiguration.getGithubProjectName());
         model.addAttribute("backgroundColor", aura);
-        model.addAttribute("storyStatus", pivotalTrackerStory.getCurrentState());
+        model.addAttribute("storyStatus", storyStatus);
         model.addAttribute("storyAcceptanceDeployResponse", storyAcceptanceDeployResponse.getResult());
         model.addAttribute("productionDeployResponse", productionDeployResponse.getResult());
         model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());

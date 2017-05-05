@@ -39,6 +39,7 @@ public class GetStoryServiceTest {
         PivotalTrackerStory story = PivotalTrackerStory.builder()
                 .currentState("whatever")
                 .hasBeenRejected(false)
+                .rejectedLabelID("")
                 .build();
 
         when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888",
@@ -55,6 +56,7 @@ public class GetStoryServiceTest {
         PivotalTrackerStory story = PivotalTrackerStory.builder()
                 .currentState("rejected")
                 .hasBeenRejected(true)
+                .rejectedLabelID("")
                 .build();
 
         when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888",

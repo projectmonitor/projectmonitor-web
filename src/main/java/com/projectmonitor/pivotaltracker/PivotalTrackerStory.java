@@ -12,6 +12,7 @@ import lombok.ToString;
 public class PivotalTrackerStory {
     private String currentState;
     private boolean hasBeenRejected;
+    private String rejectedLabelID;
 }
 
 

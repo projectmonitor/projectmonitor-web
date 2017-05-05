@@ -56,8 +56,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
                     logger.info("Story in SA deployed already, looking for new build to deploy to SA");
                     pcfStoryAcceptanceDeployer.push();
                 }
-            } else if ("rejected".equals(story.getCurrentState())) {
-                pivotalTrackerAPI.addRejectLabel(acceptanceStory.getPivotalTrackerStoryID());
+            } else if ("rejected".equals(story.getCurrentState()) || story.isHasBeenRejected()) {
                 pcfStoryAcceptanceDeployer.pushRejectedBuild(acceptanceStory.getPivotalTrackerStoryID());
             } else {
                 logger.info("Nothing to deploy at the moment...");
