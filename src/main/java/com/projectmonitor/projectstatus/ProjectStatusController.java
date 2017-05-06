@@ -60,7 +60,7 @@ public class ProjectStatusController {
                 productionDeployedStory, pivotalTrackerStory);
 
         String storyStatus = pivotalTrackerStory.getCurrentState();
-        if(pivotalTrackerStory.isHasBeenRejected()){
+        if (pivotalTrackerStory.isHasBeenRejected()) {
             storyStatus = "rejected";
         }
 

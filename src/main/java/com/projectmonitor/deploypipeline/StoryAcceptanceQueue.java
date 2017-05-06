@@ -23,7 +23,7 @@ public class StoryAcceptanceQueue {
         this.pivotalTrackerAPI = pivotalTrackerAPI;
     }
 
-    public void push(String commitSHA, String storyID) {
+    void push(String commitSHA, String storyID) {
         PivotalTrackerStory theStory = pivotalTrackerAPI.getStory(storyID);
         if (theStory.isHasBeenRejected()) {
             redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).leftPush(commitSHA + "-" + storyID);
@@ -33,7 +33,7 @@ public class StoryAcceptanceQueue {
         redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).rightPush(commitSHA + "-" + storyID);
     }
 
-    public Deploy pop() {
+    Deploy pop() {
         String queueMessage = redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME).leftPop();
 
         if (queueMessage == null || queueMessage.isEmpty()) {
@@ -52,8 +52,9 @@ public class StoryAcceptanceQueue {
         return deploy;
     }
 
-    public Deploy readHead() {
+    Deploy readHead() {
         String queueMessage = redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME).index(0);
+
         if (queueMessage == null || queueMessage.isEmpty()) {
             logger.info("No build messages's in queue, nothing to deploy to SA");
             return null;

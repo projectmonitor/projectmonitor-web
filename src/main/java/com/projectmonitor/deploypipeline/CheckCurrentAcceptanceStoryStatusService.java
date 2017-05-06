@@ -53,13 +53,13 @@ public class CheckCurrentAcceptanceStoryStatusService {
                         pcfStoryAcceptanceDeployer.push();
                     }
                 } else {
-                    logger.info("Story in SA deployed already, looking for new build to deploy to SA");
+                    logger.info("Story in Acceptance deployed already, looking for new build to deploy to SA");
                     pcfStoryAcceptanceDeployer.push();
                 }
             } else if ("rejected".equals(story.getCurrentState()) || story.isHasBeenRejected()) {
                 pcfStoryAcceptanceDeployer.pushRejectedBuild(acceptanceStory.getPivotalTrackerStoryID());
             } else {
-                logger.info("Nothing to deploy at the moment...");
+                logger.info("Story still awaiting decision. Nothing to deploy at the moment...");
             }
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
             logger.info("A web call to acceptance/production or tracker errored! {}", exception.getMessage());

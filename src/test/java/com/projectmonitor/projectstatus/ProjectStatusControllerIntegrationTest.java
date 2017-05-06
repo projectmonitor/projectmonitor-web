@@ -231,7 +231,7 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story deployed in acceptance has been accepted!, deploys under way.")))
+                .andExpect(content().string(containsString("Story deployed in acceptance has been accepted!")))
         ;
     }
 

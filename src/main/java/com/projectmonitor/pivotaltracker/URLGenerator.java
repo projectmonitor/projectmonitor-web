@@ -20,8 +20,6 @@ public class URLGenerator {
         String storyURL = pivotalTrackerStoryConfiguration.getPivotalTrackerStoryDetailsUrl();
         storyURL = storyURL.replace("{STORY_ID}", pivotalTrackerStoryID);
         storyURL = storyURL.replace("{TRACKER_PROJECT_ID}", pivotalTrackerStoryConfiguration.getTrackerProjectId());
-
-        logger.info("Url of the current story: {}", storyURL);
         return storyURL;
     }
 }
