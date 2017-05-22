@@ -1,29 +1,27 @@
 package com.projectmonitor;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.InfoEndpoint;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 
 @PropertySource("classpath:tracker.properties")
-@Configuration
-public class InfoConfiguration {
-
+@Component
+public class DeployedVersionInfoContributor implements InfoContributor {
     @Value("${pivotalTrackerStoryID}")
     private String pivotalTrackerStoryID;
 
     @Value("${storySha}")
     private String storySHA;
 
-    @Bean
-    public InfoEndpoint infoEndpoint() {
+    @Override
+    public void contribute(Info.Builder builder) {
         final LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put("pivotalTrackerStoryID", pivotalTrackerStoryID);
         map.put("storySHA", storySHA);
-        return new InfoEndpoint(map);
+        builder.withDetails(map);
     }
-
 }
