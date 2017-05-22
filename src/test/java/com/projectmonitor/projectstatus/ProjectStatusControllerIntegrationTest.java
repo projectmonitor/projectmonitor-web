@@ -119,7 +119,7 @@ public class ProjectStatusControllerIntegrationTest {
     }
 
     @After
-    public void stopProxy() {
+    public void tearDown() {
         mockServer.stop();
     }
 
