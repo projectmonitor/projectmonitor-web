@@ -129,7 +129,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("NOT_A_SUCCESS")))
+                .andExpect(xpath("//p[@class=\"ci-build-status\"]")
+                        .string(containsString("NOT_A_SUCCESS")))
         ;
     }
 
@@ -138,10 +139,14 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Currently Deployed in Story Acceptance:")))
-                .andExpect(content().string(containsString("55555")))
-                .andExpect(content().string(containsString("SHA Currently Deployed in Story Acceptance:")))
-                .andExpect(content().string(containsString("88")))
+                .andExpect(xpath("//p[@class=\"story-acceptance-story\"]")
+                        .string(containsString("Story Currently Deployed in Story Acceptance:")))
+                .andExpect(xpath("//p[@class=\"story-acceptance-story\"]")
+                        .string(containsString("55555")))
+                .andExpect(xpath("//p[@class=\"story-acceptance-sha\"]")
+                        .string(containsString("SHA Currently Deployed in Story Acceptance:")))
+                .andExpect(xpath("//p[@class=\"story-acceptance-sha\"]")
+                        .string(containsString("88")))
         ;
     }
 
@@ -150,10 +155,14 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Currently Deployed in Production:")))
-                .andExpect(content().string(containsString("42")))
-                .andExpect(content().string(containsString("SHA Currently Deployed in Production:")))
-                .andExpect(content().string(containsString("21")))
+                .andExpect(xpath("//p[@class=\"production-story\"]")
+                        .string(containsString("Story Currently Deployed in Production:")))
+                .andExpect(xpath("//p[@class=\"production-story\"]")
+                        .string(containsString("42")))
+                .andExpect(xpath("//p[@class=\"production-sha\"]")
+                        .string(containsString("SHA Currently Deployed in Production:")))
+                .andExpect(xpath("//p[@class=\"production-sha\"]")
+                        .string(containsString("21")))
         ;
     }
 
@@ -162,8 +171,10 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Last Deploy to Story Acceptance was: NOT_A_SUCCESS")))
-                .andExpect(content().string(containsString("Last Deploy to Production was: BANANAS")))
+                .andExpect(xpath("//p[@class=\"last-story-acceptance-deploy\"]")
+                        .string(containsString("Last Deploy to Story Acceptance was: NOT_A_SUCCESS")))
+                .andExpect(xpath("//p[@class=\"last-production-deploy\"]")
+                        .string(containsString("Last Deploy to Production was: BANANAS")))
         ;
     }
 
@@ -199,7 +210,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("CI is not responding")))
+                .andExpect(xpath("//p[@class=\"ci-build-status\"]")
+                        .string(containsString("CI is not responding")))
         ;
     }
 
@@ -211,8 +223,10 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story Acceptance Deploy Job is not responding")))
-                .andExpect(content().string(containsString("Production Deploy Job is not responding")))
+                .andExpect(xpath("//p[@class=\"last-story-acceptance-deploy\"]")
+                        .string(containsString("Story Acceptance Deploy Job is not responding")))
+                .andExpect(xpath("//p[@class=\"last-production-deploy\"]")
+                        .string(containsString("Production Deploy Job is not responding")))
         ;
     }
 
@@ -235,7 +249,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story deployed in acceptance has been accepted!")))
+                .andExpect(xpath("//div[@class=\"acceptance-story-status\"]")
+                        .string(containsString("Story deployed in acceptance has been accepted!")))
         ;
     }
 
@@ -281,7 +296,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story deployed in acceptance has been rejected!")))
+                .andExpect(xpath("//div[@class=\"acceptance-story-status\"]")
+                        .string(containsString("Story deployed in acceptance has been rejected!")))
         ;
     }
 
@@ -327,7 +343,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story deployed in acceptance has been rejected!")))
+                .andExpect(xpath("//div[@class=\"acceptance-story-status\"]")
+                        .string(containsString("Story deployed in acceptance has been rejected!")))
         ;
     }
 
@@ -336,7 +353,9 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Story deployed awaiting decision.")))
+                .andExpect(xpath("//div[@class=\"acceptance-story-status\"]")
+                        .string(containsString("Story deployed awaiting decision.")))
+
         ;
     }
 }

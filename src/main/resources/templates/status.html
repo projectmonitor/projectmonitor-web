@@ -8,41 +8,47 @@
 </head>
 <body th:class="${backgroundColor}">
 
-    <h2 th:text="|Test Build:|" />
-    <p th:text="|CI Status: ${status}|"/>
-
-    <h2 th:text="|Story Acceptance:|" />
-    <p class="story-acceptance-story">
-        Story Currently Deployed in Story Acceptance:
-        <a th:text="|${storyAcceptanceDeployedStoryID}|" th:href="|https://www.pivotaltracker.com/story/show/${storyAcceptanceDeployedStoryID}|"/>
-    </p>
-    <p>
-        SHA Currently Deployed in Story Acceptance:
-        <a th:text="|${storyAcceptanceDeployedSHA}|" th:href="|https://github.com/${githubUsername}/${githubProjectName}/commit/${storyAcceptanceDeployedSHA}|" />
-    </p>
-    <div th:switch="${storyStatus}">
-        <p th:case="'rejected'">
-            Story deployed in acceptance has been rejected!
-        </p>
-        <p th:case="'accepted'">
-            Story deployed in acceptance has been accepted!
-        </p>
-        <p th:case="*">
-            Story deployed awaiting decision.
-        </p>
+    <div class="ci-info">
+        <h2 th:text="|Test Build:|" />
+        <p class="ci-build-status" th:text="|CI Status: ${status}|"/>
     </div>
 
-    <p th:text="|Last Deploy to Story Acceptance was: ${storyAcceptanceDeployResponse}|"/>
+    <div class="story-acceptance-info">
+        <h2>Story Acceptance:</h2>
+        <p class="story-acceptance-story">
+            Story Currently Deployed in Story Acceptance:
+            <a th:text="|${storyAcceptanceDeployedStoryID}|" th:href="|https://www.pivotaltracker.com/story/show/${storyAcceptanceDeployedStoryID}|"/>
+        </p>
+        <p class="story-acceptance-sha">
+            SHA Currently Deployed in Story Acceptance:
+            <a th:text="|${storyAcceptanceDeployedSHA}|" th:href="|https://github.com/${githubUsername}/${githubProjectName}/commit/${storyAcceptanceDeployedSHA}|" />
+        </p>
+        <div class="acceptance-story-status" th:switch="${storyStatus}">
+            <p th:case="'rejected'">
+                Story deployed in acceptance has been rejected!
+            </p>
+            <p th:case="'accepted'">
+                Story deployed in acceptance has been accepted!
+            </p>
+            <p th:case="*">
+                Story deployed awaiting decision.
+            </p>
+        </div>
 
-    <h2 th:text="|Production:|" />
-    <p class="production-story">
-        Story Currently Deployed in Production:
-        <a th:text="|${productionDeployedStoryID}|" th:href="|https://www.pivotaltracker.com/story/show/${productionDeployedStoryID}|"/>
-    </p>
-    <p>
-        SHA Currently Deployed in Production:
-        <a th:text="|${productionDeployedSHA}|" th:href="|https://github.com/${githubUsername}/${githubProjectName}/commit/${productionDeployedSHA}|" />
-    </p>
-    <p th:text="|Last Deploy to Production was: ${productionDeployResponse}|"/>
+        <p class="last-story-acceptance-deploy" th:text="|Last Deploy to Story Acceptance was: ${storyAcceptanceDeployResponse}|"/>
+    </div>
+
+    <div class="productionInfo">
+        <h2 th:text="|Production:|" />
+        <p class="production-story">
+            Story Currently Deployed in Production:
+            <a th:text="|${productionDeployedStoryID}|" th:href="|https://www.pivotaltracker.com/story/show/${productionDeployedStoryID}|"/>
+        </p>
+        <p class="production-sha">
+            SHA Currently Deployed in Production:
+            <a th:text="|${productionDeployedSHA}|" th:href="|https://github.com/${githubUsername}/${githubProjectName}/commit/${productionDeployedSHA}|" />
+        </p>
+        <p class="last-production-deploy" th:text="|Last Deploy to Production was: ${productionDeployResponse}|"/>
+    </div>
 </body>
 </html>

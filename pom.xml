@@ -89,6 +89,12 @@
             <artifactId>mockserver-netty</artifactId>
             <version>3.10.4</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
