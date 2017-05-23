@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euf -o pipefail
 
+# REPLACE ME WITH YOUR ORG AND SPACE
+export CF_SPACE=example_space
+export CF_ORG=example_org
+
 #
 # Some assumptions:
 # 1. You have jenkins configured to use an ssh key so we can push
@@ -61,7 +65,7 @@ then
 
     ./ci/add_story_to_manifest.sh manifest-acceptance.yml ${ShaRebased} ${STORY_ID}
 
-    cf login -a api.run.pivotal.io -u ${CF_USER} -p ${CF_PASSWORD} -s pronto -o dirk
+    cf login -a api.run.pivotal.io -u ${CF_USER} -p ${CF_PASSWORD} -s $CF_SPACE -o $CF_ORG
     cf push -f manifest.yml -t 180
     cf logout
 else
