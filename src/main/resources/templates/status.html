@@ -12,7 +12,7 @@
     <p th:text="|CI Status: ${status}|"/>
 
     <h2 th:text="|Story Acceptance:|" />
-    <p>
+    <p class="story-acceptance-story">
         Story Currently Deployed in Story Acceptance:
         <a th:text="|${storyAcceptanceDeployedStoryID}|" th:href="|https://www.pivotaltracker.com/story/show/${storyAcceptanceDeployedStoryID}|"/>
     </p>
@@ -35,7 +35,7 @@
     <p th:text="|Last Deploy to Story Acceptance was: ${storyAcceptanceDeployResponse}|"/>
 
     <h2 th:text="|Production:|" />
-    <p>
+    <p class="production-story">
         Story Currently Deployed in Production:
         <a th:text="|${productionDeployedStoryID}|" th:href="|https://www.pivotaltracker.com/story/show/${productionDeployedStoryID}|"/>
     </p>

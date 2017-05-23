@@ -23,6 +23,7 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -173,7 +174,8 @@ public class ProjectStatusControllerIntegrationTest {
         mvc.perform(MockMvcRequestBuilders
                 .get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Production is not responding")))
+                .andExpect(xpath("//p[@class=\"production-story\"]")
+                        .string(containsString("Production is not responding")))
         ;
     }
 
@@ -185,6 +187,8 @@ public class ProjectStatusControllerIntegrationTest {
                 .get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Story Acceptance is not responding")))
+                .andExpect(xpath("//p[@class=\"story-acceptance-story\"]")
+                        .string(containsString("Story Acceptance is not responding")))
         ;
     }
 
