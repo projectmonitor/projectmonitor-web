@@ -50,5 +50,11 @@
         </p>
         <p class="last-production-deploy" th:text="|Last Deploy to Production was: ${productionDeployResponse}|"/>
     </div>
+    <div class="production-revert">
+        <form action="/" method="post" name="balls">
+            <input type="submit" th:if="${productionRevertFlag}" disabled="disabled" value="Reverting Production Build"/>
+            <input type="submit" th:unless="${productionRevertFlag}" value="Revert Production Build"/>
+        </form>
+    </div>
 </body>
 </html>

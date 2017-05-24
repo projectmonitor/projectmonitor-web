@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping("/")
 public class ProjectStatusController {
 
     private ApplicationConfiguration applicationConfiguration;
@@ -22,6 +21,7 @@ public class ProjectStatusController {
     private Environments environments;
     private AuraService auraService;
     private PivotalTrackerAPI pivotalTrackerAPI;
+    private ProductionRevertFlag productionRevertFlag;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
@@ -29,16 +29,18 @@ public class ProjectStatusController {
                                    JenkinsJobs jenkinsJobs,
                                    Environments environments,
                                    AuraService auraService,
-                                   PivotalTrackerAPI pivotalTrackerAPI) {
+                                   PivotalTrackerAPI pivotalTrackerAPI,
+                                   ProductionRevertFlag productionRevertFlag) {
 
         this.applicationConfiguration = applicationConfiguration;
         this.jenkinsJobs = jenkinsJobs;
         this.environments = environments;
         this.auraService = auraService;
         this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.productionRevertFlag = productionRevertFlag;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, path = "/")
     public String execute(Model model) {
         CIResponse ciResponse = jenkinsJobs.loadLastCompletedCIRun();
         CIResponse storyAcceptanceDeployResponse = jenkinsJobs.loadStoryAcceptanceLastDeployStatus();
@@ -75,6 +77,7 @@ public class ProjectStatusController {
         model.addAttribute("storyAcceptanceDeployedSHA", storyAcceptanceDeployedStory.getStorySHA());
         model.addAttribute("productionDeployedStoryID", productionDeployedStory.getPivotalTrackerStoryID());
         model.addAttribute("productionDeployedSHA", productionDeployedStory.getStorySHA());
+        model.addAttribute("productionRevertFlag", productionRevertFlag.get());
         return "status";
     }
 }

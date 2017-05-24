@@ -9,7 +9,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 @Getter
 @Setter
-public class PivotalTrackerLabelSlim {
+class PivotalTrackerLabelSlim {
 
     private String name;
 }

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PivotalTrackerAPIService implements PivotalTrackerAPI {
+class PivotalTrackerAPIService implements PivotalTrackerAPI {
 
     private final RejectLabelService rejectLabelService;
     private final GetStoryService getStoryService;

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class RemoveRejectLabelService {
+class RemoveRejectLabelService {
 
     private URLGenerator urlGenerator;
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;

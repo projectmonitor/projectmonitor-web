@@ -4,6 +4,7 @@ import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import com.projectmonitor.projectstatus.DeployedAppInfo;
+import com.projectmonitor.projectstatus.ProductionRevertFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
     private final PCFProductionDeployer pcfProductionDeployer;
     private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
     private final PivotalTrackerAPI pivotalTrackerAPI;
+    private final ProductionRevertFlag productionRevertFlag;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
@@ -26,17 +28,24 @@ public class CheckCurrentAcceptanceStoryStatusService {
                                                     ApplicationConfiguration applicationConfiguration,
                                                     PCFProductionDeployer pcfProductionDeployer,
                                                     PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer,
-                                                    PivotalTrackerAPI pivotalTrackerAPI) {
+                                                    PivotalTrackerAPI pivotalTrackerAPI,
+                                                    ProductionRevertFlag productionRevertFlag) {
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
         this.applicationConfiguration = applicationConfiguration;
         this.pcfProductionDeployer = pcfProductionDeployer;
         this.pcfStoryAcceptanceDeployer = pcfStoryAcceptanceDeployer;
         this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.productionRevertFlag = productionRevertFlag;
     }
 
     @Scheduled(fixedDelay = 180000, initialDelay = 10000)
     public void execute() {
         logger.info("Job to determine if we should deploy to production kicking off...");
+
+        if (productionRevertFlag.get()) {
+            logger.info("A production revert appears to be under way. Exiting without doing anything.");
+            return;
+        }
 
         try {
             DeployedAppInfo acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl(), DeployedAppInfo.class);

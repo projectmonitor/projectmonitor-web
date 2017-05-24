@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties
-public class PivotalTrackerStoryConfiguration {
+class PivotalTrackerStoryConfiguration {
     private String pivotalTrackerStoryDetailsUrl;
 
     private String trackerProjectId;

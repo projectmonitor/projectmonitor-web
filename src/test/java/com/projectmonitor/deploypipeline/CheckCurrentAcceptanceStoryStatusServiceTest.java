@@ -4,6 +4,7 @@ import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import com.projectmonitor.projectstatus.DeployedAppInfo;
+import com.projectmonitor.projectstatus.ProductionRevertFlag;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,6 +30,8 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     private PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
     @Mock
     private PivotalTrackerAPI pivotalTrackerAPI;
+    @Mock
+    private ProductionRevertFlag productionRevertFlag;
 
     private DeployedAppInfo acceptanceStoryInfo;
     private DeployedAppInfo productionStoryInfo;
@@ -40,7 +44,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
         subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate,
                 applicationConfiguration, pcfProductionDeployer,
-                pcfStoryAcceptanceDeployer, pivotalTrackerAPI);
+                pcfStoryAcceptanceDeployer, pivotalTrackerAPI, productionRevertFlag);
 
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
@@ -50,6 +54,14 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
         productionStoryInfo = new DeployedAppInfo();
         productionStoryInfo.setPivotalTrackerStoryID("9999");
         when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class)).thenReturn(productionStoryInfo);
+        when(productionRevertFlag.get()).thenReturn(false);
+    }
+
+    @Test
+    public void execute_whenTheProductionRevertFlagIsSet_exitOnStartup() throws Exception {
+        when(productionRevertFlag.get()).thenReturn(true);
+        subject.execute();
+        verifyZeroInteractions(productionReleaseRestTemplate);
     }
 
     @Test
