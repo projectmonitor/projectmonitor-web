@@ -9,8 +9,11 @@ import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -22,6 +25,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProductionRevertTaskTest {
 
+    @InjectMocks
     private ProductionRevertTask subject;
 
     @Mock
@@ -49,8 +53,6 @@ public class ProductionRevertTaskTest {
 
     @Before
     public void setUp() {
-        subject = new ProductionRevertTask(productionDeployHistory, storyAcceptanceQueue, environments, pivotalTrackerAPI, jenkinsAPI, productionRevertFlag, revertErrorRepository);
-
         when(productionDeployHistory.getLastDeploy())
                 .thenReturn(Deploy.builder().build());
 
@@ -84,6 +86,15 @@ public class ProductionRevertTaskTest {
     }
 
     @Test
+    public void whenThereIsntAPreviousProductionDeploy_exits() throws Exception {
+        when(productionDeployHistory.getPreviousDeploy())
+                .thenReturn(null);
+        subject.start();
+
+        verifyZeroInteractions(pivotalTrackerAPI);
+    }
+
+    @Test
     public void start_rejectsTheStoryRelatedToCurrentProductionDeploy() throws Exception {
         when(productionDeployHistory.getLastDeploy())
                 .thenReturn(Deploy.builder().storyID("the-story-being-reverted").build());
@@ -91,6 +102,13 @@ public class ProductionRevertTaskTest {
         subject.start();
 
         verify(pivotalTrackerAPI).rejectStory("the-story-being-reverted");
+    }
+
+    @Test
+    public void whenRejectingTheStoryFails_itStillRevertsProduction() throws Exception {
+        doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST)).when(pivotalTrackerAPI).rejectStory(any());
+        subject.start();
+        verify(jenkinsAPI).revertProduction(any());
     }
 
     @Test

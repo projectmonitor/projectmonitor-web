@@ -45,10 +45,15 @@ public class ProductionRevertTask {
 
     @Async
     void start() {
-        // todo handle error from any of these loads
         Deploy lastProductionDeploy = productionDeployHistory.getLastDeploy();
-        DeployedAppInfo storyAcceptanceDeploy = environments.loadStoryAcceptanceDeployStory();
         Deploy previousProductionDeploy = productionDeployHistory.getPreviousDeploy();
+
+        if(previousProductionDeploy == null){
+            logger.info("There isn't a previous production deploy to rollback too!");
+            return;
+        }
+
+        DeployedAppInfo storyAcceptanceDeploy = environments.loadStoryAcceptanceDeployStory();
 
         try {
             pivotalTrackerAPI.rejectStory(lastProductionDeploy.getStoryID());
