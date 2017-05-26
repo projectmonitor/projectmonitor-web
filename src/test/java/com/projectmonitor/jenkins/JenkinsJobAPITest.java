@@ -65,6 +65,28 @@ public class JenkinsJobAPITest {
     }
 
     @Test
+    public void loadJobStatus_whenTheRequestFails_throwsAnException() throws Exception {
+        mockServer
+                .when(
+                        request()
+                                .withMethod("GET")
+                                .withPath("/whut")
+                                .withHeader("Authorization", "Basic YmFuYW5hOmRhbWFnZQ==")
+
+                )
+                .respond(
+                        response()
+                                .withStatusCode(400)
+                                .withHeaders(new Header("Content-Type", "application/json"))
+                                .withBody("the error")
+                );
+
+        exception.expect(RequestFailedException.class);
+        exception.expectMessage("Trigger job request failed with status: 400 response: the error");
+        subject.loadJobStatus("http://localhost:1090/whut");
+    }
+
+    @Test
     public void triggerJob_addsAuth() throws Exception {
         HttpRequest request = request()
                 .withMethod("POST")
@@ -89,10 +111,15 @@ public class JenkinsJobAPITest {
 
         mockServer
                 .when(request)
-                .respond(response().withStatusCode(400))
+                .respond(
+                        response()
+                                .withStatusCode(400)
+                                .withBody("the error")
+                )
         ;
 
         exception.expect(RequestFailedException.class);
+        exception.expectMessage("Trigger job request failed with status: 400 response: the error");
         subject.triggerJob("http://localhost:1090/whut");
     }
 }

@@ -33,7 +33,7 @@ public class JenkinsJobPoller {
                         logger.info("Deploy has finished!");
                         return true;
                     }
-                } catch (RuntimeException e) {
+                } catch (RuntimeException | RequestFailedException e) {
                     logger.info("Call to jenkins status failed, but job kicked off, continuing polling LOL", e.getMessage());
                     jenkinsJobStatus.setBuilding(true);
                 }

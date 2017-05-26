@@ -26,7 +26,7 @@ public class JenkinsJobPollerTest {
     ThreadSleepService threadSleepService;
 
     @Test
-    public void blocksUntilTheJenkinsJobHasCompleted_returnsTrueIfJobSuccessful() throws InterruptedException {
+    public void blocksUntilTheJenkinsJobHasCompleted_returnsTrueIfJobSuccessful() throws InterruptedException, RequestFailedException {
         CIResponse stillBuilding = new CIResponse();
         stillBuilding.setBuilding(true);
 

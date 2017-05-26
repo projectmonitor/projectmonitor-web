@@ -1,13 +1,11 @@
 package com.projectmonitor.jenkins;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -26,6 +24,7 @@ public class JenkinsJobAPI {
         this.ciJobConfiguration = ciJobConfiguration;
     }
 
+    // TODO this class and the other API class, same concept?
     private void addAuthentication(String username, String password) {
         List<ClientHttpRequestInterceptor> interceptors = Collections
                 .singletonList(new BasicAuthorizationInterceptor(
@@ -36,12 +35,21 @@ public class JenkinsJobAPI {
         );
     }
 
-    public CIResponse loadJobStatus(String url) {
+    public CIResponse loadJobStatus(String url) throws RequestFailedException {
         addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
-        return restTemplate.getForObject(
-                url,
-                CIResponse.class
-        );
+        try {
+            return restTemplate.getForObject(
+                    url,
+                    CIResponse.class
+            );
+        } catch (HttpStatusCodeException e) {
+            String message = "Trigger job request failed with status: " +
+                    e.getStatusCode() + " response: " +
+                    e.getResponseBodyAsString();
+            throw new RequestFailedException(message, e);
+        } catch (Exception e) {
+            throw new RequestFailedException(e.getMessage(), e);
+        }
     }
 
     public void triggerJob(String url) throws RequestFailedException {
@@ -51,10 +59,9 @@ public class JenkinsJobAPI {
                     url,
                     null,
                     String.class);
-        } catch (HttpStatusCodeException e)  // thrown by DefaultResponseErrorHandler
-        {
+        } catch (HttpStatusCodeException e) {
             String message = "Trigger job request failed with status: " +
-                    e.getStatusCode() + "response: \n" +
+                    e.getStatusCode() + " response: " +
                     e.getResponseBodyAsString();
             throw new RequestFailedException(message, e);
         } catch (Exception e) {

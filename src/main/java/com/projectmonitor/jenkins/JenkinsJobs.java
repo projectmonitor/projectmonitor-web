@@ -1,6 +1,8 @@
 package com.projectmonitor.jenkins;
 
 import com.projectmonitor.deploypipeline.Deploy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,8 @@ public class JenkinsJobs implements JenkinsAPI {
     private CIJobConfiguration ciJobConfiguration;
     private JenkinsRevertJob jenkinsRevertJob;
     private JenkinsRevertStoryAcceptance jenkinsRevertStoryAcceptance;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public JenkinsJobs(JenkinsJobAPI jenkinsJobAPI,
@@ -29,7 +33,8 @@ public class JenkinsJobs implements JenkinsAPI {
         try {
             ciResponse = jenkinsJobAPI.loadJobStatus(
                     ciJobConfiguration.getCiLastCompletedBuildURL());
-        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+        } catch (RequestFailedException exception) {
+            logger.warn(exception.getMessage(), exception);
             ciResponse.setResult("CI is not responding");
         }
         return ciResponse;
@@ -42,7 +47,8 @@ public class JenkinsJobs implements JenkinsAPI {
             ciResponse = jenkinsJobAPI.loadJobStatus(
                     ciJobConfiguration.getStoryAcceptanceDeployJobLastStatusURL()
             );
-        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+        } catch (RequestFailedException exception) {
+            logger.warn(exception.getMessage(), exception);
             ciResponse.setResult("Story Acceptance Deploy Job is not responding");
         }
 
@@ -56,7 +62,8 @@ public class JenkinsJobs implements JenkinsAPI {
             ciResponse = jenkinsJobAPI.loadJobStatus(
                     ciJobConfiguration.getProductionDeployJobLastStatusURL()
             );
-        } catch (org.springframework.web.client.HttpClientErrorException exception) {
+        } catch (RequestFailedException exception) {
+            logger.warn(exception.getMessage(), exception);
             ciResponse.setResult("Production Deploy Job is not responding");
         }
 
