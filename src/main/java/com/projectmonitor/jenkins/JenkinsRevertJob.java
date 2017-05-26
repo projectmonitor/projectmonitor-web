@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 class JenkinsRevertJob {
 
     private CIJobConfiguration ciJobConfiguration;
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
     private JenkinsJobPoller jenkinsJobPoller;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     JenkinsRevertJob(CIJobConfiguration ciJobConfiguration,
-                     JenkinsRestTemplate jenkinsRestTemplate,
+                     JenkinsJobAPI jenkinsJobAPI,
                      JenkinsJobPoller jenkinsJobPoller) {
         this.ciJobConfiguration = ciJobConfiguration;
-        this.jenkinsRestTemplate = jenkinsRestTemplate;
+        this.jenkinsJobAPI = jenkinsJobAPI;
         this.jenkinsJobPoller = jenkinsJobPoller;
     }
 
@@ -28,7 +28,7 @@ class JenkinsRevertJob {
         logger.info("Reverting Production to the following SHA: " + theDeploy.getSha());
         String jobURL = ciJobConfiguration.getRevertProductionURL()
                 + theDeploy.getSha() + "&STORY_ID=" + theDeploy.getStoryID();
-        jenkinsRestTemplate.triggerJob(jobURL);
+        jenkinsJobAPI.triggerJob(jobURL);
 
         jenkinsJobPoller.execute(ciJobConfiguration.getRevertProductionStatusURL());
     }

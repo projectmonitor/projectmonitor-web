@@ -18,7 +18,7 @@ public class JenkinsRevertStoryAcceptanceTest {
     private JenkinsRevertStoryAcceptance subject;
 
     @Mock
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
 
     @Mock
     private CIJobConfiguration ciJobConfiguration;
@@ -40,7 +40,7 @@ public class JenkinsRevertStoryAcceptanceTest {
         Deploy theDeploy = Deploy.builder()
                 .sha("sha").storyID("storyID").build();
         subject.execute(theDeploy);
-        verify(jenkinsRestTemplate).triggerJob("theRevertJob.com/sha&STORY_ID=storyID");
+        verify(jenkinsJobAPI).triggerJob("theRevertJob.com/sha&STORY_ID=storyID");
     }
 
     @Test

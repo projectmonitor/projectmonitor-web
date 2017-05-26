@@ -2,7 +2,7 @@ package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
-import com.projectmonitor.jenkins.JenkinsRestTemplate;
+import com.projectmonitor.jenkins.JenkinsJobAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +11,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class PCFProductionDeployer {
 
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
     private CIJobConfiguration ciJobConfiguration;
     private final ProductionDeployHistory productionDeployHistory;
     private JenkinsJobPoller jenkinsJobPoller;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public PCFProductionDeployer(JenkinsRestTemplate productionReleaseRestTemplate,
+    public PCFProductionDeployer(JenkinsJobAPI productionReleaseRestTemplate,
                                  CIJobConfiguration ciJobConfiguration,
                                  ProductionDeployHistory productionDeployHistory, JenkinsJobPoller jenkinsJobPoller) {
-        this.jenkinsRestTemplate = productionReleaseRestTemplate;
+        this.jenkinsJobAPI = productionReleaseRestTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
         this.productionDeployHistory = productionDeployHistory;
         this.jenkinsJobPoller = jenkinsJobPoller;
@@ -31,7 +31,7 @@ public class PCFProductionDeployer {
         logger.info("Kicking off Jenkins Job to do production release");
 
         try {
-            jenkinsRestTemplate.triggerJob(
+            jenkinsJobAPI.triggerJob(
                     ciJobConfiguration.getProductionDeployJobURL()
                             + shaToDeploy + "&STORY_ID=" + storyID);
         } catch (RuntimeException e) {

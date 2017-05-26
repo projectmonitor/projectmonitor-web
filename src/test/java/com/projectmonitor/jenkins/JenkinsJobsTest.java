@@ -17,7 +17,7 @@ public class JenkinsJobsTest {
     private JenkinsJobs subject;
 
     @Mock
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
     @Mock
     private CIJobConfiguration ciJobConfiguration;
     @Mock

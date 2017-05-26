@@ -7,15 +7,15 @@ import org.springframework.stereotype.Component;
 @Component
 class JenkinsRevertStoryAcceptance {
 
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
     private CIJobConfiguration ciJobConfiguration;
     private JenkinsJobPoller jenkinsJobPoller;
 
     @Autowired
-    JenkinsRevertStoryAcceptance(JenkinsRestTemplate jenkinsRestTemplate,
+    JenkinsRevertStoryAcceptance(JenkinsJobAPI jenkinsJobAPI,
                                  CIJobConfiguration ciJobConfiguration,
                                  JenkinsJobPoller jenkinsJobPoller) {
-        this.jenkinsRestTemplate = jenkinsRestTemplate;
+        this.jenkinsJobAPI = jenkinsJobAPI;
         this.ciJobConfiguration = ciJobConfiguration;
         this.jenkinsJobPoller = jenkinsJobPoller;
     }
@@ -23,7 +23,7 @@ class JenkinsRevertStoryAcceptance {
     void execute(Deploy theDeploy) {
         String jobURL = ciJobConfiguration.getRevertStoryAcceptanceURL()
                 + theDeploy.getSha() + "&STORY_ID=" + theDeploy.getStoryID();
-        jenkinsRestTemplate.triggerJob(jobURL);
+        jenkinsJobAPI.triggerJob(jobURL);
 
         jenkinsJobPoller.execute(ciJobConfiguration.getRevertStoryAcceptanceStatusURL());
     }

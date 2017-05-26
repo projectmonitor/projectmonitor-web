@@ -1,7 +1,6 @@
 package com.projectmonitor.jenkins;
 
 import com.projectmonitor.deploypipeline.ThreadSleepService;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,7 +20,7 @@ public class JenkinsJobPollerTest {
     private JenkinsJobPoller subject;
 
     @Mock
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
 
     @Mock
     ThreadSleepService threadSleepService;
@@ -35,7 +34,7 @@ public class JenkinsJobPollerTest {
         finishedBuilding.setBuilding(false);
         finishedBuilding.setResult(JenkinsJobPoller.SUCCESS_MESSAGE);
 
-        when(jenkinsRestTemplate.loadJobStatus("theurl.com"))
+        when(jenkinsJobAPI.loadJobStatus("theurl.com"))
                 .thenReturn(stillBuilding).thenReturn(finishedBuilding);
 
         assertThat(subject.execute("theurl.com")).isTrue();
@@ -48,7 +47,7 @@ public class JenkinsJobPollerTest {
         finishedBuilding.setBuilding(false);
         finishedBuilding.setResult("SOMETHING_ELSE");
 
-        when(jenkinsRestTemplate.loadJobStatus("theurl.com")).thenReturn(finishedBuilding);
+        when(jenkinsJobAPI.loadJobStatus("theurl.com")).thenReturn(finishedBuilding);
 
         assertThat(subject.execute("theurl.com")).isFalse();
     }
@@ -59,7 +58,7 @@ public class JenkinsJobPollerTest {
         finishedBuilding.setBuilding(false);
         finishedBuilding.setResult(JenkinsJobPoller.SUCCESS_MESSAGE);
 
-        when(jenkinsRestTemplate.loadJobStatus("theurl.com"))
+        when(jenkinsJobAPI.loadJobStatus("theurl.com"))
                 .thenThrow(new RuntimeException()).thenReturn(finishedBuilding);
 
         assertThat(subject.execute("theurl.com")).isTrue();

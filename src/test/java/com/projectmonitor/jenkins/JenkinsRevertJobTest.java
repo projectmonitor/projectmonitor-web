@@ -16,7 +16,7 @@ public class JenkinsRevertJobTest {
 
     private JenkinsRevertJob subject;
     @Mock
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
     @Mock
     private JenkinsJobPoller jenkinsJobPoller;
     private CIJobConfiguration ciJobConfiguration;
@@ -26,7 +26,7 @@ public class JenkinsRevertJobTest {
         ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setRevertProductionURL("http://revert.job/");
         ciJobConfiguration.setRevertProductionStatusURL("jobstatus");
-        subject = new JenkinsRevertJob(ciJobConfiguration, jenkinsRestTemplate, jenkinsJobPoller);
+        subject = new JenkinsRevertJob(ciJobConfiguration, jenkinsJobAPI, jenkinsJobPoller);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class JenkinsRevertJobTest {
                 .build();
         subject.execute(theDeploy);
 
-        verify(jenkinsRestTemplate).triggerJob("http://revert.job/" + "sha&STORY_ID=storyID");
+        verify(jenkinsJobAPI).triggerJob("http://revert.job/" + "sha&STORY_ID=storyID");
     }
 
     @Test

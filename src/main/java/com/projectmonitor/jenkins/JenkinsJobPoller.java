@@ -12,13 +12,13 @@ public class JenkinsJobPoller {
     static final String SUCCESS_MESSAGE = "SUCCESS";
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private ThreadSleepService threadSleepService;
-    private JenkinsRestTemplate jenkinsRestTemplate;
+    private JenkinsJobAPI jenkinsJobAPI;
 
     @Autowired
     public JenkinsJobPoller(ThreadSleepService threadSleepService,
-                            JenkinsRestTemplate jenkinsRestTemplate) {
+                            JenkinsJobAPI jenkinsJobAPI) {
         this.threadSleepService = threadSleepService;
-        this.jenkinsRestTemplate = jenkinsRestTemplate;
+        this.jenkinsJobAPI = jenkinsJobAPI;
     }
 
     public boolean execute(String theJobToPoll) {
@@ -28,7 +28,7 @@ public class JenkinsJobPoller {
                 logger.info("Sleeping before next poll...");
                 threadSleepService.sleep(10000);
                 try {
-                    jenkinsJobStatus = jenkinsRestTemplate.loadJobStatus(theJobToPoll);
+                    jenkinsJobStatus = jenkinsJobAPI.loadJobStatus(theJobToPoll);
                     if (!jenkinsJobStatus.isBuilding() && SUCCESS_MESSAGE.equals(jenkinsJobStatus.getResult())) {
                         logger.info("Deploy has finished!");
                         return true;

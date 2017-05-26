@@ -11,14 +11,14 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class JenkinsRestTemplate {
+public class JenkinsJobAPI {
 
     private RestTemplate restTemplate;
     private CIJobConfiguration ciJobConfiguration;
 
     @Autowired
-    public JenkinsRestTemplate(RestTemplate restTemplate,
-                               CIJobConfiguration ciJobConfiguration) {
+    public JenkinsJobAPI(RestTemplate restTemplate,
+                         CIJobConfiguration ciJobConfiguration) {
         this.restTemplate = restTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
     }
