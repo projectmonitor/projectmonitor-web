@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static junit.framework.TestCase.fail;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
