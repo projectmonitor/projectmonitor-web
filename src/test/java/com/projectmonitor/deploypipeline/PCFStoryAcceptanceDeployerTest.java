@@ -1,7 +1,7 @@
 package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.jenkins.CIJobConfiguration;
-import com.projectmonitor.jenkins.JenkinsJobStatus;
+import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.junit.Before;
@@ -42,15 +42,14 @@ public class PCFStoryAcceptanceDeployerTest {
 
     @Test
     public void push_triggersTheJenkinsSADeployJob_withTheNextBuildThatHasPassedCI() throws Exception {
-        Deploy theDeploy = new Deploy();
-        theDeploy.setSha("theNextDeployableSHA");
+        Deploy theDeploy = Deploy.builder().sha("theNextDeployableSHA").build();
 
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
 
-        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
-                .thenReturn(new JenkinsJobStatus());
+        when(jenkinsRestTemplate.loadJobStatus(deployStatusURL))
+                .thenReturn(new CIResponse());
         subject.push();
-        Mockito.verify(jenkinsRestTemplate).postForEntity(saDeployJobURL, null, String.class);
+        Mockito.verify(jenkinsRestTemplate).triggerJob(saDeployJobURL);
     }
 
     @Test
@@ -62,39 +61,38 @@ public class PCFStoryAcceptanceDeployerTest {
 
     @Test
     public void push_whenSADeployJobFinishesAndIsSuccessful_returnsTrue() throws Exception {
-        Deploy theDeploy = new Deploy();
-        theDeploy.setSha("theNextDeployableSHA");
+        Deploy theDeploy = Deploy.builder().sha("theNextDeployableSHA").build();
 
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
 
-        JenkinsJobStatus successStatus = new JenkinsJobStatus();
+        CIResponse successStatus = new CIResponse();
         successStatus.setBuilding(false);
         successStatus.setResult("SUCCESS");
 
-        JenkinsJobStatus buildingStatus = new JenkinsJobStatus();
+        CIResponse buildingStatus = new CIResponse();
         buildingStatus.setBuilding(true);
         buildingStatus.setResult("not success yet");
 
-        when(jenkinsRestTemplate.postForEntity(saDeployJobURL, null, Object.class)).thenReturn(null);
-        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
+
+        when(jenkinsRestTemplate.loadJobStatus(deployStatusURL))
                 .thenReturn(buildingStatus).thenReturn(successStatus);
 
         assertThat(subject.push()).isTrue();
-        Mockito.verify(jenkinsRestTemplate, times(2)).getForObject(deployStatusURL, JenkinsJobStatus.class);
+        Mockito.verify(jenkinsRestTemplate, times(2)).loadJobStatus(deployStatusURL);
     }
 
     @Test
     public void push_whenSADeployJobFails_rejectsStoryReturnsFalse() throws Exception {
-        Deploy theDeploy = new Deploy();
-        theDeploy.setSha("theNextDeployableSHA");
-        theDeploy.setStoryID("theStoryID");
+        Deploy theDeploy = Deploy.builder()
+                .sha("theNextDeployableSHA")
+                .storyID("theStoryID").build();
 
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
 
-        JenkinsJobStatus failedStatus = new JenkinsJobStatus();
+        CIResponse failedStatus = new CIResponse();
         failedStatus.setBuilding(false);
         failedStatus.setResult("NOT A SUCCESS");
-        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
+        when(jenkinsRestTemplate.loadJobStatus(deployStatusURL))
                 .thenReturn(failedStatus);
 
         assertThat(subject.push()).isFalse();
@@ -103,29 +101,35 @@ public class PCFStoryAcceptanceDeployerTest {
 
     @Test
     public void pushRejectedBuild_whenTheStoryPassedInMatchesTheHeadOfTheQueue_deploys_removesRejectedLabel() throws Exception {
-        Deploy theDeploy = new Deploy();
-        theDeploy.setSha("theNextDeployableSHA");
-        theDeploy.setStoryID("aRejectedStory");
+        Deploy theDeploy = Deploy.builder()
+                .sha("theNextDeployableSHA")
+                .storyID("aRejectedStory").build();
 
         Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
 
-        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
-                .thenReturn(new JenkinsJobStatus());
+        when(jenkinsRestTemplate.loadJobStatus(deployStatusURL))
+                .thenReturn(new CIResponse());
         subject.pushRejectedBuild("aRejectedStory");
-        Mockito.verify(jenkinsRestTemplate).postForEntity(saDeployJobURL, null, String.class);
+        Mockito.verify(jenkinsRestTemplate).triggerJob(saDeployJobURL);
         Mockito.verify(pivotalTrackerAPI).removeRejectLabel("aRejectedStory");
     }
 
     @Test
     public void pushRejectedBuild_whenTheStoryPassedInDoesNotMatchHeadofQueue_doesNotDeploy() throws Exception {
-        Deploy theDeploy = new Deploy();
-        theDeploy.setSha("theNextDeployableSHA");
-        theDeploy.setStoryID("aDifferentStory");
+        Deploy theDeploy = Deploy.builder()
+                .sha("theNextDeployableSHA")
+                .storyID("aDifferentStory").build();
 
         Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
-        when(jenkinsRestTemplate.getForObject(deployStatusURL, JenkinsJobStatus.class))
-                .thenReturn(new JenkinsJobStatus());
+        when(jenkinsRestTemplate.loadJobStatus(deployStatusURL))
+                .thenReturn(new CIResponse());
+        subject.pushRejectedBuild("aRejectedStory");
+        Mockito.verify(storyAcceptanceQueue, times(0)).pop();
+    }
+
+    @Test
+    public void pushRejectedBuild_whenBuildQueueIsEmpty_doesNotDeploy() throws Exception {
         subject.pushRejectedBuild("aRejectedStory");
         Mockito.verify(storyAcceptanceQueue, times(0)).pop();
     }

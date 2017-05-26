@@ -1,10 +1,14 @@
 package com.projectmonitor.jenkins;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties
+@Getter
+@Setter
 public class CIJobConfiguration {
 
     private String ciLastCompletedBuildURL;
@@ -20,76 +24,9 @@ public class CIJobConfiguration {
     private String ciUsername;
     private String ciPassword;
 
+    private String revertProductionURL;
+    private String revertProductionStatusURL;
 
-    public String getStoryAcceptanceDeployJobURL() {
-        return storyAcceptanceDeployJobURL;
-    }
-
-    public void setStoryAcceptanceDeployJobURL(String storyAcceptanceDeployJobURL) {
-        this.storyAcceptanceDeployJobURL = storyAcceptanceDeployJobURL;
-    }
-
-    public String getProductionDeployJobURL() {
-        return productionDeployJobURL;
-    }
-
-    public void setProductionDeployJobURL(String productionDeployJobURL) {
-        this.productionDeployJobURL = productionDeployJobURL;
-    }
-
-    public String getProductionDeployStatusURL() {
-        return productionDeployStatusURL;
-    }
-
-    public void setProductionDeployStatusURL(String productionDeployStatusURL) {
-        this.productionDeployStatusURL = productionDeployStatusURL;
-    }
-
-    public String getStoryAcceptanceDeployStatusURL() {
-        return storyAcceptanceDeployStatusURL;
-    }
-
-    public void setStoryAcceptanceDeployStatusURL(String storyAcceptanceDeployStatusURL) {
-        this.storyAcceptanceDeployStatusURL = storyAcceptanceDeployStatusURL;
-    }
-
-    public String getProductionDeployJobLastStatusURL() {
-        return productionDeployJobLastStatusURL;
-    }
-
-    public void setProductionDeployJobLastStatusURL(String productionDeployJobLastStatusURL) {
-        this.productionDeployJobLastStatusURL = productionDeployJobLastStatusURL;
-    }
-
-    public String getCiLastCompletedBuildURL() {
-        return ciLastCompletedBuildURL;
-    }
-
-    public void setCiLastCompletedBuildURL(String ciLastCompletedBuildURL) {
-        this.ciLastCompletedBuildURL = ciLastCompletedBuildURL;
-    }
-
-    public String getCiPassword() {
-        return ciPassword;
-    }
-
-    public void setCiPassword(String ciPassword) {
-        this.ciPassword = ciPassword;
-    }
-
-    public String getCiUsername() {
-        return ciUsername;
-    }
-
-    public void setCiUsername(String ciUsername) {
-        this.ciUsername = ciUsername;
-    }
-
-    public String getStoryAcceptanceDeployJobLastStatusURL() {
-        return storyAcceptanceDeployJobLastStatusURL;
-    }
-
-    public void setStoryAcceptanceDeployJobLastStatusURL(String storyAcceptanceDeployJobLastStatusURL) {
-        this.storyAcceptanceDeployJobLastStatusURL = storyAcceptanceDeployJobLastStatusURL;
-    }
+    private String revertStoryAcceptanceURL;
+    private String revertStoryAcceptanceStatusURL;
 }

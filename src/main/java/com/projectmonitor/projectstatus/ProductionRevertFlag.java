@@ -25,4 +25,8 @@ public class ProductionRevertFlag {
     public boolean get() {
         return redisTemplate.boundValueOps(KEY).get() != null;
     }
+
+    public void clear() {
+        redisTemplate.delete(KEY);
+    }
 }

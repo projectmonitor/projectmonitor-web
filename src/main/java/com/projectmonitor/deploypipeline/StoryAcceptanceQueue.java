@@ -23,7 +23,7 @@ public class StoryAcceptanceQueue {
         this.pivotalTrackerAPI = pivotalTrackerAPI;
     }
 
-    void push(String commitSHA, String storyID) {
+    public void push(String commitSHA, String storyID) {
         PivotalTrackerStory theStory = pivotalTrackerAPI.getStory(storyID);
         if (theStory.isHasBeenRejected()) {
             redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).leftPush(commitSHA + "-" + storyID);
@@ -46,10 +46,10 @@ public class StoryAcceptanceQueue {
             return null;
         }
 
-        Deploy deploy = new Deploy();
-        deploy.setSha(parts[0]);
-        deploy.setStoryID(parts[1]);
-        return deploy;
+        return Deploy.builder()
+                .sha(parts[0])
+                .storyID(parts[1])
+                .build();
     }
 
     Deploy readHead() {
@@ -65,9 +65,9 @@ public class StoryAcceptanceQueue {
             return null;
         }
 
-        Deploy deploy = new Deploy();
-        deploy.setSha(parts[0]);
-        deploy.setStoryID(parts[1]);
-        return deploy;
+        return Deploy.builder()
+                .sha(parts[0])
+                .storyID(parts[1])
+                .build();
     }
 }

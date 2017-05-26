@@ -17,9 +17,9 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RejectStoryServiceTest {
+public class StoryStateServiceTest {
 
-    private RejectStoryService subject;
+    private StoryStateService subject;
     @Mock
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     @Mock
@@ -34,12 +34,12 @@ public class RejectStoryServiceTest {
 
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerToken()).thenReturn("some-tracker-token");
 
-        subject = new RejectStoryService(urlGenerator, pivotalTrackerStoryConfiguration,
+        subject = new StoryStateService(urlGenerator, pivotalTrackerStoryConfiguration,
                 productionReleaseRestTemplate);
     }
 
     @Test
-    public void execute_informsTrackerTheStoryHasBeenRejected() throws Exception {
+    public void execute_informsTrackerOfTheStateChange() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-TrackerToken", "some-tracker-token");
         headers.set("Content-Type", "application/json");
@@ -55,7 +55,7 @@ public class RejectStoryServiceTest {
                 eq(String.class)
         )).thenReturn(new ResponseEntity<>(HttpStatus.ACCEPTED));
 
-        subject.execute("55");
+        subject.setState("55", "rejected");
         Mockito.verify(productionReleaseRestTemplate).exchange(
                 eq("http://tracker.com/100/55"),
                 eq(HttpMethod.PUT),

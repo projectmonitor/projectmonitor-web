@@ -24,6 +24,9 @@ public class RevertProjectStatusControllerTest {
     @MockBean
     private ProductionRevertFlag productionRevertFlag;
 
+    @MockBean
+    private ProductionRevertTask productionRevertTask;
+
     @Test
     public void post_kicksOffJenkinsRevertJob_redirectsToHomePage() throws Exception {
         this.mvc.perform(post("/"))
@@ -32,5 +35,6 @@ public class RevertProjectStatusControllerTest {
         ;
 
         verify(productionRevertFlag).set();
+        verify(productionRevertTask).start();
     }
 }

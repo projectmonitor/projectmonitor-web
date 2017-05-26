@@ -8,23 +8,23 @@ class PivotalTrackerAPIService implements PivotalTrackerAPI {
 
     private final RejectLabelService rejectLabelService;
     private final GetStoryService getStoryService;
-    private final RejectStoryService rejectStoryService;
-    private RemoveRejectLabelService removeRejectLabelService;
+    private final StoryStateService storyStateService;
+    private final RemoveRejectLabelService removeRejectLabelService;
 
     @Autowired
     public PivotalTrackerAPIService(RejectLabelService rejectLabelService,
                                     GetStoryService getStoryService,
-                                    RejectStoryService rejectStoryService,
+                                    StoryStateService storyStateService,
                                     RemoveRejectLabelService removeRejectLabelService) {
         this.rejectLabelService = rejectLabelService;
         this.getStoryService = getStoryService;
-        this.rejectStoryService = rejectStoryService;
+        this.storyStateService = storyStateService;
         this.removeRejectLabelService = removeRejectLabelService;
     }
 
     @Override
     public void rejectStory(String storyID) {
-        rejectStoryService.execute(storyID);
+        storyStateService.setState(storyID, "rejected");
     }
 
     @Override
@@ -40,5 +40,10 @@ class PivotalTrackerAPIService implements PivotalTrackerAPI {
     @Override
     public void removeRejectLabel(String storyID){
         removeRejectLabelService.execute(storyID);
+    }
+
+    @Override
+    public void finishStory(String pivotalTrackerStoryID) {
+        storyStateService.setState(pivotalTrackerStoryID, "finished");
     }
 }

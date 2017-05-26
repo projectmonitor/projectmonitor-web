@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+
 @Component
-class RejectStoryService {
+class StoryStateService {
 
     private URLGenerator urlGenerator;
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
@@ -21,24 +23,25 @@ class RejectStoryService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public RejectStoryService(URLGenerator urlGenerator,
-                              PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
-                              RestTemplate productionReleaseRestTemplate) {
+    public StoryStateService(URLGenerator urlGenerator,
+                             PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
+                             RestTemplate productionReleaseRestTemplate) {
         this.urlGenerator = urlGenerator;
         this.pivotalTrackerStoryConfiguration = pivotalTrackerStoryConfiguration;
         this.productionReleaseRestTemplate = productionReleaseRestTemplate;
     }
 
-    void execute(String storyID) {
+    void setState(String storyID, String state) {
         String storyURL = urlGenerator.generate(storyID);
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-TrackerToken", pivotalTrackerStoryConfiguration.getPivotalTrackerToken());
         headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 
         PivotalTrackerStoryDTO body = new PivotalTrackerStoryDTO();
-        body.setCurrentState("rejected");
+        body.setCurrentState(state);
 
-        logger.info("Rejecting tracker story: {}", storyID);
+
+        logger.info("Setting tracker story: {} to state: {}", storyID, state);
 
         HttpEntity<PivotalTrackerStoryDTO> entity = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = productionReleaseRestTemplate.exchange(
@@ -49,7 +52,7 @@ class RejectStoryService {
         );
 
         if (response.getStatusCodeValue() > 399) {
-            logger.error("Failed marking tracker Story: " + storyID + " as rejected.");
+            logger.error("Failed marking tracker Story: " + storyID + " as " + state);
         }
 
     }

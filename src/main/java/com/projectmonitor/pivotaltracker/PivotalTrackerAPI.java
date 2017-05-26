@@ -9,4 +9,6 @@ public interface PivotalTrackerAPI {
     void addRejectLabel(String storyID);
 
     void removeRejectLabel(String pivotalTrackerStoryID);
+
+    void finishStory(String pivotalTrackerStoryID);
 }

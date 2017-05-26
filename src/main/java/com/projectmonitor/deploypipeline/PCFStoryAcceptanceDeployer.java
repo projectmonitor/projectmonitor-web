@@ -1,7 +1,7 @@
 package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.jenkins.CIJobConfiguration;
-import com.projectmonitor.jenkins.JenkinsJobStatus;
+import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.slf4j.Logger;
@@ -44,24 +44,20 @@ public class PCFStoryAcceptanceDeployer {
         }
 
         logger.info("Deploying to Story Acceptance with the following SHA: " + deploy.getSha());
-        jenkinsRestTemplate.addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
-
         try {
-            jenkinsRestTemplate.postForEntity(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + deploy.getSha(),
-                    null,
-                    String.class);
+            jenkinsRestTemplate.triggerJob(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + deploy.getSha());
         } catch (RuntimeException e) {
             logger.info("Call to kickoff story acceptance deploy failed, cause: ", e.getMessage());
             return false;
         }
 
-        JenkinsJobStatus jenkinsJobStatus = new JenkinsJobStatus();
+        CIResponse jenkinsJobStatus = new CIResponse();
         try {
             do {
                 logger.info("Sleeping before next poll...");
                 threadSleepService.sleep(15000);
                 try {
-                    jenkinsJobStatus = jenkinsRestTemplate.getForObject(ciJobConfiguration.getStoryAcceptanceDeployStatusURL(), JenkinsJobStatus.class);
+                    jenkinsJobStatus = jenkinsRestTemplate.loadJobStatus(ciJobConfiguration.getStoryAcceptanceDeployStatusURL());
                 } catch (RuntimeException e) {
                     logger.info("Call to story acceptance deploy status failed, but job kicked off, continuing polling...", e.getMessage());
                     jenkinsJobStatus.setBuilding(true);
@@ -85,7 +81,7 @@ public class PCFStoryAcceptanceDeployer {
     public void pushRejectedBuild(String rejectedStoryID) {
         logger.info("Story in acceptance is rejected, storyID: {}", rejectedStoryID);
         Deploy nextDeploy = storyAcceptanceQueue.readHead();
-        if (!Objects.equals(rejectedStoryID, nextDeploy.getStoryID())) {
+        if (nextDeploy == null || !Objects.equals(rejectedStoryID, nextDeploy.getStoryID())) {
             return;
         }
 

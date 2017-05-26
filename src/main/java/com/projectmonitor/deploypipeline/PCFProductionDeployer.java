@@ -1,7 +1,7 @@
 package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.jenkins.CIJobConfiguration;
-import com.projectmonitor.jenkins.JenkinsJobStatus;
+import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,42 +14,46 @@ public class PCFProductionDeployer {
     private final JenkinsRestTemplate jenkinsRestTemplate;
     private final ThreadSleepService threadSleepService;
     private final CIJobConfiguration ciJobConfiguration;
+    private final ProductionDeployHistory productionDeployHistory;
 
-    public static final String jenkinsSuccessMessage = "SUCCESS";
+    static final String jenkinsSuccessMessage = "SUCCESS";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public PCFProductionDeployer(JenkinsRestTemplate productionReleaseRestTemplate,
-                                 ThreadSleepService threadSleepService, CIJobConfiguration ciJobConfiguration) {
+                                 ThreadSleepService threadSleepService,
+                                 CIJobConfiguration ciJobConfiguration,
+                                 ProductionDeployHistory productionDeployHistory) {
         this.jenkinsRestTemplate = productionReleaseRestTemplate;
         this.threadSleepService = threadSleepService;
         this.ciJobConfiguration = ciJobConfiguration;
+        this.productionDeployHistory = productionDeployHistory;
     }
 
     public boolean push(String shaToDeploy, String storyID) {
         logger.info("Kicking off Jenkins Job to do production release");
-        jenkinsRestTemplate.addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
 
         try {
-            jenkinsRestTemplate.postForEntity(
-                    ciJobConfiguration.getProductionDeployJobURL() + shaToDeploy + "&STORY_ID=" + storyID,
-                    null,
-                    Object.class);
+            jenkinsRestTemplate.triggerJob(
+                    ciJobConfiguration.getProductionDeployJobURL()
+                            + shaToDeploy + "&STORY_ID=" + storyID);
         } catch (RuntimeException e) {
             logger.info("Call to jenkins failed, cause: ", e.getMessage());
             return false;
         }
 
         try {
-            JenkinsJobStatus jenkinsJobStatus = new JenkinsJobStatus();
+            CIResponse jenkinsJobStatus = new CIResponse();
             do {
                 logger.info("Sleeping before next poll...");
                 threadSleepService.sleep(10000);
                 try {
-                    jenkinsJobStatus = jenkinsRestTemplate.getForObject(ciJobConfiguration.getProductionDeployStatusURL(), JenkinsJobStatus.class);
+                    jenkinsJobStatus = jenkinsRestTemplate.loadJobStatus(
+                            ciJobConfiguration.getProductionDeployStatusURL());
                     if (!jenkinsJobStatus.isBuilding() && jenkinsSuccessMessage.equals(jenkinsJobStatus.getResult())) {
                         logger.info("Production Deploy has finished!");
+                        productionDeployHistory.push(shaToDeploy, storyID);
                         return true;
                     }
                 } catch (RuntimeException e) {

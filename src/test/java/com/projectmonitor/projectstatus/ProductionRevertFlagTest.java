@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,5 +47,11 @@ public class ProductionRevertFlagTest {
     public void get_whenTheFlagIsNotSet_returnsFalse() throws Exception {
         when(redisTemplate.boundValueOps(ProductionRevertFlag.KEY)).thenReturn(boundValueOperations);
         assertThat(subject.get()).isFalse();
+    }
+
+    @Test
+    public void clear_deletesTheKeyOutOfRedis() throws Exception {
+        subject.clear();
+        verify(redisTemplate).delete(ProductionRevertFlag.KEY);
     }
 }

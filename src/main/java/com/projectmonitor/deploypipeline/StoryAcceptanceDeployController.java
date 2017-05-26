@@ -21,9 +21,11 @@ public class StoryAcceptanceDeployController {
     @RequestMapping(value = "/storyAcceptanceDeploy/{shaValue}-{storyID}", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.CREATED)
     public Deploy put(@PathVariable String shaValue, @PathVariable String storyID){
-        Deploy deploy = new Deploy();
-        deploy.setSha(shaValue);
-        deploy.setStoryID(storyID);
+        Deploy deploy = Deploy.builder()
+                .sha(shaValue)
+                .storyID(storyID)
+                .build();
+
         storyAcceptanceQueue.push(shaValue, storyID);
         return deploy;
     }

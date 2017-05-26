@@ -7,7 +7,6 @@ export CF_ORG=example_org
 
 # because of how Jenkins checks out from Git, we are not on a branch and the remote branches are not known locally
 git checkout master
-git branch -va
 
 if [[ "$SHA_TO_DEPLOY" == "0" ]] ; then
   echo "Cannot deploy SHA: $SHA_TO_DEPLOY"
@@ -19,25 +18,12 @@ if [[ "$STORY_ID" == "0" ]] ; then
   exit 1
 fi
 
-
 SHA_TO_DEPLOY=$(git rev-parse $SHA_TO_DEPLOY)
 echo "Building SHA $SHA_TO_DEPLOY"
 
-branch_name=$(git branch -a --contains $SHA_TO_DEPLOY | awk '{n=split($1,parts,"/"); print parts[n]}FNR==2{print "Branch could not be determined";exit 7}' )
-git checkout ${branch_name}
-
-top_sha_of_branch=$(git log -1 -r ${branch_name} | awk 'FNR==1{print $2}' )
-if [[ "$top_sha_of_branch" != "$SHA_TO_DEPLOY" ]] ; then
-   echo "This SHA ($SHA_TO_DEPLOY) is not at the top of the feature branch ${branch_name}"
-   exit 2
-fi
-
-# merge branch into master and push it out
-git checkout master
-git merge $branch_name --ff-only || ( echo "Fast forward branch merge failed" && git reset --hard origin/master && exit 4 )
+git checkout $SHA_TO_DEPLOY
 
 mvn clean package -DskipTests
-git push origin master
 
 ./ci/add_story_to_manifest.sh manifest-production.yml ${SHA_TO_DEPLOY} ${STORY_ID}
 

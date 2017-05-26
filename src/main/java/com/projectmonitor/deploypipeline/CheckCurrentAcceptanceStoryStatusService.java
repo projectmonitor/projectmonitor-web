@@ -46,7 +46,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
             logger.info("A production revert appears to be under way. Exiting without doing anything.");
             return;
         }
-
+        // todo: if queue is empty just bail out
         try {
             DeployedAppInfo acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl(), DeployedAppInfo.class);
             logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());
@@ -71,7 +71,7 @@ public class CheckCurrentAcceptanceStoryStatusService {
                 logger.info("Story still awaiting decision. Nothing to deploy at the moment...");
             }
         } catch (org.springframework.web.client.HttpClientErrorException exception) {
-            logger.info("A web call to acceptance/production or tracker errored! {}", exception.getMessage());
+            logger.info("A web call to acceptance/production or tracker errored! {}", exception.getMessage(), exception);
         }
     }
 }

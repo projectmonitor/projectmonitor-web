@@ -17,19 +17,19 @@ public class PivotalTrackerAPIServiceTest {
     @Mock
     private GetStoryService getStoryService;
     @Mock
-    private RejectStoryService rejectStoryService;
+    private StoryStateService storyStateService;
     @Mock
     private RemoveRejectLabelService removeRejectLabelService;
 
     @Before
     public void setUp() {
-        subject = new PivotalTrackerAPIService(rejectLabelService, getStoryService, rejectStoryService, removeRejectLabelService);
+        subject = new PivotalTrackerAPIService(rejectLabelService, getStoryService, storyStateService, removeRejectLabelService);
     }
 
     @Test
     public void rejectStory_delegatesToRejectStoryService() throws Exception {
         subject.rejectStory("55");
-        Mockito.verify(rejectStoryService).execute("55");
+        Mockito.verify(storyStateService).setState("55", "rejected");
     }
 
     @Test
@@ -48,5 +48,11 @@ public class PivotalTrackerAPIServiceTest {
     public void removeRejectLabel_delegates() throws Exception {
         subject.removeRejectLabel("55");
         Mockito.verify(removeRejectLabelService).execute("55");
+    }
+
+    @Test
+    public void finishStory_delegates() throws Exception {
+        subject.finishStory("55");
+        Mockito.verify(storyStateService).setState("55", "finished");
     }
 }
