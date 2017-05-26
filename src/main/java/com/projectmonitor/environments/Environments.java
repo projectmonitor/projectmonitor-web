@@ -16,7 +16,7 @@ public class Environments {
         this.restTemplate = new RestTemplate();
     }
 
-    public DeployedAppInfo loadStoryAcceptanceDeployStory() {
+    public DeployedAppInfo loadStoryAcceptanceDeployedAppInfo() {
         DeployedAppInfo deployedAppInfo = new DeployedAppInfo();
         try {
             deployedAppInfo = restTemplate.getForObject(
@@ -30,7 +30,7 @@ public class Environments {
         return deployedAppInfo;
     }
 
-    public DeployedAppInfo loadProductionDeployStory() {
+    public DeployedAppInfo loadProductionDeployedAppInfo() {
         DeployedAppInfo deployedAppInfo = new DeployedAppInfo();
         try {
             deployedAppInfo = restTemplate.getForObject(

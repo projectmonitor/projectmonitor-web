@@ -47,7 +47,7 @@ public class ProjectStatusController {
     public String execute(Model model) {
         CIResponse ciResponse = jenkinsJobs.loadLastCompletedCIRun();
         CIResponse storyAcceptanceDeployResponse = jenkinsJobs.loadStoryAcceptanceLastDeployStatus();
-        DeployedAppInfo storyAcceptanceDeployedStory = environments.loadStoryAcceptanceDeployStory();
+        DeployedAppInfo storyAcceptanceDeployedStory = environments.loadStoryAcceptanceDeployedAppInfo();
 
         PivotalTrackerStory pivotalTrackerStory;
         if ("Story Acceptance is not responding".equals(storyAcceptanceDeployedStory.getPivotalTrackerStoryID())) {
@@ -57,7 +57,7 @@ public class ProjectStatusController {
         }
 
         CIResponse productionDeployResponse = jenkinsJobs.loadProductionLastDeployStatus();
-        DeployedAppInfo productionDeployedStory = environments.loadProductionDeployStory();
+        DeployedAppInfo productionDeployedStory = environments.loadProductionDeployedAppInfo();
 
         String aura = auraService.determineAura(ciResponse, storyAcceptanceDeployResponse,
                 storyAcceptanceDeployedStory, productionDeployResponse,

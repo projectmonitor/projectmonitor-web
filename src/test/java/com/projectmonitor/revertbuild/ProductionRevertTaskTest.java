@@ -62,7 +62,7 @@ public class ProductionRevertTaskTest {
         when(productionDeployHistory.getPreviousDeploy())
                 .thenReturn(previousDeploy);
 
-        when(environments.loadStoryAcceptanceDeployStory())
+        when(environments.loadStoryAcceptanceDeployedAppInfo())
                 .thenReturn(new DeployedAppInfo());
     }
 
@@ -77,7 +77,7 @@ public class ProductionRevertTaskTest {
     public void start_determinesStoryAcceptanceBuild() throws Exception {
         subject.start();
 
-        verify(environments).loadStoryAcceptanceDeployStory();
+        verify(environments).loadStoryAcceptanceDeployedAppInfo();
     }
 
     @Test
@@ -131,7 +131,7 @@ public class ProductionRevertTaskTest {
     public void start_marksAcceptanceStoryAsFinished() throws Exception {
         DeployedAppInfo storyAcceptanceInfo = new DeployedAppInfo();
         storyAcceptanceInfo.setPivotalTrackerStoryID("the-story-being-finished");
-        when(environments.loadStoryAcceptanceDeployStory())
+        when(environments.loadStoryAcceptanceDeployedAppInfo())
                 .thenReturn(storyAcceptanceInfo);
 
         subject.start();
@@ -144,7 +144,7 @@ public class ProductionRevertTaskTest {
         DeployedAppInfo storyAcceptanceInfo = new DeployedAppInfo();
         storyAcceptanceInfo.setPivotalTrackerStoryID("the-story-being-finished");
         storyAcceptanceInfo.setStorySHA("the-story-sha");
-        when(environments.loadStoryAcceptanceDeployStory())
+        when(environments.loadStoryAcceptanceDeployedAppInfo())
                 .thenReturn(storyAcceptanceInfo);
 
         subject.start();
@@ -217,7 +217,7 @@ public class ProductionRevertTaskTest {
         DeployedAppInfo storyAcceptanceInfo = new DeployedAppInfo();
         storyAcceptanceInfo.setPivotalTrackerStoryID("same-as-prod");
         storyAcceptanceInfo.setStorySHA("same-sha-as-prod");
-        when(environments.loadStoryAcceptanceDeployStory())
+        when(environments.loadStoryAcceptanceDeployedAppInfo())
                 .thenReturn(storyAcceptanceInfo);
 
         when(productionDeployHistory.getLastDeploy())

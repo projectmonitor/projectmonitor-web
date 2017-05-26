@@ -44,10 +44,10 @@ public class DeployJob {
         }
         // todo: if queue is empty just bail out
         try {
-            DeployedAppInfo acceptanceStory = environments.loadStoryAcceptanceDeployStory();
+            DeployedAppInfo acceptanceStory = environments.loadStoryAcceptanceDeployedAppInfo();
             logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());
 
-            DeployedAppInfo productionStory = environments.loadProductionDeployStory();
+            DeployedAppInfo productionStory = environments.loadProductionDeployedAppInfo();
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
             PivotalTrackerStory story = pivotalTrackerAPI.getStory(acceptanceStory.getPivotalTrackerStoryID());

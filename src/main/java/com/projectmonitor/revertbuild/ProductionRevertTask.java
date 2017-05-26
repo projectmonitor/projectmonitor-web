@@ -55,7 +55,7 @@ public class ProductionRevertTask {
             return;
         }
 
-        DeployedAppInfo storyAcceptanceDeploy = environments.loadStoryAcceptanceDeployStory();
+        DeployedAppInfo storyAcceptanceDeploy = environments.loadStoryAcceptanceDeployedAppInfo();
 
         try {
             pivotalTrackerAPI.rejectStory(lastProductionDeploy.getStoryID());

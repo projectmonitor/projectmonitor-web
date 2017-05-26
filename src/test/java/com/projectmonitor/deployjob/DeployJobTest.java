@@ -40,11 +40,11 @@ public class DeployJobTest {
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
         acceptanceStoryInfo.setStorySHA("blahblahSHA");
-        when(environments.loadStoryAcceptanceDeployStory()).thenReturn(acceptanceStoryInfo);
+        when(environments.loadStoryAcceptanceDeployedAppInfo()).thenReturn(acceptanceStoryInfo);
 
         productionStoryInfo = new DeployedAppInfo();
         productionStoryInfo.setPivotalTrackerStoryID("9999");
-        when(environments.loadProductionDeployStory()).thenReturn(productionStoryInfo);
+        when(environments.loadProductionDeployedAppInfo()).thenReturn(productionStoryInfo);
         when(productionRevertFlag.get()).thenReturn(false);
     }
 
