@@ -59,24 +59,34 @@ public class ProjectStatusController {
         CIResponse productionDeployResponse = jenkinsJobs.loadProductionLastDeployStatus();
         DeployedAppInfo productionDeployedStory = environments.loadProductionDeployedAppInfo();
 
-        String aura = auraService.determineAura(ciResponse, storyAcceptanceDeployResponse,
-                storyAcceptanceDeployedStory, productionDeployResponse,
-                productionDeployedStory, pivotalTrackerStory);
+        String ciAura = auraService.determineCIAura(ciResponse);
+
+        String storyAcceptanceAura = auraService.determineStoryAcceptanceAura(storyAcceptanceDeployResponse,
+                storyAcceptanceDeployedStory, pivotalTrackerStory);
+
+        String productionAura = auraService.determineProductionAura(productionDeployResponse,
+                productionDeployedStory);
 
         String storyStatus = pivotalTrackerStory.getCurrentState();
         if (pivotalTrackerStory.isHasBeenRejected()) {
             storyStatus = "rejected";
         }
 
-        model.addAttribute("status", ciResponse.getResult());
         model.addAttribute("githubUsername", applicationConfiguration.getGithubUsername());
         model.addAttribute("githubProjectName", applicationConfiguration.getGithubProjectName());
-        model.addAttribute("backgroundColor", aura);
+
+        model.addAttribute("ciBackgroundColor", ciAura);
+        model.addAttribute("status", ciResponse.getResult());
+
         model.addAttribute("storyStatus", storyStatus);
+
+        model.addAttribute("storyAcceptanceBackgroundColor", storyAcceptanceAura);
         model.addAttribute("storyAcceptanceDeployResponse", storyAcceptanceDeployResponse.getResult());
-        model.addAttribute("productionDeployResponse", productionDeployResponse.getResult());
         model.addAttribute("storyAcceptanceDeployedStoryID", storyAcceptanceDeployedStory.getPivotalTrackerStoryID());
         model.addAttribute("storyAcceptanceDeployedSHA", storyAcceptanceDeployedStory.getStorySHA());
+
+        model.addAttribute("productionBackgroundColor", productionAura);
+        model.addAttribute("productionDeployResponse", productionDeployResponse.getResult());
         model.addAttribute("productionDeployedStoryID", productionDeployedStory.getPivotalTrackerStoryID());
         model.addAttribute("productionDeployedSHA", productionDeployedStory.getStorySHA());
         model.addAttribute("productionRevertFlag", productionRevertFlag.get());

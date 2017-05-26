@@ -2,10 +2,6 @@ body {
     font-weight: bold;
 }
 
-body.normal {
-    background-color: cornflowerblue;
-}
-
 div.card {
     width: 650px;
     margin: 15px auto;
@@ -15,34 +11,34 @@ div.card {
     box-shadow: 10px 5px 5px black;
 }
 
-div.ci-info {
-
+.normal {
+    background-color: cornflowerblue;
 }
 
-body.dependencyDown {
+.dependencyDown {
     background-color: purple;
 }
 
-body.ciFailed {
+.ciFailed {
     background-color: red;
 }
 
-body.storyRejected {
+.storyRejected {
     background-color: firebrick;
 }
 
-body.storyAcceptanceDeployFailed {
+.storyAcceptanceDeployFailed {
     background-color: coral;
 }
 
-body.storyAcceptanceDown {
+.storyAcceptanceDown {
     background-color: darkorange;
 }
 
-body.productionDeployFailed {
+.productionDeployFailed {
     background-color: crimson;
 }
 
-body.productionDown {
+.productionDown {
     background-color: darkred;
 }

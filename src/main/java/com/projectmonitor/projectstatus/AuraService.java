@@ -8,12 +8,26 @@ import org.springframework.stereotype.Component;
 @Component
 class AuraService {
 
-    String determineAura(CIResponse ciResponse,
-                                CIResponse storyAcceptanceDeployResponse,
-                                DeployedAppInfo storyAcceptanceDeployedStory,
-                                CIResponse productionDeployResponse,
-                                DeployedAppInfo productionDeployedStory,
-                                PivotalTrackerStory pivotalTrackerStory) {
+    String determineProductionAura(CIResponse productionDeployResponse,
+                                   DeployedAppInfo productionDeployedStory) {
+        String aura = "normal";
+
+        if ("Production Deploy Job is not responding".equals(productionDeployResponse.getResult())) {
+            aura = "dependencyDown";
+        }
+
+        if ("FAILURE".equals(productionDeployResponse.getResult())) {
+            aura = "productionDeployFailed";
+        }
+
+        if ("Production is not responding".equals(productionDeployedStory.getPivotalTrackerStoryID())) {
+            aura = "productionDown";
+        }
+
+        return aura;
+    }
+
+    String determineCIAura(CIResponse ciResponse) {
         String aura = "normal";
 
         if ("CI is not responding".equals(ciResponse.getResult())) {
@@ -23,15 +37,16 @@ class AuraService {
         if ("FAILURE".equals(ciResponse.getResult())) {
             aura = "ciFailed";
         }
+        return aura;
+    }
 
+    String determineStoryAcceptanceAura(CIResponse storyAcceptanceDeployResponse,
+                                        DeployedAppInfo storyAcceptanceDeployedStory,
+                                        PivotalTrackerStory pivotalTrackerStory) {
+        String aura = "normal";
         if ("Story Acceptance Deploy Job is not responding".equals(storyAcceptanceDeployResponse.getResult())) {
             aura = "dependencyDown";
         }
-
-        if ("Production Deploy Job is not responding".equals(productionDeployResponse.getResult())) {
-            aura = "dependencyDown";
-        }
-
         if ("FAILURE".equals(storyAcceptanceDeployResponse.getResult())) {
             aura = "storyAcceptanceDeployFailed";
         }
@@ -43,14 +58,6 @@ class AuraService {
         if ("rejected".equals(pivotalTrackerStory.getCurrentState())
                 || pivotalTrackerStory.isHasBeenRejected()) {
             aura = "storyRejected";
-        }
-
-        if ("FAILURE".equals(productionDeployResponse.getResult())) {
-            aura = "productionDeployFailed";
-        }
-
-        if ("Production is not responding".equals(productionDeployedStory.getPivotalTrackerStoryID())) {
-            aura = "productionDown";
         }
 
         return aura;

@@ -6,14 +6,14 @@
     <meta http-equiv="refresh" content="7"/>
     <link href="../static/css/app.css" th:href="@{/css/app.css}" rel="stylesheet"/>
 </head>
-<body th:class="${backgroundColor}">
+<body>
 
-    <div class="ci-info card">
+    <div th:classappend="${ciBackgroundColor}" class="ci-info card">
         <h2 th:text="|Test Build:|" />
         <p class="ci-build-status" th:text="|CI Status: ${status}|"/>
     </div>
 
-    <div class="story-acceptance-info card">
+    <div th:classappend="${storyAcceptanceBackgroundColor}" class="story-acceptance-info card">
         <h2>Story Acceptance:</h2>
         <p class="story-acceptance-story">
             Story Currently Deployed in Story Acceptance:
@@ -38,7 +38,7 @@
         <p class="last-story-acceptance-deploy" th:text="|Last Deploy to Story Acceptance was: ${storyAcceptanceDeployResponse}|"/>
     </div>
 
-    <div class="productionInfo card">
+    <div th:classappend="${productionBackgroundColor}" class="productionInfo card">
         <h2 th:text="|Production:|" />
         <p class="production-story">
             Story Currently Deployed in Production:
