@@ -48,7 +48,7 @@ public class ProductionRevertTask {
         Deploy lastProductionDeploy = productionDeployHistory.getLastDeploy();
         Deploy previousProductionDeploy = productionDeployHistory.getPreviousDeploy();
 
-        if(previousProductionDeploy == null){
+        if (previousProductionDeploy == null) {
             logger.info("There isn't a previous production deploy to rollback too!");
             return;
         }
@@ -62,8 +62,8 @@ public class ProductionRevertTask {
         }
 
         try {
-            jenkinsAPI.revertProduction(previousProductionDeploy); // todo: handle errors in here
-            productionDeployHistory.pop(); // todo: should this be in the method above it?
+            jenkinsAPI.revertProduction(previousProductionDeploy);
+            productionDeployHistory.pop();
         } catch (RevertFailedException e) {
             revertErrorRepository.save(e.getMessage());
             productionRevertFlag.clear();
@@ -71,9 +71,8 @@ public class ProductionRevertTask {
         }
 
         if (deploysMatch(lastProductionDeploy, storyAcceptanceDeploy)) {
-            logger.info("Produciton and Story Acceptance builds match, bypassing revert of SA");
+            logger.info("Production and Story Acceptance builds match, bypassing revert of SA");
         } else {
-
             pivotalTrackerAPI.finishStory(storyAcceptanceDeploy.getPivotalTrackerStoryID());
 
             storyAcceptanceQueue.push(storyAcceptanceDeploy.getStorySHA(), storyAcceptanceDeploy.getPivotalTrackerStoryID());
