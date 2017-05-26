@@ -1,9 +1,9 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.jenkins;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class ThreadSleepService {
+class ThreadSleepService {
 
     public void sleep(long millisToSleep) throws InterruptedException {
         Thread.sleep(millisToSleep);

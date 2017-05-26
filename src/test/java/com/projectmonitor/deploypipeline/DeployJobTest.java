@@ -1,6 +1,5 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
@@ -19,10 +18,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CheckCurrentAcceptanceStoryStatusServiceTest {
+public class DeployJobTest {
 
     @InjectMocks
-    private CheckCurrentAcceptanceStoryStatusService subject;
+    private DeployJob subject;
     @Mock
     private PCFProductionDeployer pcfProductionDeployer;
     @Mock

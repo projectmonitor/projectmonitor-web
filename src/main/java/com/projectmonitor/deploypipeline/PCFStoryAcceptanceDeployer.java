@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-public class PCFStoryAcceptanceDeployer {
+class PCFStoryAcceptanceDeployer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private final StoryAcceptanceQueue storyAcceptanceQueue;

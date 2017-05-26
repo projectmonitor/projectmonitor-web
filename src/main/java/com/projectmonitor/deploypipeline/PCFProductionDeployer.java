@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PCFProductionDeployer {
+class PCFProductionDeployer {
 
     private JenkinsJobAPI jenkinsJobAPI;
     private CIJobConfiguration ciJobConfiguration;

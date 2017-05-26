@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CheckCurrentAcceptanceStoryStatusService {
+public class DeployJob {
 
 
     private final PCFProductionDeployer pcfProductionDeployer;
@@ -24,11 +24,11 @@ public class CheckCurrentAcceptanceStoryStatusService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public CheckCurrentAcceptanceStoryStatusService(PCFProductionDeployer pcfProductionDeployer,
-                                                    PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer,
-                                                    PivotalTrackerAPI pivotalTrackerAPI,
-                                                    ProductionRevertFlag productionRevertFlag,
-                                                    Environments environments) {
+    public DeployJob(PCFProductionDeployer pcfProductionDeployer,
+                     PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer,
+                     PivotalTrackerAPI pivotalTrackerAPI,
+                     ProductionRevertFlag productionRevertFlag,
+                     Environments environments) {
         this.pcfProductionDeployer = pcfProductionDeployer;
         this.pcfStoryAcceptanceDeployer = pcfStoryAcceptanceDeployer;
         this.pivotalTrackerAPI = pivotalTrackerAPI;
