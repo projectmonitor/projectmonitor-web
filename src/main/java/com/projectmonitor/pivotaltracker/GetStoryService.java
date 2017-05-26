@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
@@ -14,7 +15,6 @@ class GetStoryService {
     private URLGenerator urlGenerator;
     private RestTemplate restTemplate;
     private RejectLabelService rejectLabelService;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
