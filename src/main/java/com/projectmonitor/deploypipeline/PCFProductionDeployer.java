@@ -3,6 +3,7 @@ package com.projectmonitor.deploypipeline;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
 import com.projectmonitor.jenkins.JenkinsJobAPI;
+import com.projectmonitor.jenkins.RequestFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,8 @@ public class PCFProductionDeployer {
             jenkinsJobAPI.triggerJob(
                     ciJobConfiguration.getProductionDeployJobURL()
                             + shaToDeploy + "&STORY_ID=" + storyID);
-        } catch (RuntimeException e) {
-            logger.info("Call to jenkins failed, cause: ", e.getMessage());
+        } catch (RuntimeException | RequestFailedException e) {
+            logger.info("Call to jenkins failed, cause: {}", e.getMessage(), e);
             return false;
         }
 

@@ -3,6 +3,7 @@ package com.projectmonitor.deploypipeline;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
 import com.projectmonitor.jenkins.JenkinsJobAPI;
+import com.projectmonitor.jenkins.RequestFailedException;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class PCFStoryAcceptanceDeployer {
         logger.info("Deploying to Story Acceptance with the following SHA: " + deploy.getSha());
         try {
             jenkinsJobAPI.triggerJob(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + deploy.getSha());
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | RequestFailedException e) {
             logger.info("Call to kickoff story acceptance deploy failed, cause: ", e.getMessage());
             return false;
         }

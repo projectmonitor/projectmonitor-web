@@ -69,7 +69,7 @@ public class JenkinsJobs implements JenkinsAPI {
     }
 
     @Override
-    public void deployToStoryAcceptance(Deploy deploy) {
+    public void deployToStoryAcceptance(Deploy deploy) throws RevertFailedException {
         jenkinsRevertStoryAcceptance.execute(deploy);
     }
 }

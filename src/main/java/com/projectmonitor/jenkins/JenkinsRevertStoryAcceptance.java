@@ -23,12 +23,16 @@ class JenkinsRevertStoryAcceptance {
         this.jenkinsJobPoller = jenkinsJobPoller;
     }
 
-    void execute(Deploy theDeploy) {
+    void execute(Deploy theDeploy) throws RevertFailedException {
         String jobURL = ciJobConfiguration.getRevertStoryAcceptanceURL()
                 + theDeploy.getSha() + "&STORY_ID=" + theDeploy.getStoryID();
 
         logger.info("Triggering Revert of Story Acceptance with sha: {}", theDeploy.getSha());
-        jenkinsJobAPI.triggerJob(jobURL);
+        try {
+            jenkinsJobAPI.triggerJob(jobURL);
+        } catch (RequestFailedException e) {
+            throw new RevertFailedException(e.getMessage(), e);
+        }
         jenkinsJobPoller.execute(ciJobConfiguration.getRevertStoryAcceptanceStatusURL());
     }
 }

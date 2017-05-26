@@ -2,7 +2,9 @@ package com.projectmonitor.jenkins;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockserver.integration.ClientAndServer;
@@ -22,6 +24,9 @@ public class JenkinsJobAPITest {
     private ClientAndServer mockServer;
     RestTemplate restTemplate;
     CIJobConfiguration ciJobConfiguration;
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -67,11 +72,27 @@ public class JenkinsJobAPITest {
                 .withHeader("Authorization", "Basic YmFuYW5hOmRhbWFnZQ==");
 
         mockServer
-                .when( request)
+                .when(request)
                 .respond(response().withStatusCode(201))
         ;
 
         subject.triggerJob("http://localhost:1090/whut");
         mockServer.verify(request);
+    }
+
+    @Test
+    public void triggerJob_whenRequestHasAFailureStatusCode_throwsException() throws Exception {
+        HttpRequest request = request()
+                .withMethod("POST")
+                .withPath("/whut")
+                .withHeader("Authorization", "Basic YmFuYW5hOmRhbWFnZQ==");
+
+        mockServer
+                .when(request)
+                .respond(response().withStatusCode(400))
+        ;
+
+        exception.expect(RequestFailedException.class);
+        subject.triggerJob("http://localhost:1090/whut");
     }
 }

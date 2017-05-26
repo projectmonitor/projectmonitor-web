@@ -2,13 +2,15 @@ package com.projectmonitor.jenkins;
 
 import com.projectmonitor.deploypipeline.Deploy;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static junit.framework.TestCase.fail;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -20,6 +22,9 @@ public class JenkinsRevertJobTest {
     @Mock
     private JenkinsJobPoller jenkinsJobPoller;
     private CIJobConfiguration ciJobConfiguration;
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -52,7 +57,16 @@ public class JenkinsRevertJobTest {
     }
 
     @Test
-    public void whenTheRevertJobIsUnResponsive_returnFalse() throws Exception {
-        fail();
+    public void whenTheRevertJobRequestFails_throwsAnException() throws Exception {
+        doThrow(new RequestFailedException("an issue")).when(jenkinsJobAPI).triggerJob(any());
+
+        Deploy theDeploy = Deploy.builder()
+                .sha("sha")
+                .storyID("storyID")
+                .build();
+
+        exception.expect(RevertFailedException.class);
+        exception.expectMessage("an issue");
+        subject.execute(theDeploy);
     }
 }

@@ -12,5 +12,5 @@ public interface JenkinsAPI {
 
     void revertProduction(Deploy deploy) throws RevertFailedException;
 
-    void deployToStoryAcceptance(Deploy deploy);
+    void deployToStoryAcceptance(Deploy deploy) throws RevertFailedException;
 }

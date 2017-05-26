@@ -1,10 +1,13 @@
 package com.projectmonitor.jenkins;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -41,11 +44,21 @@ public class JenkinsJobAPI {
         );
     }
 
-    public void triggerJob(String url) {
+    public void triggerJob(String url) throws RequestFailedException {
         addAuthentication(ciJobConfiguration.getCiUsername(), ciJobConfiguration.getCiPassword());
-        restTemplate.postForEntity(
-                url,
-                null,
-                Object.class);
+        try {
+            restTemplate.postForEntity(
+                    url,
+                    null,
+                    String.class);
+        } catch (HttpStatusCodeException e)  // thrown by DefaultResponseErrorHandler
+        {
+            String message = "Trigger job request failed with status: " +
+                    e.getStatusCode() + "response: \n" +
+                    e.getResponseBodyAsString();
+            throw new RequestFailedException(message, e);
+        } catch (Exception e) {
+            throw new RequestFailedException(e.getMessage(), e);
+        }
     }
 }

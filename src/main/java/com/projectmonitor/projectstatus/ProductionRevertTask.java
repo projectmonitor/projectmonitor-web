@@ -77,7 +77,11 @@ public class ProductionRevertTask {
 
             storyAcceptanceQueue.push(storyAcceptanceDeploy.getStorySHA(), storyAcceptanceDeploy.getPivotalTrackerStoryID());
 
-            jenkinsAPI.deployToStoryAcceptance(lastProductionDeploy);
+            try {
+                jenkinsAPI.deployToStoryAcceptance(lastProductionDeploy);
+            } catch (RevertFailedException e) {
+                revertErrorRepository.save(e.getMessage());
+            }
         }
 
         productionRevertFlag.clear();

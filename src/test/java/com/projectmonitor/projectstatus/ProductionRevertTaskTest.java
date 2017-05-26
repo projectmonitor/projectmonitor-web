@@ -190,6 +190,27 @@ public class ProductionRevertTaskTest {
     }
 
     @Test
+    public void start_whenStoryAcceptanceRevertFails_itStoresTheCause() throws Exception {
+        Deploy previousDeploy = Deploy.builder()
+                .sha("some-sha").build();
+        when(productionDeployHistory.getPreviousDeploy())
+                .thenReturn(previousDeploy);
+
+        Deploy lastDeploy = Deploy.builder()
+                .storyID("someStory")
+                .sha("blahblahSha").build();
+        when(productionDeployHistory.getLastDeploy())
+                .thenReturn(lastDeploy);
+
+        doThrow(new RevertFailedException("the problem")).when(jenkinsAPI).deployToStoryAcceptance(lastDeploy);
+
+        subject.start();
+
+        verify(revertErrorRepository).save("the problem");
+        verify(productionRevertFlag).clear();
+    }
+
+    @Test
     public void whenProductionAndStoryAcceptanceDeploysMatch_skipSADeployAndSAQueueManipulation() throws Exception {
         DeployedAppInfo storyAcceptanceInfo = new DeployedAppInfo();
         storyAcceptanceInfo.setPivotalTrackerStoryID("same-as-prod");

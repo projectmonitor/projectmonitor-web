@@ -2,12 +2,16 @@ package com.projectmonitor.jenkins;
 
 import com.projectmonitor.deploypipeline.Deploy;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +29,9 @@ public class JenkinsRevertStoryAcceptanceTest {
 
     @Mock
     private JenkinsJobPoller jenkinsJobPoller;
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -52,5 +59,20 @@ public class JenkinsRevertStoryAcceptanceTest {
         subject.execute(theDeploy);
 
         verify(jenkinsJobPoller).execute("jobstatus");
+    }
+
+    @Test
+    public void whenTriggerJobRequestFails_throwsException() throws Exception {
+        Deploy theDeploy = Deploy.builder()
+                .sha("sha")
+                .storyID("storyID")
+                .build();
+
+        RequestFailedException theError = new RequestFailedException("done goofed");
+        doThrow(theError).when(jenkinsJobAPI).triggerJob(any());
+
+        exception.expect(RevertFailedException.class);
+        exception.expectMessage("done goofed");
+        subject.execute(theDeploy);
     }
 }

@@ -23,12 +23,16 @@ class JenkinsRevertJob {
         this.jenkinsJobPoller = jenkinsJobPoller;
     }
 
-    public void execute(Deploy theDeploy) {
-        // todo: handle errors here and throw the correct exception
+    public void execute(Deploy theDeploy) throws RevertFailedException {
         logger.info("Reverting Production to the following SHA: " + theDeploy.getSha());
         String jobURL = ciJobConfiguration.getRevertProductionURL()
                 + theDeploy.getSha() + "&STORY_ID=" + theDeploy.getStoryID();
-        jenkinsJobAPI.triggerJob(jobURL);
+
+        try {
+            jenkinsJobAPI.triggerJob(jobURL);
+        } catch (RequestFailedException e) {
+            throw new RevertFailedException(e.getMessage(), e);
+        }
 
         jenkinsJobPoller.execute(ciJobConfiguration.getRevertProductionStatusURL());
     }
