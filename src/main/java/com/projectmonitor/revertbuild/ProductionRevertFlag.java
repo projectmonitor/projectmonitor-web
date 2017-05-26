@@ -1,4 +1,4 @@
-package com.projectmonitor.projectstatus;
+package com.projectmonitor.revertbuild;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

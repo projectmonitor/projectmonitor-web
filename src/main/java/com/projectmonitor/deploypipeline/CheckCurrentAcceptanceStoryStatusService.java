@@ -4,7 +4,7 @@ import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import com.projectmonitor.projectstatus.DeployedAppInfo;
-import com.projectmonitor.projectstatus.ProductionRevertFlag;
+import com.projectmonitor.revertbuild.ProductionRevertFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

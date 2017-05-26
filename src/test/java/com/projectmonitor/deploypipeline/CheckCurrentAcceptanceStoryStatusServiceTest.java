@@ -4,7 +4,7 @@ import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import com.projectmonitor.projectstatus.DeployedAppInfo;
-import com.projectmonitor.projectstatus.ProductionRevertFlag;
+import com.projectmonitor.revertbuild.ProductionRevertFlag;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

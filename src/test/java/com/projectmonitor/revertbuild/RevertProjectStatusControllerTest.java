@@ -1,4 +1,4 @@
-package com.projectmonitor.projectstatus;
+package com.projectmonitor.revertbuild;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

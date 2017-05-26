@@ -1,4 +1,4 @@
-package com.projectmonitor.projectstatus;
+package com.projectmonitor.revertbuild;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
