@@ -19,16 +19,16 @@ class RejectLabelService {
 
     private URLGenerator urlGenerator;
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public RejectLabelService(URLGenerator urlGenerator,
                               PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
-                              RestTemplate productionReleaseRestTemplate) {
+                              RestTemplate restTemplate) {
         this.urlGenerator = urlGenerator;
         this.pivotalTrackerStoryConfiguration = pivotalTrackerStoryConfiguration;
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
+        this.restTemplate = restTemplate;
     }
 
     void add(String storyID) {
@@ -46,7 +46,7 @@ class RejectLabelService {
 
         logger.info("Adding rejected label to tracker story: {}", storyID);
         HttpEntity<PivotalTrackerLabelSlim> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = productionReleaseRestTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 storyURL,
                 HttpMethod.POST,
                 entity,

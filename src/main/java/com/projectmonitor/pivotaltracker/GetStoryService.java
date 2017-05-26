@@ -12,23 +12,23 @@ import java.util.Objects;
 class GetStoryService {
 
     private URLGenerator urlGenerator;
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
     private RejectLabelService rejectLabelService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public GetStoryService(URLGenerator urlGenerator,
-                           RestTemplate productionReleaseRestTemplate,
+                           RestTemplate restTemplate,
                            RejectLabelService rejectLabelService) {
         this.urlGenerator = urlGenerator;
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
+        this.restTemplate = restTemplate;
         this.rejectLabelService = rejectLabelService;
     }
 
     PivotalTrackerStory load(String pivotalTrackerStoryID){
         String storyURL = urlGenerator.generate(pivotalTrackerStoryID);
-        PivotalTrackerStoryDTO storyDTO = productionReleaseRestTemplate.getForObject(storyURL, PivotalTrackerStoryDTO.class);
+        PivotalTrackerStoryDTO storyDTO = restTemplate.getForObject(storyURL, PivotalTrackerStoryDTO.class);
 
         boolean hasBeenRejected = false;
         String rejectedStoryID = "";

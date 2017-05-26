@@ -20,10 +20,11 @@ class PCFProductionDeployer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public PCFProductionDeployer(JenkinsJobAPI productionReleaseRestTemplate,
+    public PCFProductionDeployer(JenkinsJobAPI jenkinsJobAPI,
                                  CIJobConfiguration ciJobConfiguration,
-                                 ProductionDeployHistory productionDeployHistory, JenkinsJobPoller jenkinsJobPoller) {
-        this.jenkinsJobAPI = productionReleaseRestTemplate;
+                                 ProductionDeployHistory productionDeployHistory,
+                                 JenkinsJobPoller jenkinsJobPoller) {
+        this.jenkinsJobAPI = jenkinsJobAPI;
         this.ciJobConfiguration = ciJobConfiguration;
         this.productionDeployHistory = productionDeployHistory;
         this.jenkinsJobPoller = jenkinsJobPoller;
@@ -41,7 +42,7 @@ class PCFProductionDeployer {
             return false;
         }
 
-        if(jenkinsJobPoller.execute(ciJobConfiguration.getProductionDeployStatusURL())){
+        if (jenkinsJobPoller.execute(ciJobConfiguration.getProductionDeployStatusURL())) {
             logger.info("Production Deploy has finished!");
             productionDeployHistory.push(shaToDeploy, storyID);
             return true;

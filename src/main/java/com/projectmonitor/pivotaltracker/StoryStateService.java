@@ -16,17 +16,17 @@ class StoryStateService {
 
     private URLGenerator urlGenerator;
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public StoryStateService(URLGenerator urlGenerator,
                              PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
-                             RestTemplate productionReleaseRestTemplate) {
+                             RestTemplate restTemplate) {
         this.urlGenerator = urlGenerator;
         this.pivotalTrackerStoryConfiguration = pivotalTrackerStoryConfiguration;
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
+        this.restTemplate = restTemplate;
     }
 
     void setState(String storyID, String state) {
@@ -42,7 +42,7 @@ class StoryStateService {
         logger.info("Setting tracker story: {} to state: {}", storyID, state);
 
         HttpEntity<PivotalTrackerStoryDTO> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = productionReleaseRestTemplate.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 storyURL,
                 HttpMethod.PUT,
                 entity,

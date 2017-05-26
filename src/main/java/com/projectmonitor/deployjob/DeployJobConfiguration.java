@@ -9,11 +9,10 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @EnableAsync
 @EnableScheduling
-public class ProductionReleaseConfiguration {
+public class DeployJobConfiguration {
 
-    @Bean(name = "productionReleaseRestTemplate")
-    public RestTemplate getProductionReleaseRestTemplate() {
+    @Bean(name = "restTemplate")
+    public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
-
 }

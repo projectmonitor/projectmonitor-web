@@ -25,7 +25,7 @@ public class StoryStateServiceTest {
     @Mock
     private URLGenerator urlGenerator;
     @Mock
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
 
     @Before
     public void setUp() {
@@ -35,7 +35,7 @@ public class StoryStateServiceTest {
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerToken()).thenReturn("some-tracker-token");
 
         subject = new StoryStateService(urlGenerator, pivotalTrackerStoryConfiguration,
-                productionReleaseRestTemplate);
+                restTemplate);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class StoryStateServiceTest {
         pivotalTrackerStoryDTO.setCurrentState("rejected");
         HttpEntity<PivotalTrackerStoryDTO> entity = new HttpEntity<>(pivotalTrackerStoryDTO, headers);
 
-        Mockito.when(productionReleaseRestTemplate.exchange(
+        Mockito.when(restTemplate.exchange(
                 eq("http://tracker.com/100/55"),
                 eq(HttpMethod.PUT),
                 eq(entity),
@@ -56,7 +56,7 @@ public class StoryStateServiceTest {
         )).thenReturn(new ResponseEntity<>(HttpStatus.ACCEPTED));
 
         subject.setState("55", "rejected");
-        Mockito.verify(productionReleaseRestTemplate).exchange(
+        Mockito.verify(restTemplate).exchange(
                 eq("http://tracker.com/100/55"),
                 eq(HttpMethod.PUT),
                 eq(entity),

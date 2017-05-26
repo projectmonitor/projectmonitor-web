@@ -15,18 +15,18 @@ class RemoveRejectLabelService {
 
     private URLGenerator urlGenerator;
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
     private GetStoryService getStoryService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     public RemoveRejectLabelService(URLGenerator urlGenerator,
                                     PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration,
-                                    RestTemplate productionReleaseRestTemplate,
+                                    RestTemplate restTemplate,
                                     GetStoryService getStoryService) {
         this.urlGenerator = urlGenerator;
         this.pivotalTrackerStoryConfiguration = pivotalTrackerStoryConfiguration;
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
+        this.restTemplate = restTemplate;
         this.getStoryService = getStoryService;
     }
 
@@ -40,7 +40,7 @@ class RemoveRejectLabelService {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
         logger.info("Removing rejected label from story: {}", storyID);
-        ResponseEntity response = productionReleaseRestTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+        ResponseEntity response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 
         if(response.getStatusCodeValue() > 399){
             logger.error("failed removing label form story: {}. \n Error response: {}", storyID, response.toString());

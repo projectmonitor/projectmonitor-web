@@ -87,8 +87,6 @@ public class ProductionRevertTask {
         }
 
         productionRevertFlag.clear();
-
-        // todo: Address packages
     }
 
     private boolean deploysMatch(Deploy lastProductionDeploy, DeployedAppInfo storyAcceptanceDeploy) {

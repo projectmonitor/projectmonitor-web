@@ -20,7 +20,7 @@ public class GetStoryServiceTest {
     private GetStoryService subject;
 
     @Mock
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
     @Mock
     private URLGenerator urlGenerator;
     @Mock
@@ -29,7 +29,7 @@ public class GetStoryServiceTest {
     @Before
     public void setUp(){
         when(urlGenerator.generate("8888")).thenReturn("https://trackerapi.com/989898/8888");
-        subject = new GetStoryService(urlGenerator, productionReleaseRestTemplate, rejectLabelService);
+        subject = new GetStoryService(urlGenerator, restTemplate, rejectLabelService);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class GetStoryServiceTest {
                 .rejectedLabelID("")
                 .build();
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888",
+        when(restTemplate.getForObject("https://trackerapi.com/989898/8888",
                 PivotalTrackerStoryDTO.class))
                 .thenReturn(storyDTO);
         assertThat(subject.load("8888")).isEqualTo(story);
@@ -59,7 +59,7 @@ public class GetStoryServiceTest {
                 .rejectedLabelID("")
                 .build();
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888",
+        when(restTemplate.getForObject("https://trackerapi.com/989898/8888",
                 PivotalTrackerStoryDTO.class))
                 .thenReturn(storyDTO);
         assertThat(subject.load("8888")).isEqualTo(story);
@@ -84,7 +84,7 @@ public class GetStoryServiceTest {
                 .hasBeenRejected(true)
                 .build();
 
-        when(productionReleaseRestTemplate.getForObject("https://trackerapi.com/989898/8888",
+        when(restTemplate.getForObject("https://trackerapi.com/989898/8888",
                 PivotalTrackerStoryDTO.class))
                 .thenReturn(storyDTO);
         assertThat(subject.load("8888")).isEqualTo(story);

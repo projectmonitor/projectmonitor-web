@@ -25,7 +25,7 @@ public class RemoveRejectLabelServiceTest {
     @Mock
     private PivotalTrackerStoryConfiguration pivotalTrackerStoryConfiguration;
     @Mock
-    private RestTemplate productionReleaseRestTemplate;
+    private RestTemplate restTemplate;
     @Mock
     private GetStoryService getStoryService;
     private PivotalTrackerStory theStory;
@@ -45,7 +45,7 @@ public class RemoveRejectLabelServiceTest {
         when(pivotalTrackerStoryConfiguration.getPivotalTrackerToken()).thenReturn("some-tracker-token");
         when(getStoryService.load("55")).thenReturn(theStory);
         subject = new RemoveRejectLabelService(urlGenerator, pivotalTrackerStoryConfiguration,
-                productionReleaseRestTemplate, getStoryService);
+                restTemplate, getStoryService);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class RemoveRejectLabelServiceTest {
 
         HttpEntity<PivotalTrackerStoryDTO> entity = new HttpEntity<>(null, headers);
 
-        Mockito.when(productionReleaseRestTemplate.exchange(
+        Mockito.when(restTemplate.exchange(
                 eq("http://tracker.com/100/55/labels/someID"),
                 eq(HttpMethod.DELETE),
                 eq(entity),
@@ -65,7 +65,7 @@ public class RemoveRejectLabelServiceTest {
 
         subject.execute("55");
 
-        Mockito.verify(productionReleaseRestTemplate).exchange(
+        Mockito.verify(restTemplate).exchange(
                 eq("http://tracker.com/100/55/labels/someID"),
                 eq(HttpMethod.DELETE),
                 eq(entity),

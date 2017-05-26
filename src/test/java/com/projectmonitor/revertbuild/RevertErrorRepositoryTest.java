@@ -28,7 +28,7 @@ public class RevertErrorRepositoryTest {
     }
 
     @Test
-    public void blah() throws Exception {
+    public void save_passesAlongTheMessageToRedis() throws Exception {
         subject.save("some error");
         verify(boundValueOperations).set("some error");
     }
