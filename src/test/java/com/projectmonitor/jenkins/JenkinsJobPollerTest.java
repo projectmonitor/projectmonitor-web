@@ -21,7 +21,7 @@ public class JenkinsJobPollerTest {
     private JenkinsJobAPI jenkinsJobAPI;
 
     @Mock
-    ThreadSleepService threadSleepService;
+    private ThreadSleepService threadSleepService;
 
     @Test
     public void blocksUntilTheJenkinsJobHasCompleted_returnsTrueIfJobSuccessful() throws InterruptedException, RequestFailedException {

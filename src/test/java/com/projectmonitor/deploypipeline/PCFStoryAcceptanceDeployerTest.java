@@ -1,5 +1,7 @@
 package com.projectmonitor.deploypipeline;
 
+import com.projectmonitor.deploys.Deploy;
+import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsJobPoller;

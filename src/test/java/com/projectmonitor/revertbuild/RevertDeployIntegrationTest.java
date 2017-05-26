@@ -4,7 +4,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.projectmonitor.deploypipeline.ProductionDeployHistory;
+import com.projectmonitor.deploys.ProductionDeployHistory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deploys;
 
 import org.junit.Before;
 import org.junit.Test;

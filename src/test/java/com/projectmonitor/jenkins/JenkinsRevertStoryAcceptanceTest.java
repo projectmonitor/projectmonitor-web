@@ -1,6 +1,6 @@
 package com.projectmonitor.jenkins;
 
-import com.projectmonitor.deploypipeline.Deploy;
+import com.projectmonitor.deploys.Deploy;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

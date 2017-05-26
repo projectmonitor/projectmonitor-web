@@ -1,5 +1,6 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.storyacceptancequeueappend;
 
+import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -15,8 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(StoryAcceptanceDeployController.class)
-public class StoryAcceptanceDeployControllerTest {
+@WebMvcTest(StoryAcceptanceQueueAppendController.class)
+public class StoryAcceptanceQueueAppendControllerTest {
 
     @Autowired
     private MockMvc mvc;

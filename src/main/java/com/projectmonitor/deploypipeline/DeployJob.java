@@ -1,6 +1,5 @@
 package com.projectmonitor.deploypipeline;
 
-import com.projectmonitor.ApplicationConfiguration;
 import com.projectmonitor.environments.DeployedAppInfo;
 import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DeployJob {
-
 
     private final PCFProductionDeployer pcfProductionDeployer;
     private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;

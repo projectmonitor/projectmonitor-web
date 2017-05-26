@@ -1,6 +1,6 @@
 package com.projectmonitor.jenkins;
 
-import com.projectmonitor.deploypipeline.Deploy;
+import com.projectmonitor.deploys.Deploy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -1,8 +1,8 @@
 package com.projectmonitor.revertbuild;
 
-import com.projectmonitor.deploypipeline.Deploy;
-import com.projectmonitor.deploypipeline.ProductionDeployHistory;
-import com.projectmonitor.deploypipeline.StoryAcceptanceQueue;
+import com.projectmonitor.deploys.Deploy;
+import com.projectmonitor.deploys.ProductionDeployHistory;
+import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import com.projectmonitor.environments.Environments;
 import com.projectmonitor.jenkins.JenkinsAPI;
 import com.projectmonitor.jenkins.RevertFailedException;

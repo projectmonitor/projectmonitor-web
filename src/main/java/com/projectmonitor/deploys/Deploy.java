@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deploys;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

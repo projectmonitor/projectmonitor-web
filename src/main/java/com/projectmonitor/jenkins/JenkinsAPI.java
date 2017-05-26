@@ -1,6 +1,6 @@
 package com.projectmonitor.jenkins;
 
-import com.projectmonitor.deploypipeline.Deploy;
+import com.projectmonitor.deploys.Deploy;
 
 public interface JenkinsAPI {
 

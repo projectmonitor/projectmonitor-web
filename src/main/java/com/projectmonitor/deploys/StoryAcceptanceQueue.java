@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deploys;
 
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
@@ -33,7 +33,7 @@ public class StoryAcceptanceQueue {
         redisTemplate.boundListOps(STORY_ACCEPTANCE_QUEUE_NAME).rightPush(commitSHA + "-" + storyID);
     }
 
-    Deploy pop() {
+    public Deploy pop() {
         String queueMessage = redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME).leftPop();
 
         if (queueMessage == null || queueMessage.isEmpty()) {
@@ -52,7 +52,7 @@ public class StoryAcceptanceQueue {
                 .build();
     }
 
-    Deploy readHead() {
+    public Deploy readHead() {
         String queueMessage = redisTemplate.boundListOps(StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME).index(0);
 
         if (queueMessage == null || queueMessage.isEmpty()) {

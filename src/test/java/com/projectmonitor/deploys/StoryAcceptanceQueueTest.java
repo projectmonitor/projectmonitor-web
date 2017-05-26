@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deploys;
 
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
@@ -10,7 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import static com.projectmonitor.deploypipeline.StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME;
+import static com.projectmonitor.deploys.StoryAcceptanceQueue.STORY_ACCEPTANCE_QUEUE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

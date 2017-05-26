@@ -1,5 +1,7 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.storyacceptancequeueappend;
 
+import com.projectmonitor.deploys.Deploy;
+import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,12 +11,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-class StoryAcceptanceDeployController {
+class StoryAcceptanceQueueAppendController {
 
     private StoryAcceptanceQueue storyAcceptanceQueue;
 
     @Autowired
-    public StoryAcceptanceDeployController(StoryAcceptanceQueue storyAcceptanceQueue) {
+    public StoryAcceptanceQueueAppendController(StoryAcceptanceQueue storyAcceptanceQueue) {
         this.storyAcceptanceQueue = storyAcceptanceQueue;
     }
 

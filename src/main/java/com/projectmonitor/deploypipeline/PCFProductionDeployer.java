@@ -1,5 +1,6 @@
 package com.projectmonitor.deploypipeline;
 
+import com.projectmonitor.deploys.ProductionDeployHistory;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
 import com.projectmonitor.jenkins.JenkinsJobAPI;
