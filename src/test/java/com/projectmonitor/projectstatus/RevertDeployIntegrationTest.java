@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.projectmonitor.deploypipeline.ProductionDeployHistory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,6 @@ import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static com.projectmonitor.projectstatus.ProductionRevertFlag.KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
@@ -66,7 +66,8 @@ public class RevertDeployIntegrationTest {
     public void tearDown() {
         mockServer.stop();
 
-        redisTemplate.delete(KEY);
+        redisTemplate.delete(ProductionRevertFlag.KEY);
+        redisTemplate.delete(ProductionDeployHistory.KEY);
     }
 
     @Test

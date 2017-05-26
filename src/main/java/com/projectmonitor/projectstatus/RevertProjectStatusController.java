@@ -21,20 +21,11 @@ public class RevertProjectStatusController {
     public String execute() {
         productionRevertFlag.set();
         productionRevertTask.start();
-
-
-
-        // build the prod deploy queue on production deploys - done
+        // TODO:
+        // display the errors we are saving in the revert job
+            // allow clearing of them how?
         // on server boot reset production revert flag
             // or determine state based on running revert job?
-        // mark a production revert flag so other background job doesn't try shit - done
-            // (also can disable button) - done
-            // (also used to mark background red as can be)
-        // enqueue a revert job (async) that ->
-
-
-
-        // redirect holmes
         return "redirect:/";
     }
 }

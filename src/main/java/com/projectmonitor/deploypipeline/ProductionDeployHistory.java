@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductionDeployHistory {
 
-    static final String KEY = "PRODUCTION_DEPLOY_QUEUE";
+    public static final String KEY = "PRODUCTION_DEPLOY_QUEUE";
     private RedisTemplate<String, String> redisTemplate;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
