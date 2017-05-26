@@ -1,4 +1,4 @@
-package com.projectmonitor.projectstatus;
+package com.projectmonitor.environments;
 
 import com.projectmonitor.ApplicationConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;

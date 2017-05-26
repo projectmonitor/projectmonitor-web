@@ -1,6 +1,8 @@
 package com.projectmonitor.projectstatus;
 
 import com.projectmonitor.ApplicationConfiguration;
+import com.projectmonitor.environments.DeployedAppInfo;
+import com.projectmonitor.environments.Environments;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsJobs;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;

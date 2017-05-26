@@ -1,16 +1,17 @@
 package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.ApplicationConfiguration;
+import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
-import com.projectmonitor.projectstatus.DeployedAppInfo;
+import com.projectmonitor.environments.DeployedAppInfo;
 import com.projectmonitor.revertbuild.ProductionRevertFlag;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,10 +21,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CheckCurrentAcceptanceStoryStatusServiceTest {
 
+    @InjectMocks
     private CheckCurrentAcceptanceStoryStatusService subject;
-    private ApplicationConfiguration applicationConfiguration;
-    @Mock
-    private RestTemplate productionReleaseRestTemplate;
     @Mock
     private PCFProductionDeployer pcfProductionDeployer;
     @Mock
@@ -32,28 +31,21 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     private PivotalTrackerAPI pivotalTrackerAPI;
     @Mock
     private ProductionRevertFlag productionRevertFlag;
-
+    @Mock
+    private Environments environments;
     private DeployedAppInfo acceptanceStoryInfo;
     private DeployedAppInfo productionStoryInfo;
 
     @Before
     public void setUp() {
-        applicationConfiguration = new ApplicationConfiguration();
-        applicationConfiguration.setStoryAcceptanceUrl("http://story.acceptance.url/info");
-        applicationConfiguration.setProductionUrl("http://story.production.url/info");
-
-        subject = new CheckCurrentAcceptanceStoryStatusService(productionReleaseRestTemplate,
-                applicationConfiguration, pcfProductionDeployer,
-                pcfStoryAcceptanceDeployer, pivotalTrackerAPI, productionRevertFlag);
-
         acceptanceStoryInfo = new DeployedAppInfo();
         acceptanceStoryInfo.setPivotalTrackerStoryID("8888");
         acceptanceStoryInfo.setStorySHA("blahblahSHA");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl(), DeployedAppInfo.class)).thenReturn(acceptanceStoryInfo);
+        when(environments.loadStoryAcceptanceDeployStory()).thenReturn(acceptanceStoryInfo);
 
         productionStoryInfo = new DeployedAppInfo();
         productionStoryInfo.setPivotalTrackerStoryID("9999");
-        when(productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class)).thenReturn(productionStoryInfo);
+        when(environments.loadProductionDeployStory()).thenReturn(productionStoryInfo);
         when(productionRevertFlag.get()).thenReturn(false);
     }
 
@@ -61,7 +53,7 @@ public class CheckCurrentAcceptanceStoryStatusServiceTest {
     public void execute_whenTheProductionRevertFlagIsSet_exitOnStartup() throws Exception {
         when(productionRevertFlag.get()).thenReturn(true);
         subject.execute();
-        verifyZeroInteractions(productionReleaseRestTemplate);
+        verifyZeroInteractions(environments);
     }
 
     @Test

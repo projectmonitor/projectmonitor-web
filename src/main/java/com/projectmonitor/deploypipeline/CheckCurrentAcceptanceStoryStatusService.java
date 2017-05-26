@@ -1,41 +1,39 @@
 package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.ApplicationConfiguration;
+import com.projectmonitor.environments.DeployedAppInfo;
+import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
-import com.projectmonitor.projectstatus.DeployedAppInfo;
 import com.projectmonitor.revertbuild.ProductionRevertFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class CheckCurrentAcceptanceStoryStatusService {
 
-    private final RestTemplate productionReleaseRestTemplate;
-    private final ApplicationConfiguration applicationConfiguration;
+
     private final PCFProductionDeployer pcfProductionDeployer;
     private final PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer;
     private final PivotalTrackerAPI pivotalTrackerAPI;
     private final ProductionRevertFlag productionRevertFlag;
+    private final Environments environments;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public CheckCurrentAcceptanceStoryStatusService(RestTemplate productionReleaseRestTemplate,
-                                                    ApplicationConfiguration applicationConfiguration,
-                                                    PCFProductionDeployer pcfProductionDeployer,
+    public CheckCurrentAcceptanceStoryStatusService(PCFProductionDeployer pcfProductionDeployer,
                                                     PCFStoryAcceptanceDeployer pcfStoryAcceptanceDeployer,
                                                     PivotalTrackerAPI pivotalTrackerAPI,
-                                                    ProductionRevertFlag productionRevertFlag) {
-        this.productionReleaseRestTemplate = productionReleaseRestTemplate;
-        this.applicationConfiguration = applicationConfiguration;
+                                                    ProductionRevertFlag productionRevertFlag,
+                                                    Environments environments) {
         this.pcfProductionDeployer = pcfProductionDeployer;
         this.pcfStoryAcceptanceDeployer = pcfStoryAcceptanceDeployer;
         this.pivotalTrackerAPI = pivotalTrackerAPI;
         this.productionRevertFlag = productionRevertFlag;
+        this.environments = environments;
     }
 
     @Scheduled(fixedDelay = 180000, initialDelay = 10000)
@@ -48,10 +46,10 @@ public class CheckCurrentAcceptanceStoryStatusService {
         }
         // todo: if queue is empty just bail out
         try {
-            DeployedAppInfo acceptanceStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getStoryAcceptanceUrl(), DeployedAppInfo.class);
+            DeployedAppInfo acceptanceStory = environments.loadStoryAcceptanceDeployStory();
             logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());
 
-            DeployedAppInfo productionStory = productionReleaseRestTemplate.getForObject(applicationConfiguration.getProductionUrl(), DeployedAppInfo.class);
+            DeployedAppInfo productionStory = environments.loadProductionDeployStory();
             logger.info("Current story in production: {}", productionStory.getPivotalTrackerStoryID());
 
             PivotalTrackerStory story = pivotalTrackerAPI.getStory(acceptanceStory.getPivotalTrackerStoryID());

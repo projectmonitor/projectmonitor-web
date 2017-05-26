@@ -1,5 +1,6 @@
 package com.projectmonitor.projectstatus;
 
+import com.projectmonitor.environments.DeployedAppInfo;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.junit.Before;

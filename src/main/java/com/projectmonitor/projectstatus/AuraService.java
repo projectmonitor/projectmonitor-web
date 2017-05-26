@@ -1,13 +1,14 @@
 package com.projectmonitor.projectstatus;
 
+import com.projectmonitor.environments.DeployedAppInfo;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuraService {
+class AuraService {
 
-    public String determineAura(CIResponse ciResponse,
+    String determineAura(CIResponse ciResponse,
                                 CIResponse storyAcceptanceDeployResponse,
                                 DeployedAppInfo storyAcceptanceDeployedStory,
                                 CIResponse productionDeployResponse,

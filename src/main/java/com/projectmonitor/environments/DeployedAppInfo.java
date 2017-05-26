@@ -1,4 +1,4 @@
-package com.projectmonitor.projectstatus;
+package com.projectmonitor.environments;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
