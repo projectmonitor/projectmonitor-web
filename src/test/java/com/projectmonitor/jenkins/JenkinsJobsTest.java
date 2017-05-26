@@ -24,8 +24,6 @@ public class JenkinsJobsTest {
     @Mock
     private JenkinsRevertStoryAcceptance jenkinsRevertStoryAcceptance;
 
-    // TODO this class has untested methods
-
     @Test
     public void revertProduction_delegates() throws Exception {
         Deploy theDeploy = Deploy.builder().build();
