@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deployjob;
 
 import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;

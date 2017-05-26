@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deployjob;
 
 import com.projectmonitor.deploys.ProductionDeployHistory;
 import com.projectmonitor.jenkins.CIJobConfiguration;

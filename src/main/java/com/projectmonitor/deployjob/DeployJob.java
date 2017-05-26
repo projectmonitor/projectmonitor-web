@@ -1,4 +1,4 @@
-package com.projectmonitor.deploypipeline;
+package com.projectmonitor.deployjob;
 
 import com.projectmonitor.environments.DeployedAppInfo;
 import com.projectmonitor.environments.Environments;
