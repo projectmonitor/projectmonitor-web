@@ -6,6 +6,19 @@ body.normal {
     background-color: cornflowerblue;
 }
 
+div.card {
+    width: 650px;
+    margin: 15px auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid black;
+    box-shadow: 10px 5px 5px black;
+}
+
+div.ci-info {
+
+}
+
 body.dependencyDown {
     background-color: purple;
 }
