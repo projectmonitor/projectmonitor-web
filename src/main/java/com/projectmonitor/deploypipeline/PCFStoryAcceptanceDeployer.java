@@ -1,7 +1,7 @@
 package com.projectmonitor.deploypipeline;
 
 import com.projectmonitor.jenkins.CIJobConfiguration;
-import com.projectmonitor.jenkins.CIResponse;
+import com.projectmonitor.jenkins.JenkinsJobPoller;
 import com.projectmonitor.jenkins.JenkinsRestTemplate;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.slf4j.Logger;
@@ -18,21 +18,20 @@ public class PCFStoryAcceptanceDeployer {
     private final StoryAcceptanceQueue storyAcceptanceQueue;
     private final JenkinsRestTemplate jenkinsRestTemplate;
     private final CIJobConfiguration ciJobConfiguration;
-    private final ThreadSleepService threadSleepService;
     private PivotalTrackerAPI pivotalTrackerAPI;
-    private static final String JENKINS_SUCCESS_MESSAGE = "SUCCESS";
+    private JenkinsJobPoller jenkinsJobPoller;
 
     @Autowired
     public PCFStoryAcceptanceDeployer(StoryAcceptanceQueue storyAcceptanceQueue,
                                       JenkinsRestTemplate jenkinsRestTemplate,
                                       CIJobConfiguration ciJobConfiguration,
-                                      ThreadSleepService threadSleepService,
-                                      PivotalTrackerAPI pivotalTrackerAPI) {
+                                      PivotalTrackerAPI pivotalTrackerAPI,
+                                      JenkinsJobPoller jenkinsJobPoller) {
         this.storyAcceptanceQueue = storyAcceptanceQueue;
         this.jenkinsRestTemplate = jenkinsRestTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
-        this.threadSleepService = threadSleepService;
         this.pivotalTrackerAPI = pivotalTrackerAPI;
+        this.jenkinsJobPoller = jenkinsJobPoller;
     }
 
     public boolean push() {
@@ -51,34 +50,19 @@ public class PCFStoryAcceptanceDeployer {
             return false;
         }
 
-        CIResponse jenkinsJobStatus = new CIResponse();
-        try {
-            do {
-                logger.info("Sleeping before next poll...");
-                threadSleepService.sleep(15000);
-                try {
-                    jenkinsJobStatus = jenkinsRestTemplate.loadJobStatus(ciJobConfiguration.getStoryAcceptanceDeployStatusURL());
-                } catch (RuntimeException e) {
-                    logger.info("Call to story acceptance deploy status failed, but job kicked off, continuing polling...", e.getMessage());
-                    jenkinsJobStatus.setBuilding(true);
-                }
-            } while (jenkinsJobStatus.isBuilding());
-        } catch (InterruptedException e) {
-            logger.info("Some thread problem", e.getMessage());
-        }
+        boolean buildSuccessful = jenkinsJobPoller.execute(ciJobConfiguration.getStoryAcceptanceDeployStatusURL());
 
-        if (JENKINS_SUCCESS_MESSAGE.equals(jenkinsJobStatus.getResult())) {
+        if (buildSuccessful) {
             logger.info("Story Acceptance Deploy has finished successfully!");
             return true;
-        } else {
-            logger.info("Story Acceptance Deploy failed, rejecting story");
-            pivotalTrackerAPI.rejectStory(deploy.getStoryID());
         }
 
+        logger.info("Story Acceptance Deploy failed, rejecting story");
+        pivotalTrackerAPI.rejectStory(deploy.getStoryID());
         return false;
     }
 
-    public void pushRejectedBuild(String rejectedStoryID) {
+    void pushRejectedBuild(String rejectedStoryID) {
         logger.info("Story in acceptance is rejected, storyID: {}", rejectedStoryID);
         Deploy nextDeploy = storyAcceptanceQueue.readHead();
         if (nextDeploy == null || !Objects.equals(rejectedStoryID, nextDeploy.getStoryID())) {
