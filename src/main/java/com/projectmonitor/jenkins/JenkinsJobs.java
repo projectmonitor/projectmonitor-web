@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JenkinsJobs implements JenkinsAPI {
 
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     private CIJobConfiguration ciJobConfiguration;
     private JenkinsRevertJob jenkinsRevertJob;
     private JenkinsRevertStoryAcceptance jenkinsRevertStoryAcceptance;
@@ -17,11 +17,11 @@ public class JenkinsJobs implements JenkinsAPI {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    public JenkinsJobs(JenkinsJobAPI jenkinsJobAPI,
+    public JenkinsJobs(JenkinsClient jenkinsClient,
                        CIJobConfiguration ciJobConfiguration,
                        JenkinsRevertJob jenkinsRevertJob,
                        JenkinsRevertStoryAcceptance jenkinsRevertStoryAcceptance) {
-        this.jenkinsJobAPI = jenkinsJobAPI;
+        this.jenkinsClient = jenkinsClient;
         this.ciJobConfiguration = ciJobConfiguration;
         this.jenkinsRevertJob = jenkinsRevertJob;
         this.jenkinsRevertStoryAcceptance = jenkinsRevertStoryAcceptance;
@@ -31,7 +31,7 @@ public class JenkinsJobs implements JenkinsAPI {
     public CIResponse loadLastCompletedCIRun() {
         CIResponse ciResponse = new CIResponse();
         try {
-            ciResponse = jenkinsJobAPI.loadJobStatus(
+            ciResponse = jenkinsClient.loadJobStatus(
                     ciJobConfiguration.getCiLastCompletedBuildURL());
         } catch (RequestFailedException exception) {
             logger.warn(exception.getMessage(), exception);
@@ -44,7 +44,7 @@ public class JenkinsJobs implements JenkinsAPI {
     public CIResponse loadStoryAcceptanceLastDeployStatus() {
         CIResponse ciResponse = new CIResponse();
         try {
-            ciResponse = jenkinsJobAPI.loadJobStatus(
+            ciResponse = jenkinsClient.loadJobStatus(
                     ciJobConfiguration.getStoryAcceptanceDeployJobLastStatusURL()
             );
         } catch (RequestFailedException exception) {
@@ -59,7 +59,7 @@ public class JenkinsJobs implements JenkinsAPI {
     public CIResponse loadProductionLastDeployStatus() {
         CIResponse ciResponse = new CIResponse();
         try {
-            ciResponse = jenkinsJobAPI.loadJobStatus(
+            ciResponse = jenkinsClient.loadJobStatus(
                     ciJobConfiguration.getProductionDeployJobLastStatusURL()
             );
         } catch (RequestFailedException exception) {
@@ -76,7 +76,7 @@ public class JenkinsJobs implements JenkinsAPI {
     }
 
     @Override
-    public void deployToStoryAcceptance(Deploy deploy) throws RevertFailedException {
+    public void revertAcceptance(Deploy deploy) throws RevertFailedException {
         jenkinsRevertStoryAcceptance.execute(deploy);
     }
 }

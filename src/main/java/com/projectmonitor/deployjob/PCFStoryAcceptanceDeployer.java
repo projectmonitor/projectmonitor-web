@@ -4,7 +4,7 @@ import com.projectmonitor.deploys.Deploy;
 import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
-import com.projectmonitor.jenkins.JenkinsJobAPI;
+import com.projectmonitor.jenkins.JenkinsClient;
 import com.projectmonitor.jenkins.RequestFailedException;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.slf4j.Logger;
@@ -19,19 +19,19 @@ class PCFStoryAcceptanceDeployer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
     private final StoryAcceptanceQueue storyAcceptanceQueue;
-    private final JenkinsJobAPI jenkinsJobAPI;
+    private final JenkinsClient jenkinsClient;
     private final CIJobConfiguration ciJobConfiguration;
     private PivotalTrackerAPI pivotalTrackerAPI;
     private JenkinsJobPoller jenkinsJobPoller;
 
     @Autowired
     public PCFStoryAcceptanceDeployer(StoryAcceptanceQueue storyAcceptanceQueue,
-                                      JenkinsJobAPI jenkinsJobAPI,
+                                      JenkinsClient jenkinsClient,
                                       CIJobConfiguration ciJobConfiguration,
                                       PivotalTrackerAPI pivotalTrackerAPI,
                                       JenkinsJobPoller jenkinsJobPoller) {
         this.storyAcceptanceQueue = storyAcceptanceQueue;
-        this.jenkinsJobAPI = jenkinsJobAPI;
+        this.jenkinsClient = jenkinsClient;
         this.ciJobConfiguration = ciJobConfiguration;
         this.pivotalTrackerAPI = pivotalTrackerAPI;
         this.jenkinsJobPoller = jenkinsJobPoller;
@@ -47,7 +47,7 @@ class PCFStoryAcceptanceDeployer {
 
         logger.info("Deploying to Story Acceptance with the following SHA: " + deploy.getSha());
         try {
-            jenkinsJobAPI.triggerJob(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + deploy.getSha());
+            jenkinsClient.triggerJob(ciJobConfiguration.getStoryAcceptanceDeployJobURL() + deploy.getSha());
         } catch (RuntimeException | RequestFailedException e) {
             logger.info("Call to kickoff story acceptance deploy failed, cause: ", e.getMessage());
             return false;

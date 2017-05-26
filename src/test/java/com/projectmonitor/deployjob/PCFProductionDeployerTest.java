@@ -4,7 +4,7 @@ import com.projectmonitor.deploys.ProductionDeployHistory;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
-import com.projectmonitor.jenkins.JenkinsJobAPI;
+import com.projectmonitor.jenkins.JenkinsClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +24,7 @@ public class PCFProductionDeployerTest {
     private String expectedProductionDeployJobURL = "http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=blahblahSHA&STORY_ID=theStoryID";
     private String deployStatusURL = "http://localhost:8080/job/TestProject to Production/lastBuild/api/json";
     @Mock
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     @Mock
     private ProductionDeployHistory productionDeployHistory;
     @Mock
@@ -35,14 +35,14 @@ public class PCFProductionDeployerTest {
         CIJobConfiguration ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setProductionDeployJobURL("http://localhost:8080/job/TestProject to Production/buildWithParameters?SHA_TO_DEPLOY=");
         ciJobConfiguration.setProductionDeployStatusURL(deployStatusURL);
-        subject = new PCFProductionDeployer(jenkinsJobAPI, ciJobConfiguration, productionDeployHistory, jenkinsJobPoller);
+        subject = new PCFProductionDeployer(jenkinsClient, ciJobConfiguration, productionDeployHistory, jenkinsJobPoller);
     }
 
     @Test
     public void push_kicksOffProductionDeployJob_withShaFromAcceptance() throws Exception {
-        when(jenkinsJobAPI.loadJobStatus(deployStatusURL)).thenReturn(new CIResponse());
+        when(jenkinsClient.loadJobStatus(deployStatusURL)).thenReturn(new CIResponse());
         subject.push("blahblahSHA", "theStoryID");
-        Mockito.verify(jenkinsJobAPI).triggerJob(expectedProductionDeployJobURL);
+        Mockito.verify(jenkinsClient).triggerJob(expectedProductionDeployJobURL);
     }
 
     @Test

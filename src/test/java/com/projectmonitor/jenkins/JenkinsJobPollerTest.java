@@ -18,7 +18,7 @@ public class JenkinsJobPollerTest {
     private JenkinsJobPoller subject;
 
     @Mock
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
 
     @Mock
     private ThreadSleepService threadSleepService;
@@ -32,7 +32,7 @@ public class JenkinsJobPollerTest {
         finishedBuilding.setBuilding(false);
         finishedBuilding.setResult(JenkinsJobPoller.SUCCESS_MESSAGE);
 
-        when(jenkinsJobAPI.loadJobStatus("theurl.com"))
+        when(jenkinsClient.loadJobStatus("theurl.com"))
                 .thenReturn(stillBuilding).thenReturn(finishedBuilding);
 
         assertThat(subject.execute("theurl.com")).isTrue();
@@ -45,7 +45,7 @@ public class JenkinsJobPollerTest {
         finishedBuilding.setBuilding(false);
         finishedBuilding.setResult("SOMETHING_ELSE");
 
-        when(jenkinsJobAPI.loadJobStatus("theurl.com")).thenReturn(finishedBuilding);
+        when(jenkinsClient.loadJobStatus("theurl.com")).thenReturn(finishedBuilding);
 
         assertThat(subject.execute("theurl.com")).isFalse();
     }
@@ -56,7 +56,7 @@ public class JenkinsJobPollerTest {
         finishedBuilding.setBuilding(false);
         finishedBuilding.setResult(JenkinsJobPoller.SUCCESS_MESSAGE);
 
-        when(jenkinsJobAPI.loadJobStatus("theurl.com"))
+        when(jenkinsClient.loadJobStatus("theurl.com"))
                 .thenThrow(new RuntimeException()).thenReturn(finishedBuilding);
 
         assertThat(subject.execute("theurl.com")).isTrue();

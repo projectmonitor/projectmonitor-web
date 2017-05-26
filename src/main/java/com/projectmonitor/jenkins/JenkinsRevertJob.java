@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 class JenkinsRevertJob {
 
     private CIJobConfiguration ciJobConfiguration;
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     private JenkinsJobPoller jenkinsJobPoller;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
     JenkinsRevertJob(CIJobConfiguration ciJobConfiguration,
-                     JenkinsJobAPI jenkinsJobAPI,
+                     JenkinsClient jenkinsClient,
                      JenkinsJobPoller jenkinsJobPoller) {
         this.ciJobConfiguration = ciJobConfiguration;
-        this.jenkinsJobAPI = jenkinsJobAPI;
+        this.jenkinsClient = jenkinsClient;
         this.jenkinsJobPoller = jenkinsJobPoller;
     }
 
@@ -29,7 +29,7 @@ class JenkinsRevertJob {
                 + theDeploy.getSha() + "&STORY_ID=" + theDeploy.getStoryID();
 
         try {
-            jenkinsJobAPI.triggerJob(jobURL);
+            jenkinsClient.triggerJob(jobURL);
         } catch (RequestFailedException e) {
             throw new RevertFailedException(e.getMessage(), e);
         }

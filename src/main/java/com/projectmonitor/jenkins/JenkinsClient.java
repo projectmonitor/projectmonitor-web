@@ -12,19 +12,18 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class JenkinsJobAPI {
+public class JenkinsClient {
 
     private RestTemplate restTemplate;
     private CIJobConfiguration ciJobConfiguration;
 
     @Autowired
-    public JenkinsJobAPI(RestTemplate restTemplate,
+    public JenkinsClient(RestTemplate restTemplate,
                          CIJobConfiguration ciJobConfiguration) {
         this.restTemplate = restTemplate;
         this.ciJobConfiguration = ciJobConfiguration;
     }
 
-    // TODO this class and the other API class, same concept?
     private void addAuthentication(String username, String password) {
         List<ClientHttpRequestInterceptor> interceptors = Collections
                 .singletonList(new BasicAuthorizationInterceptor(

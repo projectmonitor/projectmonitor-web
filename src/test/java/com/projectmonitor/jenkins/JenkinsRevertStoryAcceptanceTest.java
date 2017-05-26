@@ -22,7 +22,7 @@ public class JenkinsRevertStoryAcceptanceTest {
     private JenkinsRevertStoryAcceptance subject;
 
     @Mock
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
 
     @Mock
     private CIJobConfiguration ciJobConfiguration;
@@ -47,7 +47,7 @@ public class JenkinsRevertStoryAcceptanceTest {
         Deploy theDeploy = Deploy.builder()
                 .sha("sha").storyID("storyID").build();
         subject.execute(theDeploy);
-        verify(jenkinsJobAPI).triggerJob("theRevertJob.com/sha&STORY_ID=storyID");
+        verify(jenkinsClient).triggerJob("theRevertJob.com/sha&STORY_ID=storyID");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class JenkinsRevertStoryAcceptanceTest {
                 .build();
 
         RequestFailedException theError = new RequestFailedException("done goofed");
-        doThrow(theError).when(jenkinsJobAPI).triggerJob(any());
+        doThrow(theError).when(jenkinsClient).triggerJob(any());
 
         exception.expect(RevertFailedException.class);
         exception.expectMessage("done goofed");

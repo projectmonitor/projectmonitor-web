@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 @Component
 class JenkinsRevertStoryAcceptance {
 
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     private CIJobConfiguration ciJobConfiguration;
     private JenkinsJobPoller jenkinsJobPoller;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     @Autowired
-    JenkinsRevertStoryAcceptance(JenkinsJobAPI jenkinsJobAPI,
+    JenkinsRevertStoryAcceptance(JenkinsClient jenkinsClient,
                                  CIJobConfiguration ciJobConfiguration,
                                  JenkinsJobPoller jenkinsJobPoller) {
-        this.jenkinsJobAPI = jenkinsJobAPI;
+        this.jenkinsClient = jenkinsClient;
         this.ciJobConfiguration = ciJobConfiguration;
         this.jenkinsJobPoller = jenkinsJobPoller;
     }
@@ -29,7 +29,7 @@ class JenkinsRevertStoryAcceptance {
 
         logger.info("Triggering Revert of Story Acceptance with sha: {}", theDeploy.getSha());
         try {
-            jenkinsJobAPI.triggerJob(jobURL);
+            jenkinsClient.triggerJob(jobURL);
         } catch (RequestFailedException e) {
             throw new RevertFailedException(e.getMessage(), e);
         }

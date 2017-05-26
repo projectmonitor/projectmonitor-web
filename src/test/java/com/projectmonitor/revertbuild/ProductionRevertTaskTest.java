@@ -161,7 +161,7 @@ public class ProductionRevertTaskTest {
 
         subject.start();
 
-        verify(jenkinsAPI).deployToStoryAcceptance(lastProductionDeploy);
+        verify(jenkinsAPI).revertAcceptance(lastProductionDeploy);
     }
 
     @Test
@@ -204,7 +204,7 @@ public class ProductionRevertTaskTest {
         when(productionDeployHistory.getLastDeploy())
                 .thenReturn(lastDeploy);
 
-        doThrow(new RevertFailedException("the problem")).when(jenkinsAPI).deployToStoryAcceptance(lastDeploy);
+        doThrow(new RevertFailedException("the problem")).when(jenkinsAPI).revertAcceptance(lastDeploy);
 
         subject.start();
 
@@ -227,7 +227,7 @@ public class ProductionRevertTaskTest {
 
         subject.start();
         verify(pivotalTrackerAPI, times(0)).finishStory(any());
-        verify(jenkinsAPI, times(0)).deployToStoryAcceptance(any());
+        verify(jenkinsAPI, times(0)).revertAcceptance(any());
         verifyZeroInteractions(storyAcceptanceQueue);
     }
 }

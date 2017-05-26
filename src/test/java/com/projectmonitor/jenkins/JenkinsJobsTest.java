@@ -16,7 +16,7 @@ public class JenkinsJobsTest {
     private JenkinsJobs subject;
 
     @Mock
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     @Mock
     private CIJobConfiguration ciJobConfiguration;
     @Mock
@@ -34,7 +34,7 @@ public class JenkinsJobsTest {
     @Test
     public void deployToStoryAcceptance_delegates() throws Exception {
         Deploy theDeploy = Deploy.builder().build();
-        subject.deployToStoryAcceptance(theDeploy);
+        subject.revertAcceptance(theDeploy);
         verify(jenkinsRevertStoryAcceptance).execute(theDeploy);
     }
 }

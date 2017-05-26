@@ -18,7 +18,7 @@ public class JenkinsRevertJobTest {
 
     private JenkinsRevertJob subject;
     @Mock
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     @Mock
     private JenkinsJobPoller jenkinsJobPoller;
     private CIJobConfiguration ciJobConfiguration;
@@ -31,7 +31,7 @@ public class JenkinsRevertJobTest {
         ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setRevertProductionURL("http://revert.job/");
         ciJobConfiguration.setRevertProductionStatusURL("jobstatus");
-        subject = new JenkinsRevertJob(ciJobConfiguration, jenkinsJobAPI, jenkinsJobPoller);
+        subject = new JenkinsRevertJob(ciJobConfiguration, jenkinsClient, jenkinsJobPoller);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class JenkinsRevertJobTest {
                 .build();
         subject.execute(theDeploy);
 
-        verify(jenkinsJobAPI).triggerJob("http://revert.job/" + "sha&STORY_ID=storyID");
+        verify(jenkinsClient).triggerJob("http://revert.job/" + "sha&STORY_ID=storyID");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class JenkinsRevertJobTest {
 
     @Test
     public void whenTheRevertJobRequestFails_throwsAnException() throws Exception {
-        doThrow(new RequestFailedException("an issue")).when(jenkinsJobAPI).triggerJob(any());
+        doThrow(new RequestFailedException("an issue")).when(jenkinsClient).triggerJob(any());
 
         Deploy theDeploy = Deploy.builder()
                 .sha("sha")

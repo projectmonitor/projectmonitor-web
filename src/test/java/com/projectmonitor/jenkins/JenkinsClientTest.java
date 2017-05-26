@@ -18,9 +18,9 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JenkinsJobAPITest {
+public class JenkinsClientTest {
 
-    JenkinsJobAPI subject;
+    JenkinsClient subject;
     private ClientAndServer mockServer;
     RestTemplate restTemplate;
     CIJobConfiguration ciJobConfiguration;
@@ -34,7 +34,7 @@ public class JenkinsJobAPITest {
         ciJobConfiguration.setCiUsername("banana");
         ciJobConfiguration.setCiPassword("damage");
         restTemplate = new RestTemplate();
-        subject = new JenkinsJobAPI(restTemplate, ciJobConfiguration);
+        subject = new JenkinsClient(restTemplate, ciJobConfiguration);
 
         mockServer = startClientAndServer(1090);
     }

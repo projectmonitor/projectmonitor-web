@@ -5,7 +5,7 @@ import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import com.projectmonitor.jenkins.CIJobConfiguration;
 import com.projectmonitor.jenkins.CIResponse;
 import com.projectmonitor.jenkins.JenkinsJobPoller;
-import com.projectmonitor.jenkins.JenkinsJobAPI;
+import com.projectmonitor.jenkins.JenkinsClient;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,13 +23,14 @@ public class PCFStoryAcceptanceDeployerTest {
 
     private PCFStoryAcceptanceDeployer subject;
     @Mock
-    private JenkinsJobAPI jenkinsJobAPI;
+    private JenkinsClient jenkinsClient;
     @Mock
     private StoryAcceptanceQueue storyAcceptanceQueue;
     @Mock
     private PivotalTrackerAPI pivotalTrackerAPI;
     @Mock
     private JenkinsJobPoller jenkinsJobPoller;
+
     private String saDeployJobURL = "http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=theNextDeployableSHA";
     private String deployStatusURL = "http://localhost:8080/job/TestProject to SA/lastBuild/api/json";
 
@@ -38,7 +39,7 @@ public class PCFStoryAcceptanceDeployerTest {
         CIJobConfiguration ciJobConfiguration = new CIJobConfiguration();
         ciJobConfiguration.setStoryAcceptanceDeployJobURL("http://localhost:8080/job/TestProject to SA/buildWithParameters?ShaToBuild=");
         ciJobConfiguration.setStoryAcceptanceDeployStatusURL(deployStatusURL);
-        subject = new PCFStoryAcceptanceDeployer(storyAcceptanceQueue, jenkinsJobAPI, ciJobConfiguration, pivotalTrackerAPI, jenkinsJobPoller);
+        subject = new PCFStoryAcceptanceDeployer(storyAcceptanceQueue, jenkinsClient, ciJobConfiguration, pivotalTrackerAPI, jenkinsJobPoller);
     }
 
     @Test
@@ -47,17 +48,17 @@ public class PCFStoryAcceptanceDeployerTest {
 
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
 
-        when(jenkinsJobAPI.loadJobStatus(deployStatusURL))
+        when(jenkinsClient.loadJobStatus(deployStatusURL))
                 .thenReturn(new CIResponse());
         subject.push();
-        Mockito.verify(jenkinsJobAPI).triggerJob(saDeployJobURL);
+        Mockito.verify(jenkinsClient).triggerJob(saDeployJobURL);
     }
 
     @Test
     public void push_whenQueueEmpty_doesNotTriggerAnSADeploy_returnsTrue() throws Exception {
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(null);
         assertThat(subject.push()).isTrue();
-        Mockito.verifyZeroInteractions(jenkinsJobAPI);
+        Mockito.verifyZeroInteractions(jenkinsClient);
     }
 
     @Test
@@ -94,10 +95,10 @@ public class PCFStoryAcceptanceDeployerTest {
         Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
         Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
 
-        when(jenkinsJobAPI.loadJobStatus(deployStatusURL))
+        when(jenkinsClient.loadJobStatus(deployStatusURL))
                 .thenReturn(new CIResponse());
         subject.pushRejectedBuild("aRejectedStory");
-        Mockito.verify(jenkinsJobAPI).triggerJob(saDeployJobURL);
+        Mockito.verify(jenkinsClient).triggerJob(saDeployJobURL);
         Mockito.verify(pivotalTrackerAPI).removeRejectLabel("aRejectedStory");
     }
 
@@ -108,7 +109,7 @@ public class PCFStoryAcceptanceDeployerTest {
                 .storyID("aDifferentStory").build();
 
         Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
-        when(jenkinsJobAPI.loadJobStatus(deployStatusURL))
+        when(jenkinsClient.loadJobStatus(deployStatusURL))
                 .thenReturn(new CIResponse());
         subject.pushRejectedBuild("aRejectedStory");
         Mockito.verify(storyAcceptanceQueue, times(0)).pop();
