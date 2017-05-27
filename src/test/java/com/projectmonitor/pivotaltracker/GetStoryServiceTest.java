@@ -3,20 +3,26 @@ package com.projectmonitor.pivotaltracker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetStoryServiceTest {
-
+    @InjectMocks
     private GetStoryService subject;
 
     @Mock
@@ -28,8 +34,8 @@ public class GetStoryServiceTest {
 
     @Before
     public void setUp(){
-        when(urlGenerator.generate("8888")).thenReturn("https://trackerapi.com/989898/8888");
-        subject = new GetStoryService(urlGenerator, restTemplate, rejectLabelService);
+        when(urlGenerator.generate("8888"))
+                .thenReturn("https://trackerapi.com/989898/8888");
     }
 
     @Test

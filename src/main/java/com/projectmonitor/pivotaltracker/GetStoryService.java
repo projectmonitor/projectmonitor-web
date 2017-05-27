@@ -26,9 +26,16 @@ class GetStoryService {
         this.rejectLabelService = rejectLabelService;
     }
 
-    PivotalTrackerStory load(String pivotalTrackerStoryID){
+    PivotalTrackerStory load(String pivotalTrackerStoryID) {
         String storyURL = urlGenerator.generate(pivotalTrackerStoryID);
-        PivotalTrackerStoryDTO storyDTO = restTemplate.getForObject(storyURL, PivotalTrackerStoryDTO.class);
+
+        PivotalTrackerStoryDTO storyDTO;
+        try {
+            storyDTO = restTemplate.getForObject(storyURL, PivotalTrackerStoryDTO.class);
+        } catch (HttpStatusCodeException exception) {
+            logger.error("Retrieving story {} failed with status code: {} and response: {}", pivotalTrackerStoryID, exception.getStatusCode(), exception.getResponseBodyAsString());
+            return PivotalTrackerStory.builder().build();
+        }
 
         boolean hasBeenRejected = false;
         String rejectedStoryID = "";
