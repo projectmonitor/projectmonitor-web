@@ -1,5 +1,6 @@
 package com.projectmonitor.deployjob;
 
+import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
 import com.projectmonitor.pivotaltracker.PivotalTrackerStory;

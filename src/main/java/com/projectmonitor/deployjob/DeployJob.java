@@ -1,5 +1,6 @@
 package com.projectmonitor.deployjob;
 
+import com.projectmonitor.deploys.StoryAcceptanceQueue;
 import com.projectmonitor.environments.DeployedAppInfo;
 import com.projectmonitor.environments.Environments;
 import com.projectmonitor.pivotaltracker.PivotalTrackerAPI;
@@ -42,7 +43,7 @@ public class DeployJob {
             logger.info("A production revert appears to be under way. Exiting without doing anything.");
             return;
         }
-        // todo: if queue is empty just bail out
+
         try {
             DeployedAppInfo acceptanceStory = environments.loadStoryAcceptanceDeployedAppInfo();
             logger.info("Current story in acceptance {}", acceptanceStory.getPivotalTrackerStoryID());

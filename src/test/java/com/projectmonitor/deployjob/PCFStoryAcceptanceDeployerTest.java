@@ -16,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,7 +47,7 @@ public class PCFStoryAcceptanceDeployerTest {
     public void push_triggersTheJenkinsSADeployJob_withTheNextBuildThatHasPassedCI() throws Exception {
         Deploy theDeploy = Deploy.builder().sha("theNextDeployableSHA").build();
 
-        Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
+        Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
 
         when(jenkinsClient.loadJobStatus(deployStatusURL))
                 .thenReturn(new CIResponse());
@@ -56,20 +57,21 @@ public class PCFStoryAcceptanceDeployerTest {
 
     @Test
     public void push_whenQueueEmpty_doesNotTriggerAnSADeploy_returnsTrue() throws Exception {
-        Mockito.when(storyAcceptanceQueue.pop()).thenReturn(null);
+        Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(null);
         assertThat(subject.push()).isTrue();
         Mockito.verifyZeroInteractions(jenkinsClient);
     }
 
     @Test
-    public void push_whenSADeployJobFinishesAndIsSuccessful_returnsTrue() throws Exception {
+    public void push_whenSADeployJobFinishesAndIsSuccessful_returnsTrueAndPopBuildOutOfQueue() throws Exception {
         Deploy theDeploy = Deploy.builder().sha("theNextDeployableSHA").build();
 
-        Mockito.when(storyAcceptanceQueue.pop()).thenReturn(theDeploy);
+        Mockito.when(storyAcceptanceQueue.readHead()).thenReturn(theDeploy);
 
         when(jenkinsJobPoller.execute(deployStatusURL)).thenReturn(true);
 
         assertThat(subject.push()).isTrue();
+        verify(storyAcceptanceQueue).pop();
     }
 
     @Test

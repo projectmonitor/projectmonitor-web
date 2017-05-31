@@ -38,7 +38,7 @@ class PCFStoryAcceptanceDeployer {
     }
 
     public boolean push() {
-        Deploy deploy = storyAcceptanceQueue.pop();
+        Deploy deploy = storyAcceptanceQueue.readHead();
 
         if (deploy == null) {
             logger.info("No build SHA's in queue, nothing to deploy to SA\n");
@@ -57,6 +57,7 @@ class PCFStoryAcceptanceDeployer {
 
         if (buildSuccessful) {
             logger.info("Story Acceptance Deploy has finished successfully!");
+            storyAcceptanceQueue.pop();
             return true;
         }
 
